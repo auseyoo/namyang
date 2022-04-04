@@ -1,0 +1,6 @@
+file:
+  upload:
+    path : "\\\\150.1.3.3\\log\\ny_order\\upload\\"
+    maxSize : 10485760
+
+

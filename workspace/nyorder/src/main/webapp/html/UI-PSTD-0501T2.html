@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템 - 단가정보 관리 / 애음자단가관리</title>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<script type="text/javascript">
+    var myGridID;
+    var myGridID2;
+    var gridData = [
+			{"id":"#Cust0","areaNm":"매입단가","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust1","areaNm":"지역표준단가","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust2","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust3","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+            {"id":"#Cust4","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust5","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust6","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust7","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+            {"id":"#Cust8","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust9","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust10","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust11","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+            {"id":"#Cust12","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust13","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust14","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust15","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+            {"id":"#Cust16","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust17","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust18","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust19","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+            {"id":"#Cust20","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust21","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust22","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust23","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""}  
+    ];
+    var gridData2 = [
+			{"id":"#Cust0","areaNm":"매입단가","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust1","areaNm":"지역표준단가","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust2","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust3","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+            {"id":"#Cust4","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust5","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust6","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust7","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+            {"id":"#Cust8","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust9","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust10","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust11","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+            {"id":"#Cust12","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust13","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust14","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust15","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+            {"id":"#Cust16","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust17","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust18","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust19","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+            {"id":"#Cust20","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust21","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust22","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""},
+			{"id":"#Cust23","areaNm":"역삼동","gtS":"340","gtM":"725","gtL":"1,380","aS":999,"aM":"333","aL":"000","highCs":"000","highCm":"111","highCl":"000","baM":"","baL":"","lowL":"","stro":"","cho":"","blS":"","blL":""}  
+    ];
+
+   
+   $(document).ready(function(){
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid(columnLayout);
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.        
+        
+        AUIGrid.setGridData(myGridID, gridData);
+        
+    });
+    
+ 
+    
+    // AUIGrid 를 생성합니다.
+    function createAUIGrid() {
+        // 그리드 속성 설정
+        var gridPros = {
+                headerHeight : 29,
+                rowHeight : 29,
+                // 편집 가능 여부 (기본값 : false)
+                editable : false,
+                
+                // 엔터키가 다음 행이 아닌 다음 칼럼으로 이동할지 여부 (기본값 : false)
+                enterKeyColumnBase : true,
+                
+                // 셀 선택모드 (기본값: singleCell)
+                selectionMode : "multipleCells",
+                //showFooter : true,
+                
+                // 컨텍스트 메뉴 사용 여부 (기본값 : false)
+                useContextMenu : true,
+                
+                // 필터 사용 여부 (기본값 : false)
+                enableFilter : true,
+            
+                // 그룹핑 패널 사용
+                useGroupingPanel : false,
+
+                // 체크박스 사용 
+	            showRowCheckColumn : true,
+                
+                // 그룹핑 또는 트리로 만들었을 때 펼쳐지게 할지 여부 (기본값 : false)
+                displayTreeOpen : true,
+                
+                noDataMessage : "출력할 데이터가 없습니다.",
+                
+                groupingMessage : "여기에 칼럼을 드래그하면 그룹핑이 됩니다.",
+
+                // 고정 칼럼, 행에 있는 셀도 수정 가능 여부(기본값:false)
+                editableOnFixedCell : true,
+                fixedRowCount : 2,
+                enableSorting : false,
+                selectionMode : "multipleCells",
+                editable : true, // 수정 모드
+                
+                // 행 고유 id 에 속하는 필드명(DB의 primary key 와 일치 시키면 유용합니다.)
+                rowIdField : "id",
+                
+                // 고정 칼럼, 행에 있는 셀도 수정 가능 여부(기본값:false)
+                editableOnFixedCell : true, 
+                
+                // 행 선택모드에서 옆으로 칼럼 변경할 시 selectionChange 이벤트 발생 시킬지 여부(기본값 : false)
+                triggerSelectionChangeOnCell : true, 
+                
+                //softRemoveRowMode 적용을 원래 데이터에만 적용 즉, 새 행인 경우 적용 안시킴
+                softRemovePolicy :"exceptNew",
+                
+                // 칼럼 끝에서 오른쪽 이동 시 다음 행, 처음 칼럼으로 이동할지 여부
+                wrapSelectionMove : true,
+                
+                // selectionChange 이벤트 발생 시 간소화된 정보만 받을지 여부
+                // 이 속성은 선택한 셀이 많을 때 false 설정하면 퍼포먼스에 영향을 미칩니다.
+                // selectionChange 이벤트 바인딩 한 경우 true 설정을 권합니다.
+                simplifySelectionEvent : true       
+            }
+    
+        // 실제로 #grid_wrap 에 그리드 생성
+        myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+        myGridID2 = AUIGrid.create("#grid_wrap2", columnLayout2, gridPros);
+    }
+
+    var columnLayout = [{
+            dataField : "areaNm",
+			headerText : "지역명",
+            style : "auiLeft"
+		},{
+			dataField : "gtS",
+			headerText : "GT소",
+			width : "5%",
+            style : "auiRight"
+		},{
+			dataField : "gtM",
+			headerText : "GT중",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "gtL",
+			headerText : "GT대",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "aS",
+			headerText : "아소",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "aM",
+			headerText : "아중",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "aL",
+			headerText : "아대",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "highCs",
+			headerText : "고칼소",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "highCm",
+			headerText : "고칼중",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "highCl",
+			headerText : "고칼대",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "baM",
+			headerText : "배중",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "baL",
+			headerText : "배대",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "lowS",
+			headerText : "저소",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "lowM",
+			headerText : "저중",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "lowL",
+			headerText : "저대",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "stro",
+			headerText : "딸기",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "cho",
+			headerText : "쵸코",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "blS",
+			headerText : "깜소",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "blL",
+			headerText : "깜대",
+			width : "5%",
+            style : "auiRight"			
+		}
+	];
+    var columnLayout2 = [{
+            dataField : "areaNm",
+			headerText : "지역명",
+            style : "auiLeft"
+		},{
+			dataField : "gtS",
+			headerText : "GT소",
+			width : "5%",
+            style : "auiRight"
+		},{
+			dataField : "gtM",
+			headerText : "GT중",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "gtL",
+			headerText : "GT대",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "aS",
+			headerText : "아소",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "aM",
+			headerText : "아중",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "aL",
+			headerText : "아대",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "highCs",
+			headerText : "고칼소",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "highCm",
+			headerText : "고칼중",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "highCl",
+			headerText : "고칼대",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "baM",
+			headerText : "배중",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "baL",
+			headerText : "배대",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "lowS",
+			headerText : "저소",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "lowM",
+			headerText : "저중",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "lowL",
+			headerText : "저대",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "stro",
+			headerText : "딸기",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "cho",
+			headerText : "쵸코",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "blS",
+			headerText : "깜소",
+			width : "5%",
+            style : "auiRight"			
+		},{
+			dataField : "blL",
+			headerText : "깜대",
+			width : "5%",
+            style : "auiRight"			
+		}
+	];
+
+    // 전체 체크 설정/ 해제
+    function checkAll(checked) {
+        var rowCount = AUIGrid.getRowCount(myGridID);
+        if(checked) {
+            // 전체 데이터를 대상으로 isActive 필드를 "Active" 값으로 변경
+            AUIGrid.updateRowBlockToValue(myGridID, 0, rowCount-1, "isActive", "Active");
+        } else {
+            // 전체 데이터를 대상으로 isActive 필드를 "Inactive" 값으로 변경
+            AUIGrid.updateRowBlockToValue(myGridID, 0, rowCount-1, "isActive", "Inactive");
+        }
+    };
+
+    // 필드값으로 아이템들 얻기
+    function getItemsByField() {
+        // 그리드 데이터에서 isActive 필드의 값이 Active 인 행 아이템 모두 반환
+        var activeItems = AUIGrid.getItemsByValue(myGridID, "isActive", "Active");
+        
+        alert("Acitve 체크 개수 : " + activeItems.length);
+        /*
+        var ids = []; 
+        for(var i=0, len=activeItems.length; i<len; i++) {
+            ids.push( activeItems[i].id ); // 아이디만 따로 보관해서 alert 출력
+        }
+        var str = ids.join("\n"); 
+        alert(str);*/
+    };
+
+    function myCheckboxHandler(event) {
+        // charge 의 값들 얻기
+        var uniqueValues = AUIGrid.getColumnDistinctValues(event.pid, "charge");
+        
+        // Anna 제외하기
+        uniqueValues.splice(uniqueValues.indexOf("Anna"),1);
+
+        // Anna 제외한 행들 모두 얻기
+        var rows = AUIGrid.getRowsByValue(event.pid, "charge", uniqueValues);
+        var items = [];
+        var rowIdField = AUIGrid.getProp(event.pid, "rowIdField");
+        rows.forEach(function(v, n) {
+            var item = {
+                id : v[rowIdField],
+                isChecked : event.checked
+            };
+            items.push(item);
+        });
+        
+        // 행들 수정
+        AUIGrid.updateRowsById(event.pid, items);
+    };
+
+
+    function requestJsonData() {
+        
+        // 요청 URL
+        var url = "./data/normal_500.json";
+        
+        // ajax 요청 전 그리드에 로더 표시
+        AUIGrid.showAjaxLoader(myGridID);
+        
+        // ajax (XMLHttpRequest) 로 그리드 데이터 요청
+        ajax( {
+            url : url,
+            onSuccess : function(data) {
+                
+                //console.log(data);
+                    
+                // 그리드에 JSON 데이터 설정
+                // data 는 JSON 을 파싱한 Array-Object 임
+                AUIGrid.setGridData(myGridID, data);
+                
+                // 로더 제거
+                AUIGrid.removeAjaxLoader(myGridID);
+            },
+            onError : function(status, e) {
+                alert("데이터 요청에 실패하였습니다.\r\n status : " + status + "\r\nWAS 를 IIS 로 사용하는 경우 json 확장자가 web.config 의 handler 에 등록되었는지 확인하십시오.");
+                // 로더 제거
+                AUIGrid.removeAjaxLoader(myGridID);
+            }
+        });
+     };
+
+    //editableOnFixedCell 토글
+    function toggleEditableOnFixedCell() {
+        var downChkbox = document.getElementById("downChkbox");
+        AUIGrid.setProp(myGridID, "editableOnFixedCell", downChkbox.checked); //editingOnKeyDown 토글
+    };
+</script>
+</head>
+<body>
+	<div class="allWrap">
+		<header>
+            <h1><a href="#" class="logo" title="남양유업"></a></h1>
+
+            <div class="logInfo">
+                <ul>
+                    <li><span class="user">김 남양</span> 님 을 환영합니다.</li>
+                    <li>최근접속일시 : <span class="date">2021.12.10 09:30:00</span></li>
+                    <li><a href="#" class="logOut"><span class="blind">로그아웃</span></a></li>
+                </ul>
+            </div>
+		</header>  
+
+		<div class="contentWrap">
+            <!-- lnb -->
+			<div class="lnb">
+                <!-- 검색영역 -->
+                <div class="leftSearBox">
+                    <input type="text" name="" value="" class="inp type02">
+                    <button type="button" class="searBtn" name="" title="검색하기"></button>
+                </div>
+                <!-- 검색영역 -->
+
+				<!-- 메뉴영역 -->
+                <div class="etcMenu">
+                    <a href="#" class="allMenu" title="전체메뉴"><span>전체메뉴</span></a>
+                    <a href="#" class="favSearch" title="즐겨찾기"><span>즐겨찾기</span></a>
+                </div>
+
+                <ul>
+                    <li class="depth1">
+                        <a href="#" title="기준정보 관리"><span>기준정보 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="대리점 관리"><span>대리점 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="애음자 관리"><span>애음자 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="판매 관리"><span>판매 관리</span></a>
+                        <ul class="depth2"> <!--style="display:block" -->
+                            <li>
+                                <h3>거래처 관리</h3>
+                            </li>
+                            <li><a href="#">거래처 관리</a></li>
+                            <li><a href="#">거래처별 단가 관리</a></li>
+                            <li>
+                                <h3>판매 관리</h3>
+                            </li>
+                            <li><a href="#">판매등록</a></li>
+                            <li><a href="#">거래명세표 발행</a></li>
+                            <li><a href="#">대리점 일보</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="매출 관리"><span>매출 분석</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="세무/회계 관리"><span>세무/회계 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="장비 관리"><span>장비 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="판촉 관리"><span>판촉 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="커뮤니케이션 관리"><span>커뮤니케이션 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="마이페이지"><span>마이페이지</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="로그인"><span>로그인</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <!-- 메뉴영역 -->
+
+                <a href="#" class="sideBtn"></a>
+			</div>
+            <!-- lnb -->
+			
+            <!-- content -->
+            <div class="rContentBox">
+                <div class="content">
+                    <div class="titTopArea">
+                        <h2 class="tit01">단가정보 관리 <a href="#" class="favor" title="즐겨찾기"></a></h2>
+
+                        <div class="location">
+                            <ul>
+                                <li><i class="home"></i></li>
+                                <li>기준정보관리</li>
+                                <li>기준정보 관리</li>
+                                <li>단가정보 관리</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- tabs -->
+                    <div class="tabsWrap">
+                        <ul class="tabs">
+                            <li class="" rel="tab01">지역단가 관리</li>
+                            <li class="active" rel="tab02">애음자단가 관리</li>
+                        </ul>
+
+                        <!-- tabContent 전체 -->
+                        <div id="tab01" class="tabContent">
+                             <!-- 조회 -->
+                            <div class="inquiryBox type02">
+                                <dl>
+                                    <dt>기준일</dt>
+                                    <dd>
+                                        <div class="formWrap">            
+                                            <div class="dateWrap">
+                                                <input type="text" name="date" value="10-24-1984" class="inp" id="datepicker">
+                                                <button type="button" class="datepickerBtn" title="날짜입력"></button>
+                                            </div>                        
+                                        </div>
+                                    </dd>
+                                    <dt>지역</dt>
+                                    <dd>
+                                        <div class="formWrap">
+                                            <input type="text" id="inp_product01" class="inp w120 mr10" value="" name="" placeholder="지역명">
+                                            <button type="button" name="" class="comBtn" id="inp_name01">조회</button>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <div class="btnGroup right">
+                                    <button type="button" name="" class="comBtn">지역 관리</button>
+                                    <button type="button" name="" class="inquBtn">저장</button>
+                                </div>
+                            </div>
+                            <!-- 조회 -->
+                            
+                            <!-- 상태정보 -->
+                                    <div class="txtInfo">
+                                ※ 지역표준단가는 <표준제품 관리> 메뉴에서 제품별로 관리할 수 있습니다.
+                            </div>
+                            <!--// 상태정보 -->
+
+
+                            <div class="titleArea right">
+                                <p class="numState">
+                                    <em>총 <span class="pColor01 fb">24</span></em> 건 이 조회되었습니다.
+                                </p>
+                                <div class="formGroup">
+                                    <label for="sel_puch" name="sel_puch" class="mr10">매입원가 대비</label>  
+                                    <select name="" class="sel small w140" id="sel_puch">
+                                        <option>초기화</option>
+                                        <option>전일자주문량</option>
+                                        <option>전전일자주문량</option>
+                                        <option>예상수량</option>
+                                    </select>
+                                    <input type="text" id="inp_product02" class="inp w120 small" name="" placeholder="0">
+                                    <button type="button" name="" class="comBtn small">일괄적용</button>
+                                </div>
+                            </div>
+                        
+                            <!-- grid -->
+                            <div class="girdBox">
+                                <div id="grid_wrap" style="height:500px"></div>
+                            </div>
+                            <!-- grid -->
+                        </div>
+
+                        <div id="tab02" class="tabContent">
+                             <!-- 조회 -->
+                            <div class="inquiryBox type02">
+                                <dl>
+                                    <dt>기준일</dt>
+                                    <dd>
+                                        <div class="formWrap">            
+                                            <div class="dateWrap">
+                                                <input type="text" name="date" value="10-24-1984" class="inp" id="datepicker">
+                                                <button type="button" class="datepickerBtn" title="날짜입력"></button>
+                                            </div>                        
+                                        </div>
+                                    </dd>
+                                    <dt>지역</dt>
+                                    <dd>
+                                        <div class="formWrap">
+                                            <input type="text" id="inp_product01" class="inp w120 mr10" value="" name="" placeholder="지역명">
+                                            <button type="button" name="" class="comBtn" id="inp_name01">조회</button>
+                                        </div>
+                                    </dd>
+                                </dl>
+                                <div class="btnGroup right">
+                                    <button type="button" name="" class="comBtn">지역 관리</button>
+                                    <button type="button" name="" class="inquBtn">저장</button>
+                                </div>
+                            </div>
+                            <!-- 조회 -->
+                            
+                            <!-- 상태정보 -->
+                                    <div class="txtInfo">
+                                ※ 지역표준단가는 <표준제품 관리> 메뉴에서 제품별로 관리할 수 있습니다.
+                            </div>
+                            <!--// 상태정보 -->
+
+
+                            <div class="titleArea right">
+                                <p class="numState">
+                                    <em>총 <span class="pColor01 fb">24</span></em> 건 이 조회되었습니다.
+                                </p>
+                                <div class="formGroup">
+                                    <label for="sel_puch" name="sel_puch" class="mr10">매입원가 대비</label>  
+                                    <select name="" class="sel small w140" id="sel_puch">
+                                        <option>초기화</option>
+                                        <option>전일자주문량</option>
+                                        <option>전전일자주문량</option>
+                                        <option>예상수량</option>
+                                    </select>
+                                    <input type="text" id="inp_product02" class="inp w120 small" name="" placeholder="0">
+                                    <button type="button" name="" class="comBtn small">일괄적용</button>
+                                </div>
+                            </div>
+                        
+                            <!-- grid -->
+                            <div class="girdBox">
+                                <div id="grid_wrap2" style="height:500px"></div>
+                            </div>
+                            <!-- grid -->
+                        </div>
+
+                </div>
+
+                <footer>
+                    COPYRIGHT-NAMYANG-DAIRY-PRODUCTS-COLTD-ALL-RIGHT-RESERVED
+                </footer>
+            </div>
+            <!-- content -->
+		</div>
+	</div>
+</body>
+</html>

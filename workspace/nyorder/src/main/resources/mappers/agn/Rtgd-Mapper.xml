@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.agn.dao.RtgdMapper">
+
+	<sql id="selectRtgdList">
+		SELECT
+			TBT.AGEN_SEQ			
+			, TBT.ORD_RTGD_SEQ	/*반품시퀀스*/
+			, TBT.PRD_DTL_SEQ
+			, TBT.ORD_STUS_CD
+			, TBT.REQ_BOX_QTY	/*반품의뢰수량*/	
+			, TBT.REQ_IDDY_QTY	/*반품의뢰수량*/
+			, TBT.UNTPC			/*반품단가*/
+			, TBT.SPPRC			/*반품금액*/	
+			, TBT.VAT_SPPRC		/*반품금액 VAT*/		
+			, TBT.RTGD_SEC		/*반품유형*/	
+			, TBT.TRNST_YN		/*SAP 전송여부*/	
+			, TBT.REQ_DT		/*의뢰일자*/	
+			, TBS.DCSN_YN		/*확정여부*/	
+			, TBS.DCSN_QTY		/*반품확정수량*/	
+			, TBS.DCSN_DT		/*확정일자*/	
+			, TBT.REG_COS		/*입력경로*/
+			, TBS.ERR_MSG		/*에러메세지*/
+		FROM 
+		(
+			SELECT 
+			*
+			FROM  T_ORD_RTGD			
+			WHERE				
+				AGEN_SEQ = #{agenSeq} 	
+				AND REQ_DT LIKE #{reqYm} + '%'	
+				AND ORD_STUS_CD = 'RTGD'
+				AND PRGRM_DSTN_CD = 'T'
+				AND USE_YN = 'Y'		
+		) TBT 
+		LEFT OUTER JOIN (
+			SELECT 
+			*
+			FROM  T_ORD_RTGD			
+			WHERE				
+				AGEN_SEQ = #{agenSeq} 	
+				AND REQ_DT LIKE #{reqYm} + '%'	
+				AND ORD_STUS_CD = 'RTGD'
+				AND PRGRM_DSTN_CD = 'S'
+				AND USE_YN = 'Y'		
+		) TBS ON TBT.AGEN_SEQ = TBS.AGEN_SEQ AND TBT.PRD_DTL_SEQ = TBS.PRD_DTL_SEQ AND TBT.REQ_DT = TBS.REQ_DT 								
+	</sql>
+	
+	<sql id="selectRetList">
+		SELECT
+			TBT.AGEN_SEQ			
+			, TBT.ORD_RTGD_SEQ	/*반품시퀀스*/
+			, TBT.PRD_DTL_SEQ
+			, TBT.ORD_STUS_CD
+			, TBT.REQ_BOX_QTY	/*반품의뢰수량*/	
+			, TBT.REQ_IDDY_QTY	/*반품의뢰수량*/
+			, TBT.UNTPC			/*반품단가*/
+			, TBT.SPPRC			/*반품금액*/	
+			, TBT.VAT_SPPRC		/*반품금액 VAT*/		
+			, TBT.RTGD_SEC		/*반품유형*/	
+			, TBT.TRNST_YN		/*SAP 전송여부*/	
+			, TBT.REQ_DT		/*의뢰일자*/	
+			, TBS.DCSN_YN		/*확정여부*/	
+			, TBS.DCSN_QTY		/*반품확정수량*/	
+			, TBS.DCSN_DT		/*확정일자*/	
+			, TBT.REG_COS		/*입력경로*/
+			, TBS.ERR_MSG		/*에러메세지*/
+		FROM 
+		(
+			SELECT 
+			*
+			FROM  T_ORD_RTGD			
+			WHERE				
+				AGEN_SEQ = #{agenSeq} 	
+				AND REQ_DT LIKE #{reqYm} + '%'	
+				AND ORD_STUS_CD = 'RET'
+				AND PRGRM_DSTN_CD = 'T'
+				AND USE_YN = 'Y'		
+		) TBT 
+		LEFT OUTER JOIN (
+			SELECT 
+			*
+			FROM  T_ORD_RTGD			
+			WHERE				
+				AGEN_SEQ = #{agenSeq} 	
+				AND REQ_DT LIKE #{reqYm} + '%'	
+				AND ORD_STUS_CD = 'RET'
+				AND PRGRM_DSTN_CD = 'S'
+				AND USE_YN = 'Y'		
+		) TBS ON TBT.AGEN_SEQ = TBS.AGEN_SEQ AND TBT.PRD_DTL_SEQ = TBS.PRD_DTL_SEQ AND TBT.REQ_DT = TBS.REQ_DT 								
+	</sql>
+
+	<select id="selectRtngudList" parameterType="com.namyang.nyorder.agn.vo.RtgdVO" resultType="com.namyang.nyorder.agn.vo.RtgdVO">
+		/* Rtgd-Mapper - selectRtngudList */
+			SELECT 							
+				TB.AGEN_SEQ
+				, TB.ORD_STUS_CD						
+				, TB.PRD_DTL_CD						
+				, TB.SHTN_NM AS PRD_NM						
+				, TB.RTGD_SEC
+				, TB.RTGD_SEC_TXT									
+				, TB.IN_PATH						
+				, TB.FALT_QTY						
+				, TB.REQ_BOX_QTY						
+				, TB.REQ_IDDY_QTY						
+				, TB.REQ_QTY						
+				, TB.DCSN_BOX_QTY						
+				, TB.DCSN_IDDY_QTY						
+				, TB.DCSN_QTY						
+				, TB.UNTPC						
+				, FLOOR(TB.SPPRC) AS SPPRC						
+				, FLOOR(TB.VAT_SPPRC) AS VAT_SPPRC						
+				, TB.TOT_AMOUNT						
+				, TB.REQ_DT						
+				, TB.DCSN_DT						
+			FROM (						
+							
+				SELECT						
+					A.AGEN_SEQ
+					, A.ORD_STUS_CD	
+					, B.PRD_DTL_SEQ
+					, B.PRD_DTL_CD					
+					, B.SHTN_NM					
+					, A.RTGD_SEC		
+					, D.COMM_NM AS RTGD_SEC_TXT			
+					, '입력경로' AS 'IN_PATH'					
+					, B.FALT_QTY					
+					, A.REQ_BOX_QTY					
+					, A.REQ_IDDY_QTY					
+					, ((ISNULL(A.REQ_BOX_QTY, 0) * ISNULL(B.FALT_QTY, 0)) + ISNULL(A.REQ_IDDY_QTY, 0)) AS REQ_QTY					
+					, CASE WHEN B.FALT_QTY != 0 AND B.FALT_QTY IS NOT NULL THEN FLOOR((A.DCSN_QTY / ISNULL(B.FALT_QTY, 0))) ELSE 0 END DCSN_BOX_QTY					
+					, CASE WHEN B.FALT_QTY != 0 AND B.FALT_QTY IS NOT NULL THEN (A.DCSN_QTY % ISNULL(B.FALT_QTY, 0))  ELSE 0 END DCSN_IDDY_QTY						
+					, A.DCSN_QTY					
+					, A.UNTPC					
+					, A.SPPRC					
+					, A.VAT_SPPRC					
+					, (A.SPPRC + A.VAT_SPPRC) AS TOT_AMOUNT					
+					, A.REQ_DT
+					, A.DCSN_DT					
+				FROM						
+					(
+						/*반품 조회*/								
+						<include refid="selectRtgdList"/>
+						
+						UNION ALL						
+						
+						/*반송 조회*/								
+						<include refid="selectRetList"/>
+				) A 						
+				INNER JOIN T_PRD_DTL B ON A.PRD_DTL_SEQ = B.PRD_DTL_SEQ  AND A.AGEN_SEQ = B.AGEN_SEQ 						
+				LEFT OUTER JOIN T_COMM D ON D.COMM_GRP_CD = 'SD0018' AND A.RTGD_SEC = D.COMM_CD
+			) TB	
+			WHERE 1=1
+			<if test="ordStusCd != null and ordStusCd != '' ">
+				AND TB.ORD_STUS_CD = #{ordStusCd} 
+			</if>		
+			<if test="prdDtlCd != null and prdDtlCd != '' ">
+				AND TB.PRD_DTL_CD LIKE '%' + #{prdDtlCd} + '%'
+			</if>		
+			<if test="prdNm != null and prdNm != '' ">
+				AND TB.SHTN_NM LIKE '%' + #{prdNm} + '%' 
+			</if>					
+			<if test="inPath != null and inPath != '' ">
+				AND TB.IN_PATH = #{inPath} 
+			</if>
+	</select>
+	
+	<select id="selectRtgdConfmList" parameterType="com.namyang.nyorder.agn.vo.RtgdVO" resultType="com.namyang.nyorder.agn.vo.RtgdVO">	
+		/* Rtgd-Mapper - selectRtgdConfmList */	
+			/*반품확인서 조회 쿼리*/
+				SELECT 							
+				TB.AGEN_SEQ
+				, TB.ORD_STUS_CD						
+				, TB.PRD_DTL_CD						
+				, TB.SHTN_NM AS PRD_NM						
+				, TB.RTGD_SEC_TXT									
+				, TB.DCSN_BOX_QTY						
+				, TB.DCSN_IDDY_QTY						
+				, TB.DCSN_QTY						
+				, TB.DCSN_DT						
+			FROM (						
+							
+				SELECT						
+					A.AGEN_SEQ
+					, A.ORD_STUS_CD	
+					, B.PRD_DTL_SEQ
+					, B.PRD_DTL_CD					
+					, B.SHTN_NM					
+					, CASE WHEN A.RTGD_SEC = '202' THEN '특별반품' ELSE '' END RTGD_SEC_TXT
+					, CASE WHEN B.FALT_QTY != 0 AND B.FALT_QTY IS NOT NULL THEN FLOOR((A.DCSN_QTY / ISNULL(B.FALT_QTY, 0))) ELSE 0 END DCSN_BOX_QTY					
+					, CASE WHEN B.FALT_QTY != 0 AND B.FALT_QTY IS NOT NULL THEN (A.DCSN_QTY % ISNULL(B.FALT_QTY, 0))  ELSE 0 END DCSN_IDDY_QTY						
+					, A.DCSN_QTY					
+					, A.DCSN_DT					
+				FROM						
+					(
+						/*반품 조회*/								
+						<include refid="selectRtgdList"/>
+						
+						UNION ALL						
+						
+						/*반송 조회*/								
+						<include refid="selectRetList"/>
+				) A 						
+				INNER JOIN T_PRD_DTL B ON A.PRD_DTL_SEQ = B.PRD_DTL_SEQ  AND A.AGEN_SEQ = B.AGEN_SEQ
+			) TB	
+			WHERE 1=1 
+				AND ORD_STUS_CD = 'RTGD'
+			<if test="ordStusCd != null and ordStusCd != '' ">
+				AND TB.ORD_STUS_CD = #{ordStusCd} 
+			</if>		
+			<if test="prdDtlCd != null and prdDtlCd != '' ">
+				AND TB.PRD_DTL_CD LIKE '%' + #{prdDtlCd} + '%'
+			</if>		
+			<if test="prdNm != null and prdNm != '' ">
+				AND TB.SHTN_NM LIKE '%' + #{prdNm} + '%' 
+			</if>					
+			<if test="inPath != null and inPath != '' ">
+				AND TB.IN_PATH = #{inPath} 
+			</if>
+	</select>	
+</mapper>

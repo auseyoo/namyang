@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi" />
+<meta name="format-detection" content="telephone=no, address=no, email=no" />
+<title>MOBILE 남양유업 대리점 주문시스템</title>
+<link rel="stylesheet" type="text/css" href="../../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/m_layout.css"/>
+<script type="text/javascript" src="../../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../../js/datepicker_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+</head>
+<body>
+	<div class="subAllWrap">
+		<header>
+			<a href="#" class="pre"></a>
+			<h2>내 정보 조회</h2>
+
+			<div class="allMenu">
+				<div class="box">
+					<div class="allBtn">
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<nav>
+			<div class="logInfo">
+				<ul>
+					<li><span class="user">김 남양</span> 님,<br/>을 환영합니다.</li>
+					<!-- <li><a href="#" class="logBtn"><span>로그아웃</span></a></li> -->
+					<li><a href="#" class="logBtn"><span>로그인</span></a></li>
+				</ul>
+			</div>
+
+			<!-- lnb -->
+			<div class="lnbWrap">
+				<div class="tabContent lnb" >
+					<ul>
+						<li class="depth1 active">
+							<a href="#" title="기준정보 관리"><span>기준정보 관리</span></a>
+							<ul class="depth2">
+								<li><a href="/std/stdPrdSearch.do">제품 조회</a></li>
+							</ul>
+						</li>
+						<li class="depth1">
+							<a href="#" title="주문 관리"><span>주문 관리</span></a>
+							<ul class="depth2">
+								<li><a href="/agn/ordrReg.do">주문 등록</a></li>
+								<li><a href="/agn/ordrDcsnDly.do">주문확정/배송 조회</a></li>
+								<li><a href="/agn/rtngudList.do">반품/반송 관리</a></li>
+								<li><a href="/agn/rtngudReg.do">반품등록</a></li>
+								<li><a href="#">학교급식 주문 등록</a></li>
+								<li><a href="#">학교급식 주문 조회</a></li>
+							</ul>
+						</li>
+						<li class="depth1">
+							<a href="#" title="재고 관리"><span>재고 관리</span></a>
+							<ul class="depth2">
+								<li><a href="">재고 관리</a></li>
+								<li><a href="">크레이트 반납 관리</a></li>
+							</ul>
+						</li>
+						<li class="depth1">
+							<a href="#" title="배달 관리"><span>배달 관리</span></a>
+							<ul class="depth2">
+								<li><a href="">배달 관리</a></li>
+							</ul>
+						</li>
+						<li class="depth1">
+							<a href="#" title="판매 관리"><span>판매 관리</span></a>
+							<ul class="depth2"><!--style="display:block" -->
+								<li><a href="/sale/saleReg.do">판매등록</a></li>
+							</ul>
+						</li>
+						<li class="depth1">
+							<a href="#" title="커뮤니케이션 관리"><span>커뮤니케이션 관리</span></a>
+							<ul class="depth2">
+								<li><a href="">게시판</a></li>
+								<li><a href="/cmmc/notiList.do" class="active">공지사항</a></li>
+								<li><a href="">자료실</a></li>
+								<li><a href="">알림 내역</a></li>
+							</ul>
+						</li>
+						<li class="depth1">
+							<a href="#" title="마이페이지"><span>마이페이지</span></a>
+							<ul class="depth2">
+								<li><a href="">정보 관리</a></li>
+								<li><a href="/myp/myInfoSearch.do">내 정보 조회</a></li>
+								<li><a href="/myp/cdtlSearch.do">여신 조회</a></li>
+								<li><a href="">지원 조회</a></li>
+								<li><a href="">환경설정</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+            <!-- lnb -->
+		</nav>
+
+		<div class="contents">
+			<div class="titleArea type02">
+				<h2 class="tit01">대리점 상세 정보</h2>
+			</div>
+
+			<div class="txtInfo pColor02">
+				<span>정보 수정은 담당사원에게 요청해주세요.</span>
+			</div>
+
+			<div class="tblWrap bgW">
+				<table class="tbl submit">
+					<caption>대리점 상세 정보</caption>
+					<colgroup>
+						<col class="cHead">
+						<col>
+						<col class="cHead">
+						<col>
+					</colgroup>
+					<tbody>
+						<tr>
+							<th scope="row">대리점코드</th>
+							<td>
+								00001212
+							</td>
+							<th scope="row">상호</th>
+							<td>
+								비티소프트
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">사업자번호</th>
+							<td>
+								210315486665
+							</td>
+							<th scope="row">대표자명</th>
+							<td>
+								이은은
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">업태</th>
+							<td>
+								도소매
+							</td>
+							<th scope="row">업종</th>
+							<td>
+								음료 및 유제품
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">사업장 전화번호</th>
+							<td>
+								02-1588-4888
+							</td>
+							<th scope="row">휴대폰번호</th>
+							<td>
+								010-0000-000
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">팩스</th>
+							<td>
+								02-1588-4888
+							</td>
+							<th scope="row">이메일주소</th>
+							<td>
+								btsoft@btsoft.kr 
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">우편번호</th>
+							<td colspan="3">
+								08165
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">주소</th>
+							<td colspan="3">
+								서울시 구로구
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">상세주소</th>
+							<td colspan="3">
+								에이스테크노타워 8층
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">담당지점</th>
+							<td>
+								강남지점
+							</td>
+							<th scope="row">담당사원</th>
+							<td>
+								김남양
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">계약종류명</th>
+							<td>
+								도매, 위탁(유통)
+							</td>
+							<th scope="row">계약잔여일</th>
+							<td>
+								283
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">계약시작일</th>
+							<td>
+								2021-10-01
+							</td>
+							<th scope="row">계약종료일</th>
+							<td>
+								2022-09-30
+							</td>
+						</tr>
+						<tr>
+							<th scope="row">가상계좌</th>
+							<td>
+								기업은행/0000000000000
+							</td>
+							<th scope="row">CMS계좌</th>
+							<td>
+								00000000000
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+
+		<div class="boMenu">
+			<ul>
+				<li><a href="#"></a><span>홈</span></li>
+				<li><a href="#"></a><span>주문등록</span></li>
+				<li><a href="#"></a><span>카메라</span></li>
+				<li><a href="#"></a><span>주문조회</span></li>
+				<li><a href="#"></a><span>내정보조회</span></li>
+			</ul>
+		</div>
+	</div>
+</body>
+</html>

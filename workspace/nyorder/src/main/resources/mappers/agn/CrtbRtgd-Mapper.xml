@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.agn.dao.CrtbRtgdMapper">
+	
+	<select id="selectCrtbRtgdList" parameterType="hashmap" resultType="com.namyang.nyorder.agn.vo.CrtbRtgdVO">
+		/* CrtbRtgd-Mapper - selectCrtbRtgdList */
+			SELECT *
+			FROM (
+				<!-- 이월재고 조회 -->
+				<foreach collection="crtbCds" item="item" index="index" separator=" UNION ALL " open="" close="">
+                    <![CDATA[
+					SELECT
+						'0' AS ORD
+						, '' AS SEL_DT
+						, #{item} AS CRTB_CD
+						, '0' AS CRTB_RTGD_SEQ
+						, '0' AS RTGD_DT
+						, '0' AS YESTD_QTY
+						, '0' AS DLVY_QTY
+						, '0' AS REPT_QTY
+						, '0' AS COLET_QTY
+						, CASE WHEN (SELECT MAX(RTGD_DT) FROM T_CRTB_RTGD WHERE AGEN_SEQ = #{agenSeq} AND RTGD_DT < #{reqYm} + '01' AND CRTB_CD = #{item}) IS NOT NULL THEN (
+																																									SELECT 	INVRY_QTY
+																																									FROM T_CRTB_RTGD
+																																									WHERE AGEN_SEQ = #{agenSeq} 
+																																									AND CRTB_CD = #{item}
+																																									AND RTGD_DT = 
+																																										(
+																																											SELECT MAX(RTGD_DT) 
+																																											FROM T_CRTB_RTGD
+																																											WHERE 
+																																											AGEN_SEQ = #{agenSeq} AND RTGD_DT < #{reqYm} + '01' AND CRTB_CD = #{item}
+																																										)
+																																								)
+								ELSE 0
+							END RTGD_QTY
+						, '0' AS INVRY_QTY
+					]]>					
+                </foreach>
+                UNION ALL
+				<!-- 조회월 데이터 조회 -->
+				<foreach collection="crtbCds" item="item" index="index" separator=" UNION ALL " open="" close="">
+                    <![CDATA[
+                    SELECT A.*, B.*
+					FROM 
+					(
+						SELECT #{index}+1 AS ORD
+								, CONVERT(VARCHAR, DATEADD(D, NUMBER, #{reqYm} + '01'), 112) AS SEL_DT
+								, #{item} AS CRTB_CD
+						FROM MASTER..SPT_VALUES 
+						WHERE TYPE = 'P' AND NUMBER <= DATEDIFF(D, #{reqYm} + '01', #{selLastYmd})						
+					) A LEFT OUTER JOIN 
+					 (
+						SELECT CRTB_RTGD_SEQ, RTGD_DT, YESTD_QTY, DLVY_QTY, REPT_QTY, COLET_QTY, RTGD_QTY, INVRY_QTY
+						FROM T_CRTB_RTGD
+						WHERE AGEN_SEQ = #{agenSeq} AND RTGD_DT LIKE #{reqYm} + '%' AND CRTB_CD = #{item}
+					) B ON A.SEL_DT = B.RTGD_DT
+					]]>					
+                </foreach>	
+			) TB
+			ORDER BY TB.SEL_DT ASC, TB.ORD ASC
+
+	</select>
+	
+	<select id="selectCrtbCdList" parameterType="com.namyang.nyorder.agn.vo.CrtbRtgdVO" resultType="com.namyang.nyorder.agn.vo.CrtbRtgdVO">
+		/* CrtbRtgd-Mapper - selectCrtbCdList */
+			SELECT DISTINCT A.CRTB_CD, B.PRD_NM
+			FROM T_CRTB_RTGD A 
+			INNER JOIN T_PRD_MST B ON A.CRTB_CD = B.PRD_SAP_CD 
+			WHERE A.AGEN_SEQ = #{agenSeq} 
+			ORDER BY B.PRD_NM ASC		
+	</select>
+	
+	<update id="megCrtbRtgd" parameterType="com.namyang.nyorder.agn.vo.CrtbRtgdVO">
+		/* CrtbRtgd-Mapper - megCrtbRtgd */
+			<![CDATA[
+			DECLARE @CRTB_RTGD_SEQ numeric(13)
+			SET @CRTB_RTGD_SEQ = NEXT VALUE FOR SQ_CRTB_RTGD
+			
+			DECLARE @V_YESTD_QTY NUMERIC(9,0) 
+			SET @V_YESTD_QTY = NULL 
+			
+			--전일 재고 조회
+			SELECT @V_YESTD_QTY = ISNULL(INVRY_QTY, 0) 
+								FROM T_CRTB_RTGD 
+								WHERE 
+								AGEN_SEQ = #{agenSeq} AND CRTB_CD = #{crtbCd} 
+								AND RTGD_DT = (
+									SELECT MAX(RTGD_DT) 
+									FROM T_CRTB_RTGD
+									WHERE 
+									AGEN_SEQ = #{agenSeq} AND RTGD_DT < #{rtgdDt} AND CRTB_CD = #{crtbCd}
+								)
+			
+			MERGE INTO T_CRTB_RTGD A
+			USING(
+					SELECT #{agenSeq} AS AGEN_SEQ
+							, #{rtgdDt} AS RTGD_DT
+							, #{crtbCd} AS CRTB_CD
+			) B
+			ON (
+				A.AGEN_SEQ = B.AGEN_SEQ AND A.RTGD_DT = B.RTGD_DT AND A.CRTB_CD = B.CRTB_CD
+			) 
+			WHEN	MATCHED THEN 
+					UPDATE	SET 
+							YESTD_QTY = ISNULL(@V_YESTD_QTY, 0)
+							, REPT_QTY = #{reptQty}		
+							, RTGD_QTY = #{rtgdQty} 	
+							, INVRY_QTY = ISNULL(@V_YESTD_QTY, 0) + (#{reptQty} - #{rtgdQty}) 
+							, UPD_DTM = CURRENT_TIMESTAMP
+							, UPD_SEQ = #{emplSeq, jdbcType=NUMERIC}
+			WHEN	NOT MATCHED THEN
+					INSERT(CRTB_RTGD_SEQ, AGEN_SEQ, RTGD_DT, CRTB_CD, YESTD_QTY, DLVY_QTY, REPT_QTY, COLET_QTY, RTGD_QTY, INVRY_QTY, REG_DTM, REG_SEQ, UPD_DTM, UPD_SEQ)
+					VALUES(@CRTB_RTGD_SEQ
+						, #{agenSeq}
+						, #{rtgdDt}
+						, #{crtbCd}
+						, @V_YESTD_QTY
+						, 0
+						, #{reptQty}
+						, 0
+						, #{rtgdQty}
+						, (@V_YESTD_QTY + (#{reptQty} - #{rtgdQty}))
+						, CURRENT_TIMESTAMP
+						, #{emplSeq, jdbcType=NUMERIC}
+						, CURRENT_TIMESTAMP
+						, #{emplSeq, jdbcType=NUMERIC}
+					);
+			]]>	
+	</update>
+	
+	<update id="updStdPrdCrtbAfterUpd" parameterType="com.namyang.nyorder.agn.vo.CrtbRtgdVO">
+		{CALL NY_ORDER.dbo.P_CRTB_AFTER_UPD(#{agenSeq}, #{crtbCd}, #{reqYm}, #{emplSeq}, '' )}
+	</update>
+	
+</mapper>

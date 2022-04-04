@@ -1,0 +1,31 @@
+dev:
+  driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+  jdbcUrl: jdbc:log4jdbc:sqlserver://150.1.2.184:14333;databaseName=NY_ORDER
+  password: btsoft123@
+  username: btsoft
+real:
+  driverClassName: net.sf.log4jdbc.sql.jdbcapi.DriverSpy
+  jdbcUrl: jdbc:log4jdbc:sqlserver://150.1.2.184:14333;databaseName=NY_ORDER
+  password: btsoft123@
+  username: btsoft
+  
+salt:
+  string: NYORDER 
+  
+sap:
+  jcoAshost: 150.1.2.9
+  jcoMsserv: 3641
+  jcoSysnr: 40
+  jcoClient: 100
+  jcoUser: PONQA100
+  jcoPasswd: Init00!!
+  jcoLang: KO
+  jcoGroup: NQA
+  jcoPoolCapacity: 10
+  jcoPeakLimit: 10
+  jcoNycDestName: NYC_SAP
+  jcoNycDestPooled: NYC_SAP_POOL
+  
+bizPpurid:
+  url: https://www.bizppurio.com/send/result/list 
+  

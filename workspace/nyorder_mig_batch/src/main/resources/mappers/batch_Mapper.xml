@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.common.mapper.BatchMapper">
+
+    <insert id="insertSqlSession" parameterType="Map">
+        /* batch.insert */
+        INSERT INTO TEST (ID, NAME, SEX, REG_DATE) VALUES (NEXT VALUE FOR TEST_SEQ, #{name}, #{sex}, getdate())
+    </insert>
+    <insert id="insertSqlSession1" parameterType="Map">
+        /* batch.insert */
+        INSERT INTO TEST1 (ID, NAME, SEX, REG_DATE) VALUES (NEXT VALUE FOR TEST_SEQ, #{name}, #{sex}, getdate())
+    </insert>
+
+    <insert id="insertForEach" parameterType="Map">
+        /* batch.insertForEach */
+        <foreach collection="memberList" item="list" open="" close="" separator=";">
+            INSERT INTO TEST2 (ID, NAME, SEX, REG_DATE) VALUES (NEXT VALUE FOR TEST_SEQ, #{list.name}, #{list.sex}, getdate())
+        </foreach>
+    </insert>
+    <insert id="insertForEach3" parameterType="Map">
+        /* batch.insertForEach */
+        <foreach collection="memberList" item="list" open="" close="" separator=";">
+            INSERT INTO TEST3 (ID, NAME, SEX, REG_DATE) VALUES (NEXT VALUE FOR TEST_SEQ, #{list.name}, #{list.sex}, getdate())
+        </foreach>
+    </insert>
+
+</mapper>

@@ -1,0 +1,712 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.cst.dao.DoubleDlvMngMapper">
+	<select id="selectDoubleHisList" parameterType="com.namyang.nyorder.cst.vo.DoubleDlvMngVO" resultType="com.namyang.nyorder.cst.vo.DoubleDlvMngVO">
+		SELECT
+			CDM.CST_DOUBLE_MST_SEQ,
+			CDM.AGEN_SEQ,
+			CDM.AREA_SEQ,
+			AA.AREA_NM,
+			AA.AGEN_AREA_CD,
+			CASE STD_PRD_NM
+				WHEN NULL THEN SHTN_NM
+				WHEN ''   THEN SHTN_NM
+				ELSE STD_PRD_NM
+			END PRD_NM,
+			PD.PRD_DTL_CD,
+			CDM.PRD_DTL_SEQ,
+			CONVERT(DATE, CDM.LEGACY_DLV_DT, 120) LEGACY_DLV_DT,
+			CONVERT(DATE, CDM.CHG_DLV_DT, 120) CHG_DLV_DT,
+			CDM.DOUBLE_SEC_CD,
+			CDM.RETURN_YN,
+			CDM.REG_DTM,
+			CDM.REG_SEQ,
+			CONVERT(varchar, DecryptByKey(AE1.EMPL_NM)) as REG_NM,
+			CDM.UPD_DTM,
+			CDM.UPD_SEQ,
+			CONVERT(varchar, DecryptByKey(AE2.EMPL_NM)) as UPD_NM
+		FROM
+			T_CST_DOUBLE_MST CDM
+		LEFT JOIN 	T_AGEN_AREA AA
+			ON 		CDM.AGEN_SEQ = AA.AGEN_SEQ
+			AND 	CDM.AREA_SEQ = AA.AREA_SEQ
+		LEFT JOIN	T_AGEN_EMPL AE1
+			ON 		CDM.AGEN_SEQ = AE1.AGEN_SEQ
+			AND		CDM.REG_SEQ = AE1.EMPL_SEQ
+		LEFT JOIN	T_AGEN_EMPL AE2
+			ON 		CDM.AGEN_SEQ = AE2.AGEN_SEQ
+			AND		CDM.UPD_SEQ = AE2.EMPL_SEQ
+		LEFT JOIN
+			T_PRD_DTL PD
+			ON CDM.PRD_DTL_SEQ  = PD.PRD_DTL_SEQ
+		WHERE
+			CDM.AGEN_SEQ      = #{agenSeq}
+			<![CDATA[
+			AND CDM.LEGACY_DLV_DT >= REPLACE(#{srcStatDate},'-','')
+			AND CDM.LEGACY_DLV_DT <= REPLACE(#{srcEndDate},'-','')
+			]]>
+	</select>
+	<select id="selectDoubleDlvAreaList" parameterType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO" resultType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO">
+		SET DATEFIRST 1
+		SELECT
+			 b.AGEN_SEQ
+			,b.AREA_SEQ
+			,AE.EMPL_SEQ
+			,CONVERT(varchar, DecryptByKey(EMPL_NM)) as EMPL_NM
+			,AE.EMPL_CD
+			,AA.AREA_SEQ
+			,AA.AREA_NM
+			,AA.AGEN_AREA_CD
+			,AA.DLV_ORDR
+			,AA.AREA_ORDR
+		FROM
+		(
+		SELECT
+			CONVERT(VARCHAR(10), DATEADD(D, NUMBER, #{srcDate}), 112) AS DT
+			, CASE DATEPART(DW, CONVERT(DATETIME, #{srcDate})+ NUMBER)  /*DATE에 해당하는 요일넘버, 1(월요일)~7(일요일)*/
+				WHEN 1 THEN 'MON'
+				WHEN 2 THEN 'TUE'
+				WHEN 3 THEN 'WED'
+				WHEN 4 THEN 'THU'
+				WHEN 5 THEN 'FRI'
+				WHEN 6 THEN 'SAT'
+				WHEN 7 THEN 'SUN'
+				END AS DAYS
+			, (SELECT (DATEPART(week, #{srcDate}) - DATEPART(week, DATEADD(day, 1, EOMONTH(#{srcDate}, -1)))) + 1) WEEKS -- 주
+		FROM
+			MASTER..SPT_VALUES
+		WHERE
+			1=1
+			AND TYPE = 'P'
+			<![CDATA[AND NUMBER <= DATEDIFF(D, #{srcDate}, #{srcDate})]]>
+		) a
+		INNER JOIN
+		(
+			SELECT
+				AGEN_SEQ
+				, AREA_SEQ
+				, CST_SEQ
+				, CST_PRD_SEQ
+				, WEEKS
+				, QTY
+				, DAYS
+			FROM
+			(
+			SELECT
+				AGEN_SEQ
+				, AREA_SEQ
+				, CST_SEQ
+				, CST_PRD_SEQ
+				, WEEKS
+				, QTY
+				, DAYS
+			FROM
+			(
+			SELECT
+				tct.AGEN_SEQ
+				, tct.AREA_SEQ
+				, tct.CST_SEQ
+				, tct.CST_PRD_SEQ
+				, tct.WEEKS
+				, tct.SUN_QTY AS SUN
+				, tct.MON_QTY AS MON
+				, tct.TUE_QTY AS TUE
+				, tct.WED_QTY AS WED
+				, tct.THU_QTY AS THU
+				, tct.FRI_QTY AS FRI
+				, tct.SAT_QTY AS SAT
+				, tcp.PRMT_EMPL_SEQ
+				, tcp.PRMT_RMK
+			FROM
+				T_CST_PRD tcp
+				LEFT OUTER JOIN
+					T_CST_PTTN tct
+					ON tcp.AGEN_SEQ = tct.AGEN_SEQ
+					AND tcp.CST_PRD_SEQ = tct.CST_PRD_SEQ
+					AND tct.USE_YN = 'Y'
+					AND tct.LAST_YN = 'Y'
+			WHERE
+				1=1
+				AND tcp.LAST_YN ='Y'
+				AND tct.USE_YN = 'Y'
+				AND tcp.STPG_YN = 'N'
+				AND (tcp.STPG_DT IS NULL OR tcp.STPG_DT != '')
+				AND tct.WEEKS IS NOT NULL
+				AND tcp.AGEN_SEQ = #{agenSeq}
+				<![CDATA[AND DATEADD(MONTH, CONVERT (int,tcp.CNTR_MONTH) , tcp.INPT_DT ) >= #{srcDate}]]>
+			) a
+			UNPIVOT (QTY FOR DAYS IN ([MON],[TUE],[WED],[THU],[FRI],[SAT],[SUN])) AS RES_DT
+			) a
+			WHERE
+			1=1
+			<![CDATA[AND a.QTY <> 0]]>
+		) b
+		ON a.DAYS = b.DAYS
+		AND a.WEEKS = b.WEEKS
+		INNER
+		JOIN 	T_AGEN_AREA AA
+			ON 		b.AGEN_SEQ = AA.AGEN_SEQ
+			AND 	b.AREA_SEQ = AA.AREA_SEQ
+		INNER
+		JOIN	T_AGEN_EMPL AE
+			ON 		AA.AGEN_SEQ = AE.AGEN_SEQ
+			AND		AA.EMPL_SEQ = AE.EMPL_SEQ
+		GROUP BY
+			b.AGEN_SEQ, b.AREA_SEQ,	AE.EMPL_SEQ, EMPL_NM, AE.EMPL_CD, AA.AREA_SEQ, AA.AREA_NM, AA.AGEN_AREA_CD, AA.DLV_ORDR, AA.AREA_ORDR
+		UNION
+			SELECT
+				 CPD.AGEN_SEQ
+				,CPD.AREA_SEQ
+				,AE.EMPL_SEQ
+				,CONVERT(varchar, DecryptByKey(EMPL_NM)) as EMPL_NM
+				,AE.EMPL_CD
+				,AA.AREA_SEQ
+				,AA.AREA_NM
+				,AA.AGEN_AREA_CD
+				,AA.DLV_ORDR
+				,AA.AREA_ORDR
+			FROM
+				T_CST_PRD_DLVY CPD
+			INNER JOIN
+				T_CST_PRD CP
+					ON CP.CST_PRD_SEQ = CPD.CST_PRD_SEQ
+					AND CP.LAST_YN ='Y'
+					AND CP.STPG_YN = 'N'
+					AND (CP.STPG_DT IS NULL OR CP.STPG_DT != '')
+			INNER
+				JOIN 	T_AGEN_AREA AA
+					ON 		CP.AGEN_SEQ = AA.AGEN_SEQ
+					AND 	CP.AREA_SEQ = AA.AREA_SEQ
+				INNER
+				JOIN	T_AGEN_EMPL AE
+					ON 		AA.AGEN_SEQ = AE.AGEN_SEQ
+					AND		AA.EMPL_SEQ = AE.EMPL_SEQ
+			WHERE
+				CPD.AGEN_SEQ = #{agenSeq}
+				AND CPD.DLVY_DT  = REPLACE(#{srcDate},'-','')
+				AND CPD.USE_YN = 'Y'
+		ORDER BY AA.AGEN_AREA_CD
+	</select>
+	<select id="selectDlvAllPrdList" parameterType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO" resultType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO">
+		SET DATEFIRST 1
+		SELECT
+			 b.AGEN_SEQ
+			, b.PUCH_SEQ
+			, b.PRD_SEQ
+			, b.PRD_DTL_SEQ
+			,PD.STD_PRD_NM
+			,PD.SHTN_NM PRD_NM
+			,PD.PRD_DTL_CD
+			,P.PUCH_CD
+			,P.PUCH_NM
+		FROM
+		(
+		SELECT
+			CONVERT(VARCHAR(10), DATEADD(D, NUMBER, #{srcDate}), 112) AS DT
+			, CASE DATEPART(DW, CONVERT(DATETIME, #{srcDate})+ NUMBER)  /*DATE에 해당하는 요일넘버, 1(월요일)~7(일요일)*/
+				WHEN 1 THEN 'MON'
+				WHEN 2 THEN 'TUE'
+				WHEN 3 THEN 'WED'
+				WHEN 4 THEN 'THU'
+				WHEN 5 THEN 'FRI'
+				WHEN 6 THEN 'SAT'
+				WHEN 7 THEN 'SUN'
+				END AS DAYS
+			, (SELECT (DATEPART(week, #{srcDate}) - DATEPART(week, DATEADD(day, 1, EOMONTH(#{srcDate}, -1)))) + 1) WEEKS -- 주
+		FROM
+			MASTER..SPT_VALUES
+		WHERE
+			1=1
+			AND TYPE = 'P'
+			<![CDATA[AND NUMBER <= DATEDIFF(D, #{srcDate}, #{srcDate})]]>
+		) a
+		INNER JOIN
+		(
+			SELECT
+				AGEN_SEQ
+				, AREA_SEQ
+				, CST_SEQ
+				, CST_PRD_SEQ
+				, PTTN_SEQ
+				, PUCH_SEQ
+				, PRD_SEQ
+				, PRD_DTL_SEQ
+				, WEEKS
+				, QTY
+				, DAYS
+			FROM
+			(
+			SELECT
+				AGEN_SEQ
+				, AREA_SEQ
+				, CST_SEQ
+				, CST_PRD_SEQ
+				, PTTN_SEQ
+				, PUCH_SEQ
+				, PRD_SEQ
+				, PRD_DTL_SEQ
+				, WEEKS
+				, QTY
+				, DAYS
+			FROM
+			(
+			SELECT
+				tct.AGEN_SEQ
+				, tct.AREA_SEQ
+				, tct.CST_SEQ
+				, tct.CST_PRD_SEQ
+				, tct.PTTN_SEQ
+				, tct.PUCH_SEQ
+				, tcp.PRD_SEQ
+				, tct.PRD_DTL_SEQ
+				, tct.WEEKS
+				, tct.SUN_QTY AS SUN
+				, tct.MON_QTY AS MON
+				, tct.TUE_QTY AS TUE
+				, tct.WED_QTY AS WED
+				, tct.THU_QTY AS THU
+				, tct.FRI_QTY AS FRI
+				, tct.SAT_QTY AS SAT
+				, tcp.PRMT_EMPL_SEQ
+				, tcp.PRMT_RMK
+			FROM
+				T_CST_PRD tcp
+				LEFT OUTER JOIN
+					T_CST_PTTN tct
+					ON tcp.AGEN_SEQ = tct.AGEN_SEQ
+					AND tcp.CST_PRD_SEQ = tct.CST_PRD_SEQ
+					AND tct.USE_YN = 'Y'
+					AND tct.LAST_YN = 'Y'
+			WHERE
+				1=1
+				AND tcp.LAST_YN ='Y'
+				AND tct.USE_YN = 'Y'
+				AND tcp.STPG_YN = 'N'
+				AND (tcp.STPG_DT IS NULL OR tcp.STPG_DT != '')
+				AND tct.WEEKS IS NOT NULL
+				AND tcp.AGEN_SEQ = #{agenSeq}
+				<![CDATA[AND DATEADD(MONTH, CONVERT (int,tcp.CNTR_MONTH) , tcp.INPT_DT ) >= #{srcDate}]]>
+			) a
+			UNPIVOT (QTY FOR DAYS IN ([MON],[TUE],[WED],[THU],[FRI],[SAT],[SUN])) AS RES_DT
+			) a
+			WHERE
+			1=1
+			<![CDATA[AND a.QTY <> 0]]>
+		) b
+		ON a.DAYS = b.DAYS
+		AND a.WEEKS = b.WEEKS
+		LEFT JOIN
+			T_PRD_DTL PD
+			ON PD.PRD_DTL_SEQ  = b.PRD_DTL_SEQ
+		LEFT JOIN
+			(
+				SELECT	PUCH_SEQ, PUCH_CD, PUCH_NM, USE_CD
+				FROM	T_AGEN_MJR_PUCH
+				WHERE	USE_CD ='Y'
+				UNION ALL
+				SELECT	PUCH_SEQ, PUCH_CD, PUCH_NM, USE_CD
+				FROM T_AGEN_OTR_PUCH
+				WHERE	USE_CD ='Y'
+				AND 	AGEN_SEQ =#{agenSeq}
+			)  P
+			ON	b.PUCH_SEQ = PD.PUCH_SEQ
+		GROUP BY
+			b.AGEN_SEQ
+			, b.PUCH_SEQ
+			, b.PRD_SEQ
+			, b.PRD_DTL_SEQ
+			,PD.STD_PRD_NM
+			,PD.SHTN_NM
+			,PD.PRD_DTL_CD
+			,P.PUCH_CD
+			,P.PUCH_NM
+		UNION
+			SELECT
+				CPD.AGEN_SEQ
+				,CPD.PUCH_SEQ
+				,PD.PRD_SEQ
+				,CPD.PRD_DTL_SEQ
+				,PD.STD_PRD_NM
+				,PD.SHTN_NM PRD_NM
+				,PD.PRD_DTL_CD
+				,P.PUCH_CD
+				,P.PUCH_NM
+			FROM
+				T_CST_PRD_DLVY CPD
+			INNER JOIN
+				T_CST_PRD CP
+					ON CP.CST_PRD_SEQ = CPD.CST_PRD_SEQ
+					AND CP.LAST_YN ='Y'
+					AND CP.STPG_YN = 'N'
+					AND (CP.STPG_DT IS NULL OR CP.STPG_DT != '')
+			LEFT JOIN
+				T_PRD_DTL PD
+				ON PD.PRD_DTL_SEQ  = CPD.PRD_DTL_SEQ
+			LEFT JOIN
+			(
+				SELECT	PUCH_SEQ, PUCH_CD, PUCH_NM, USE_CD
+				FROM	T_AGEN_MJR_PUCH
+				WHERE	USE_CD ='Y'
+				UNION ALL
+				SELECT	PUCH_SEQ, PUCH_CD, PUCH_NM, USE_CD
+				FROM T_AGEN_OTR_PUCH
+				WHERE	USE_CD ='Y'
+				AND 	AGEN_SEQ =#{agenSeq}
+			)  P
+			ON	CPD.PUCH_SEQ = PD.PUCH_SEQ
+			WHERE
+				CPD.AGEN_SEQ = #{agenSeq}
+				AND CPD.DLVY_DT  = REPLACE(#{srcDate},'-','')
+				AND CPD.USE_YN = 'Y'
+				<![CDATA[AND CPD.DLVY_QTY <>0]]>
+		ORDER BY PRD_DTL_CD
+
+	</select>
+	<select id="selectLegacyDlvData" parameterType="com.namyang.nyorder.cst.vo.DoubleDlvMngVO" resultType="com.namyang.nyorder.cst.vo.DoubleDlvMngVO">
+		 SELECT
+			CPD.CST_PRD_DLVY_SEQ,
+			CPD.AGEN_SEQ,
+			CPD.AREA_SEQ,
+			CPD.CST_SEQ,
+			CPD.CST_PRD_SEQ,
+			CPD.PTTN_SEQ,
+			CPD.PUCH_SEQ,
+			CPD.PRD_DTL_SEQ,
+			CPD.DLVY_QTY,
+			CPD.DLVY_DT,
+			CPD.DLVY_UNTPC,
+			CPD.USE_YN,
+			CP.INPT_DT ,
+			CP.CNTR_MONTH
+		FROM T_CST_PRD_DLVY CPD
+		LEFT JOIN
+			T_CST_PRD CP
+			ON CP.CST_PRD_SEQ = CPD.CST_PRD_SEQ
+		WHERE
+			CPD.AGEN_SEQ =#{agenSeq}
+			AND CPD.AREA_SEQ = #{areaSeq}
+			AND CPD.PRD_DTL_SEQ  =#{prdDtlSeq}
+			AND CPD.DLVY_DT = REPLACE(#{legacyDlvDt},'-','')
+			<![CDATA[AND DATEADD(MONTH, CONVERT (int,CP.CNTR_MONTH) , CP.INPT_DT ) >= #{chgDlvDt}]]>
+	</select>
+	<select id ="selectDoubleList" parameterType="com.namyang.nyorder.cst.vo.DoubleDlvMngVO" resultType="com.namyang.nyorder.cst.vo.DoubleDlvMngVO">
+		SELECT
+			CDM.CST_DOUBLE_MST_SEQ,
+			CDM.AGEN_SEQ,
+			CDM.AREA_SEQ,
+			CDM.PRD_DTL_SEQ,
+			CDM.LEGACY_DLV_DT,
+			CDM.CHG_DLV_DT,
+			CDM.DOUBLE_SEC_CD,
+			CDM.RETURN_YN,
+			CDD.CST_DOUBLE_DTL_SEQ,
+			CDD.SEND_DLV_SEQ,
+			CDD.RCIV_DLV_SEQ,
+			CDD.DOUBLE_QTY,
+			CDD.REG_DTM,
+			CDD.REG_SEQ
+		FROM
+			T_CST_DOUBLE_DTL CDD
+		INNER JOIN
+			T_CST_DOUBLE_MST CDM
+			ON CDM.CST_DOUBLE_MST_SEQ = CDD.CST_DOUBLE_MST_SEQ
+		WHERE
+			CDM.AGEN_SEQ          = #{agenSeq}
+			AND CDM.AREA_SEQ      = #{areaSeq}
+			AND CDM.PRD_DTL_SEQ   = #{prdDtlSeq}
+			AND CDM.LEGACY_DLV_DT = REPLACE(#{legacyDlvDt},'-','')
+			AND CDM.CHG_DLV_DT    = REPLACE(#{chgDlvDt},'-','')
+			AND CDM.RETURN_YN     ='Y'
+	</select>
+	<insert id ="megCstPrdDlvy" parameterType="com.namyang.nyorder.cst.vo.DoubleDlvMngVO">
+		ㅕㅜ
+			(
+				SELECT
+					 b.AGEN_SEQ
+					, b.AREA_SEQ
+					, b.CST_SEQ
+					, b.CST_PRD_SEQ
+					, b.PTTN_SEQ
+					, b.PUCH_SEQ
+					, b.PRD_DTL_SEQ
+					, b.QTY
+					, a.DT
+					, dbo.F_GET_UNTPC(b.AGEN_SEQ, b.AREA_SEQ, b.CST_SEQ, b.PRD_SEQ, b.PRD_DTL_SEQ, b.CST_PRD_SEQ) AS UNTPC
+					, 'Y' USE_YN
+				FROM
+				(
+				SELECT
+					CONVERT(VARCHAR(10), DATEADD(D, NUMBER, #{dlvyDt}), 112) AS DT
+					, CASE DATEPART(DW, CONVERT(DATETIME, #{dlvyDt})+ NUMBER)  /*DATE에 해당하는 요일넘버, 1(월요일)~7(일요일)*/
+						WHEN 1 THEN 'MON'
+						WHEN 2 THEN 'TUE'
+						WHEN 3 THEN 'WED'
+						WHEN 4 THEN 'THU'
+						WHEN 5 THEN 'FRI'
+						WHEN 6 THEN 'SAT'
+						WHEN 7 THEN 'SUN'
+						END AS DAYS
+					, (SELECT (DATEPART(week, #{dlvyDt}) - DATEPART(week, DATEADD(day, 1, EOMONTH(#{dlvyDt}, -1)))) + 1) WEEKS -- 주
+				FROM
+					MASTER..SPT_VALUES
+				WHERE
+					1=1
+					AND TYPE = 'P'
+					<![CDATA[AND NUMBER <= DATEDIFF(D, #{dlvyDt}, #{dlvyDt})]]>
+				) a
+				INNER JOIN
+				(
+					SELECT
+						AGEN_SEQ
+						, AREA_SEQ
+						, CST_SEQ
+						, CST_PRD_SEQ
+						, PTTN_SEQ
+						, PUCH_SEQ
+						, PRD_SEQ
+						, PRD_DTL_SEQ
+						, WEEKS
+						, QTY
+						, DAYS
+					FROM
+					(
+					SELECT
+						AGEN_SEQ
+						, AREA_SEQ
+						, CST_SEQ
+						, CST_PRD_SEQ
+						, PTTN_SEQ
+						, PUCH_SEQ
+						, PRD_SEQ
+						, PRD_DTL_SEQ
+						, WEEKS
+						, QTY
+						, DAYS
+					FROM
+					(
+					SELECT
+						tct.AGEN_SEQ
+						, tct.AREA_SEQ
+						, tct.CST_SEQ
+						, tct.CST_PRD_SEQ
+						, tct.PTTN_SEQ
+						, tct.PUCH_SEQ
+						, tcp.PRD_SEQ
+						, tct.PRD_DTL_SEQ
+						, tct.WEEKS
+						, tct.SUN_QTY AS SUN
+						, tct.MON_QTY AS MON
+						, tct.TUE_QTY AS TUE
+						, tct.WED_QTY AS WED
+						, tct.THU_QTY AS THU
+						, tct.FRI_QTY AS FRI
+						, tct.SAT_QTY AS SAT
+						, tcp.PRMT_EMPL_SEQ
+						, tcp.PRMT_RMK
+					FROM
+						T_CST_PRD tcp
+						LEFT OUTER JOIN
+							T_CST_PTTN tct
+							ON tcp.AGEN_SEQ = tct.AGEN_SEQ
+							AND tcp.CST_PRD_SEQ = tct.CST_PRD_SEQ
+							AND tct.USE_YN = 'Y'
+							AND tct.LAST_YN = 'Y'
+					WHERE
+						1=1
+						AND tcp.LAST_YN ='Y'
+						AND tct.USE_YN = 'Y'
+						AND tcp.STPG_YN = 'N'
+						AND (tcp.STPG_DT IS NULL OR tcp.STPG_DT != '')
+						AND tct.WEEKS IS NOT NULL
+						AND tcp.AGEN_SEQ = #{agenSeq}
+						<![CDATA[AND DATEADD(MONTH, CONVERT (int,tcp.CNTR_MONTH) , tcp.INPT_DT ) >= #{dlvyDt}]]>
+						<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(areaSeq)">
+							AND tcp.AREA_SEQ IN (SELECT * FROM dbo.F_GET_TEMP_TABLE(#{areaSeq}))
+						</if>
+						<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdDtlSeq)">
+							AND tcp.PRD_DTL_SEQ IN (SELECT * FROM dbo.F_GET_TEMP_TABLE(#{prdDtlSeq}))
+						</if>
+					) a
+					UNPIVOT (QTY FOR DAYS IN ([MON],[TUE],[WED],[THU],[FRI],[SAT],[SUN])) AS RES_DT
+					) a
+					WHERE
+					1=1
+					<![CDATA[AND a.QTY <> 0]]>
+				) b
+				ON a.DAYS = b.DAYS
+				AND a.WEEKS = b.WEEKS
+			) AS SPD
+			ON IPD.AGEN_SEQ = SPD.AGEN_SEQ
+				AND IPD.AREA_SEQ = SPD.AREA_SEQ
+				AND IPD.CST_SEQ  = SPD.CST_SEQ
+				AND IPD.CST_PRD_SEQ = SPD.CST_PRD_SEQ
+				AND IPD.PTTN_SEQ = SPD.PTTN_SEQ
+				AND IPD.PUCH_SEQ = SPD.PUCH_SEQ
+				AND IPD.PRD_DTL_SEQ = SPD.PRD_DTL_SEQ
+				AND IPD.DLVY_DT = SPD.DT
+				AND IPD.USE_YN ='Y'
+			WHEN NOT MATCHED THEN
+				INSERT(
+					 AGEN_SEQ
+					, AREA_SEQ
+					, CST_SEQ
+					, CST_PRD_SEQ
+					, PTTN_SEQ
+					, PUCH_SEQ
+					, PRD_DTL_SEQ
+					, DLVY_QTY
+					, DLVY_DT
+					, DLVY_UNTPC
+					, USE_YN
+					, REG_DTM
+					, REG_SEQ
+					, UPD_DTM
+					, UPD_SEQ
+				)VALUES(
+					 SPD.AGEN_SEQ
+					, SPD.AREA_SEQ
+					, SPD.CST_SEQ
+					, SPD.CST_PRD_SEQ
+					, SPD.PTTN_SEQ
+					, SPD.PUCH_SEQ
+					, SPD.PRD_DTL_SEQ
+					, SPD.QTY
+					, SPD.DT
+					, SPD.UNTPC
+					, 'Y'
+					, GETDATE()
+					, 0
+					, GETDATE()
+					, 0
+				);
+	</insert>
+
+	<insert id ="insDoubleMst" parameterType="com.namyang.nyorder.cst.vo.DoubleDlvMngVO">
+		<selectKey resultType="String" keyProperty="cstDoubleMstSeq" order="BEFORE">
+			SELECT NEXT VALUE FOR SQ_CST_DOUBLE_MST
+		</selectKey>
+		INSERT INTO NY_ORDER.dbo.T_CST_DOUBLE_MST
+			(CST_DOUBLE_MST_SEQ, AGEN_SEQ, AREA_SEQ, PRD_DTL_SEQ, LEGACY_DLV_DT, CHG_DLV_DT, DOUBLE_SEC_CD, RETURN_YN, REG_DTM, REG_SEQ)
+		VALUES(
+			#{cstDoubleMstSeq},
+			#{agenSeq},
+			#{areaSeq},
+			#{prdDtlSeq},
+			REPLACE(#{legacyDlvDt},'-',''),
+			REPLACE(#{chgDlvDt},'-',''),
+			#{doubleSecCd},
+			'Y',
+			CURRENT_TIMESTAMP,
+			#{emplSeq}
+		)
+	</insert>
+	<insert id ="insDoubleDtl" parameterType="com.namyang.nyorder.cst.vo.DoubleDlvMngVO">
+		INSERT INTO NY_ORDER.dbo.T_CST_DOUBLE_DTL
+			(CST_DOUBLE_DTL_SEQ, CST_DOUBLE_MST_SEQ, SEND_DLV_SEQ, RCIV_DLV_SEQ, DOUBLE_QTY, REG_DTM, REG_SEQ)
+		VALUES(
+			NEXT VALUE FOR SQ_CST_DOUBLE_DTL,
+			#{cstDoubleMstSeq},
+			#{cstPrdDlvySeq},
+			#{rcivDlvSeq},
+			#{dlvyQty},
+			CURRENT_TIMESTAMP,
+			#{emplSeq}
+		)
+	</insert>
+
+	<update id="updateLegacyQtyZero" parameterType="com.namyang.nyorder.cst.vo.DoubleDlvMngVO">
+		UPDATE T_CST_PRD_DLVY SET
+			T_CST_PRD_DLVY.DLVY_QTY = 0,
+			T_CST_PRD_DLVY.UPD_DTM = CURRENT_TIMESTAMP,
+			T_CST_PRD_DLVY.UPD_SEQ = #{emplSeq}
+		FROM T_CST_PRD CP
+		WHERE
+			T_CST_PRD_DLVY.AGEN_SEQ =#{agenSeq}
+			AND T_CST_PRD_DLVY.AREA_SEQ = #{areaSeq}
+			AND T_CST_PRD_DLVY.PRD_DTL_SEQ  =#{prdDtlSeq}
+			AND T_CST_PRD_DLVY.DLVY_DT = REPLACE(#{legacyDlvDt},'-','')
+			AND CP.CST_PRD_SEQ = T_CST_PRD_DLVY.CST_PRD_SEQ
+			<![CDATA[AND DATEADD(MONTH, CONVERT (int,CP.CNTR_MONTH) , CP.INPT_DT ) >= #{dlvyDt}]]>
+	</update>
+	<update id="megStatDoubleDlv" parameterType="com.namyang.nyorder.cst.vo.DoubleDlvMngVO">
+
+		EXEC P_OPEN_KEY;
+		<selectKey resultType="String" keyProperty="rcivDlvSeq" order="BEFORE">
+			DECLARE @CST_PRD_DLVY_SEQ     numeric(13)
+			DECLARE @T_CST_PRD_DLVY_SEQ     numeric(13)
+			SET @CST_PRD_DLVY_SEQ = NEXT VALUE FOR SQ_CST_PRD_DLVY
+			SET @T_CST_PRD_DLVY_SEQ =  (SELECT ISNULL(
+				(SELECT
+					CST_PRD_DLVY_SEQ
+				FROM
+					T_CST_PRD_DLVY
+				WHERE
+					AGEN_SEQ = #{agenSeq}
+					AND AREA_SEQ = #{areaSeq}
+					AND PRD_DTL_SEQ = #{prdDtlSeq}
+					AND CST_SEQ = #{cstSeq}
+					AND CST_PRD_SEQ =#{cstPrdSeq}
+					AND DLVY_DT =  REPLACE(#{dlvyDt},'-','')
+			),0))
+			SELECT
+				CASE @T_CST_PRD_DLVY_SEQ
+					WHEN 0 THEN @CST_PRD_DLVY_SEQ
+					ELSE @T_CST_PRD_DLVY_SEQ
+					END CST_PRD_DLVY_SEQ
+		</selectKey>
+		MERGE INTO T_CST_PRD_DLVY AS A
+		USING(
+			SELECT 	#{rcivDlvSeq} as CST_PRD_DLVY_SEQ
+		) B
+		ON (
+				A.CST_PRD_DLVY_SEQ = B.CST_PRD_DLVY_SEQ
+		)
+		WHEN MATCHED THEN
+			UPDATE SET
+				A.DLVY_QTY  = A.DLVY_QTY + #{dlvyQty},
+				A.UPD_DTM = CURRENT_TIMESTAMP,
+				A.UPD_SEQ = #{emplSeq}
+		WHEN NOT MATCHED  THEN
+			INSERT(CST_PRD_DLVY_SEQ,AGEN_SEQ,AREA_SEQ,CST_SEQ,CST_PRD_SEQ,PTTN_SEQ,PUCH_SEQ,PRD_DTL_SEQ,DLVY_QTY,DLVY_DT,DLVY_UNTPC,USE_YN,REG_DTM,REG_SEQ)
+			VALUES(
+				#{rcivDlvSeq},
+				#{agenSeq},
+				#{areaSeq},
+				#{cstSeq},
+				#{cstPrdSeq},
+				#{pttnSeq},
+				#{puchSeq},
+				#{prdDtlSeq},
+				#{dlvyQty},
+				REPLACE(#{dlvyDt},'-',''),
+				#{dlvyUntpc},
+				#{useYn},
+				CURRENT_TIMESTAMP,
+				#{emplSeq}
+		    );
+	</update>
+
+	<update id="updateDlvyQty" parameterType="com.namyang.nyorder.cst.vo.DoubleDlvMngVO">
+		UPDATE T_CST_PRD_DLVY SET
+		<if test='qtyUpdateType.equals("PLUS")'>
+			DLVY_QTY  = DLVY_QTY + #{doubleQty},
+		</if>
+		<if test='qtyUpdateType.equals("MINUS")'>
+			DLVY_QTY  = DLVY_QTY - #{doubleQty},
+		</if>
+			UPD_DTM = CURRENT_TIMESTAMP,
+			UPD_SEQ = #{emplSeq}
+		WHERE
+			CST_PRD_DLVY_SEQ = #{cstPrdDlvySeq}
+	</update>
+	<update id="updateReturnYn" parameterType="com.namyang.nyorder.cst.vo.DoubleDlvMngVO">
+		UPDATE T_CST_DOUBLE_MST SET
+			RETURN_YN     ='N',
+			DOUBLE_SEC_CD =#{doubleSecCd},
+			UPD_DTM = CURRENT_TIMESTAMP,
+			UPD_SEQ = #{emplSeq}
+		WHERE
+			CST_DOUBLE_MST_SEQ = #{cstDoubleMstSeq}
+	</update>
+
+</mapper>

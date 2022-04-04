@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템 - 지역 관리</title>
+<link rel="stylesheet" type="text/css" href="../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker_range_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<script type="text/javascript">
+	var myGridID;
+
+	var gridData = [
+        {"id":"#Cust02","cstInfo01":0072,"cstInfo02":"김남양","cstInfo03":"학동로 100-10, 1층","cstInfo04":"010-4565-0505","chBefore01":34343,"chBefore02":"논현동","chBefore03":34343,"chBefore04":"진남양","chAfter01":34343,"chAfter02":"논현동","chAfter03":34343,"chAfter04":"진남양","applyDate":"2021-12-31","apply":"대기","worker":"이남양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust12","cstInfo01":0072,"cstInfo02":"김남양","cstInfo03":"학동로 100-10, 1층","cstInfo04":"010-4565-0505","chBefore01":34343,"chBefore02":"논현동","chBefore03":34343,"chBefore04":"진남양","chAfter01":34343,"chAfter02":"논현동","chAfter03":34343,"chAfter04":"진남양","applyDate":"2021-12-31","apply":"대기","worker":"이남양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust02","cstInfo01":0072,"cstInfo02":"김남양","cstInfo03":"학동로 100-10, 1층","cstInfo04":"010-4565-0505","chBefore01":34343,"chBefore02":"논현동","chBefore03":34343,"chBefore04":"진남양","chAfter01":34343,"chAfter02":"논현동","chAfter03":34343,"chAfter04":"진남양","applyDate":"2021-12-31","apply":"대기","worker":"이남양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust12","cstInfo01":0072,"cstInfo02":"김남양","cstInfo03":"학동로 100-10, 1층","cstInfo04":"010-4565-0505","chBefore01":34343,"chBefore02":"논현동","chBefore03":34343,"chBefore04":"진남양","chAfter01":34343,"chAfter02":"논현동","chAfter03":34343,"chAfter04":"진남양","applyDate":"2021-12-31","apply":"대기","worker":"이남양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust02","cstInfo01":0072,"cstInfo02":"김남양","cstInfo03":"학동로 100-10, 1층","cstInfo04":"010-4565-0505","chBefore01":34343,"chBefore02":"논현동","chBefore03":34343,"chBefore04":"진남양","chAfter01":34343,"chAfter02":"논현동","chAfter03":34343,"chAfter04":"진남양","applyDate":"2021-12-31","apply":"대기","worker":"이남양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust12","cstInfo01":0072,"cstInfo02":"김남양","cstInfo03":"학동로 100-10, 1층","cstInfo04":"010-4565-0505","chBefore01":34343,"chBefore02":"논현동","chBefore03":34343,"chBefore04":"진남양","chAfter01":34343,"chAfter02":"논현동","chAfter03":34343,"chAfter04":"진남양","applyDate":"2021-12-31","apply":"대기","worker":"이남양","workTime":"2021-12-02 11:00:00"},		
+		{"id":"#Cust02","cstInfo01":0072,"cstInfo02":"김남양","cstInfo03":"학동로 100-10, 1층","cstInfo04":"010-4565-0505","chBefore01":34343,"chBefore02":"논현동","chBefore03":34343,"chBefore04":"진남양","chAfter01":34343,"chAfter02":"논현동","chAfter03":34343,"chAfter04":"진남양","applyDate":"2021-12-31","apply":"대기","worker":"이남양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust12","cstInfo01":0072,"cstInfo02":"김남양","cstInfo03":"학동로 100-10, 1층","cstInfo04":"010-4565-0505","chBefore01":34343,"chBefore02":"논현동","chBefore03":34343,"chBefore04":"진남양","chAfter01":34343,"chAfter02":"논현동","chAfter03":34343,"chAfter04":"진남양","applyDate":"2021-12-31","apply":"대기","worker":"이남양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust02","cstInfo01":0072,"cstInfo02":"김남양","cstInfo03":"학동로 100-10, 1층","cstInfo04":"010-4565-0505","chBefore01":34343,"chBefore02":"논현동","chBefore03":34343,"chBefore04":"진남양","chAfter01":34343,"chAfter02":"논현동","chAfter03":34343,"chAfter04":"진남양","applyDate":"2021-12-31","apply":"대기","worker":"이남양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust12","cstInfo01":0072,"cstInfo02":"김남양","cstInfo03":"학동로 100-10, 1층","cstInfo04":"010-4565-0505","chBefore01":34343,"chBefore02":"논현동","chBefore03":34343,"chBefore04":"진남양","chAfter01":34343,"chAfter02":"논현동","chAfter03":34343,"chAfter04":"진남양","applyDate":"2021-12-31","apply":"대기","worker":"이남양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust12","cstInfo01":0072,"cstInfo02":"김남양","cstInfo03":"학동로 100-10, 1층","cstInfo04":"010-4565-0505","chBefore01":34343,"chBefore02":"논현동","chBefore03":34343,"chBefore04":"진남양","chAfter01":34343,"chAfter02":"논현동","chAfter03":34343,"chAfter04":"진남양","applyDate":"2021-12-31","apply":"대기","worker":"이남양","workTime":"2021-12-02 11:00:00"},
+    ];
+
+	$(document).ready(function(){
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid();
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.        
+        
+		AUIGrid.setGridData(myGridID, gridData);
+	    //AUIGrid.setFooter(myGridID, footerLayout);
+    });
+
+	// AUIGrid 를 생성합니다.
+	function createAUIGrid() {
+		// 그리드 속성 설정
+		var gridPros = {
+				//headerHeight : 58,
+				rowHeight : 30,
+				// 편집 가능 여부 (기본값 : false)
+
+				rowIdField : "id",
+				showStateColumn : true,
+				wrapSelectionMove : true,
+				editingOnKeyDown : true, // 키보드 입력으로 편집 모드 진입 (기본값:true임;)
+				
+				editable : true,
+				// 엔터키가 다음 행이 아닌 다음 칼럼으로 이동할지 여부 (기본값 : false)
+				enterKeyColumnBase : true,
+				// 셀 선택모드 (기본값: singleCell)
+				selectionMode : "singleRow",
+				//showFooter : true,
+				// 컨텍스트 메뉴 사용 여부 (기본값 : false)
+				useContextMenu : true,
+				// 필터 사용 여부 (기본값 : false)
+				enableFilter : true,
+				// 그룹핑 패널 사용
+				useGroupingPanel : false,
+				
+				// 그룹핑 또는 트리로 만들었을 때 펼쳐지게 할지 여부 (기본값 : false)
+				displayTreeOpen : true,
+				
+				noDataMessage : "출력할 데이터가 없습니다.",
+				
+				groupingMessage : "여기에 칼럼을 드래그하면 그룹핑이 됩니다."
+		};
+
+		//var gridPros6 = {
+		//	headerHeight : 29,	
+        //    rowHeight : 29,
+		//	showStateColumn : false,
+        //    showRowCheckColumn : false,
+		//	selectionMode : "singleRow",
+		//}
+		
+        // 실제로 #grid_wrap 에 그리드 생성
+		myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+
+        // 행 추가 이벤트 바인딩 
+	    AUIGrid.bind(myGridID, "addRow", auiAddRowHandler);
+		
+	}
+	
+	var columnLayout = [{
+		dataField : "cstInfo",
+		headerText : "애음자 정보",
+			children : [{
+				dataField : "cstInfo01",
+				headerText : "코드",                    
+				width : "5%",
+			}, {
+				dataField : "cstInfo02",
+				headerText : "성명",
+				width : "6%",
+			}, {
+				dataField : "cstInfo03",
+				headerText : "배달주소",
+				style: "auiLeft"
+			}, {
+				dataField : "cstInfo04",
+				headerText : "휴대폰번호",
+				width : "7%",
+			}]
+		},{
+			dataField : "chBefore",
+			headerText : "변경 전",
+			children : [{
+				dataField : "chBefore01",
+				headerText : "코드",                    
+				width : "5%",
+			}, {
+				dataField : "chBefore02",
+				headerText : "지역명",
+				width : "5%",
+			}, {
+				dataField : "chBefore03",
+				headerText : "코드",
+				width : "5%",
+			}, {
+				dataField : "chBefore04",
+				headerText : "판매원",
+				width : "5%",
+			}]
+		},{
+			dataField : "chAfter",
+			headerText : "변경 후",
+			children : [{
+				dataField : "chAfter01",
+				headerText : "코드",                    
+				width : "5%",
+			}, {
+				dataField : "chAfter02",
+				headerText : "지역명",
+				width : "5%",
+			}, {
+				dataField : "chAfter03",
+				headerText : "코드",
+				width : "5%",
+			}, {
+				dataField : "chAfter04",
+				headerText : "판매원",
+				width : "5%",
+			}]	
+		},{
+			dataField : "applyDate",
+			headerText : "적용일자",
+			width : "6%",
+		},{
+			dataField : "apply",
+			headerText : "적용여부",
+			width : "5%",
+		},{
+			dataField : "worker",
+			headerText : "작업자",
+			width : "6%",
+		},{
+			dataField : "workTime",
+			headerText : "작업시간",
+		}
+	];
+
+
+	// 행 추가 이벤트 핸들러
+	function auiAddRowHandler(event) {
+		//alert(event.type + " 이벤트\r\n" + "삽입된 행 인덱스 : " + event.rowIndex + "\r\n삽입된 행 개수 : " + event.items.length);
+		document.getElementById("rowInfo").innerHTML = (event.type + " 이벤트 :  " + "삽입된 행 인덱스 : " + event.rowIndex + ", 삽입된 행 개수 : " + event.items.length);
+	};
+	
+	//행추가
+	var countries = ["areaCd", "sellerNm",  "order", "course", "telNm"];
+	var cnt = 0;
+	function addRow(rowPos) {
+		var item = new Object();
+		AUIGrid.addRow(myGridID, item, rowPos);		
+	}
+
+	// 전체 체크 설정/ 해제
+    function checkAll(checked) {
+        var rowCount = AUIGrid.getRowCount(myGridID);
+        if(checked) {
+            // 전체 데이터를 대상으로 isActive 필드를 "Active" 값으로 변경
+            AUIGrid.updateRowBlockToValue(myGridID, 0, rowCount-1, "isActive", "Active");
+        } else {
+            // 전체 데이터를 대상으로 isActive 필드를 "Inactive" 값으로 변경
+            AUIGrid.updateRowBlockToValue(myGridID, 0, rowCount-1, "isActive", "Inactive");
+        }
+    };
+    
+</script>
+</head>
+<body>
+
+
+	<!-- 실제 개발시 style 모두 지워주세요 (style 퍼블용 preview 입니다.) 가로사이즈 1500px -->
+
+	<div class="modal_bg" style="display:block; position:fixed;top:0;left:0;right:0;bottom:0;z-index:10; background:rgba(0, 0, 0, .43);"></div> <!-- modal 배경 -->
+
+	<div tabindex="-1" role="dialog" class="ui-dialog ui-corner-all ui-widget ui-widget-content ui-front" aria-describedby="readPop" aria-labelledby="ui-id-1" style="width:1500px; height:540px; top:170px; left:11%; visibility: visible;">
+		<div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix">
+			<span id="ui-id-1" class="ui-dialog-title">&nbsp;</span>
+			<button type="button" class="ui-button ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-close" title="Close">
+			<span class="ui-button-icon ui-icon ui-icon-closethick"></span>
+			<span class="ui-button-icon-space"> </span>Close</button>
+		</div>
+		
+		<div id="readPop" class="ajaxDialog ui-dialog-content ui-widget-content">
+
+		<!-- 지역변경 이력 -->
+		<div class="popWrap large modal_wrap h540" data-popup="modalAgencyViews04">
+			<header>
+				<h3>지역 변경 이력</h3>
+			</header>  
+
+			<div class="popCon">
+				<div class="popTitArea">
+					<h3>지역 변경 이력</h3>
+
+					<div class="popBtnArea">
+						<!--<button type="button" name="" class="inquBtn">저장</button>-->
+						<button type="button" name="" class="comBtn modalCloseBtn" id="modalCloseBtn">닫기</button>                   
+					</div>
+				</div>
+
+				<!-- 조회 -->
+				<div class="inquiryBox">
+					<dl>
+						<dt>작업시간</dt>
+						<dd>
+							<div class="formWrap">
+								<div class="dateWrap">
+									<input type="text" name="date" value="10/24/1984" class="inp" id="datepicker11" readonly="">                                        
+									<button type="button" class="datepickerBtn" title="날짜입력" data-target-id="datepicker11"></button>                                        
+								</div> 
+
+								<span class="divi02">-</span>
+								
+								<div class="dateWrap">
+									<input type="text" name="date" value="10/24/1984" class="inp" id="datepicker12" readonly="">
+									<button type="button" class="datepickerBtn02" title="날짜입력" data-target-id="datepicker12"></button>                                        
+								</div>
+
+								<button type="button" name="" class="comBtn">조회</button>
+							</div>
+						</dd>
+					</dl>
+				</div>
+				<!-- 조회 -->
+
+				<p class="numState">
+					<em>총 <span class="pColor01 fb">123</span></em> 건 이 조회되었습니다.
+				</p>
+
+				<!-- grid -->
+				<div class="girdBox rowspan">
+					<div id="grid_wrap"></div>
+				</div>
+				<!-- grid -->
+			</div>
+		</div>
+		<!-- 지역변경 이력 -->
+
+		</div>
+	</div>
+</body>
+</html>

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.sel.dao.MnthSaleSttsMapper">
+	
+	<select id="selectMnthSaleSttsList" parameterType="com.namyang.nyorder.sel.vo.MnthSaleSttsVO" resultType="com.namyang.nyorder.sel.vo.MnthSaleSttsVO">
+		/* MnthSaleStts-Mapper selectMnthSaleSttsList */
+		SELECT 
+			CONCAT(LEFT(SALE_DT,4),'년') YEAR,
+			SALE_DT,
+			CONVERT(INT,RIGHT(SALE_DT,2)) NUM,
+			SUM(SALE_QTY) SALE_QTY,
+			SUM(RTGD_QTY) RTGD_QTY, 
+			SUM(PRSNT_QTY) PRSNT_QTY, 
+			SUM(EXCHG_QTY) EXCHG_QTY,
+			SUM(RTGD_CT) RTGD_CT,
+			MAX(SALE_CT) SALE_CT,
+			ROUND(((SUM(SALE_AMT)-SUM(RTGD_CT)) * 100) / 110, 2) AS SU_CT,
+			ROUND(((SUM(SALE_AMT)-SUM(RTGD_CT)) * 10) / 110, 2) AS VAT_CT,
+			(SUM(SALE_AMT)-SUM(RTGD_CT)) SALE_AMT
+		FROM
+		(
+			SELECT 
+				BSM.AGEN_SEQ ,
+			 	BSD.PRD_SEQ,
+			 	BSD.PRD_DTL_SEQ,
+			 	LEFT(CONVERT(DATE, BSM.SALE_DT, 23),7) AS SALE_DT,
+			 	SALE_QTY,
+				SALE_CT,
+				SALE_QTY * SALE_CT	AS SALE_AMT,
+				RTGD_QTY,
+				RTGD_CT,
+				PRSNT_QTY,
+				EXCHG_QTY
+			FROM T_BA_SALE_MST BSM
+			INNER
+			JOIN T_BA_SALE_DTL BSD
+			ON	BSM.AGEN_SEQ = BSD.AGEN_SEQ 
+			AND	BSM.VEND_SEQ  = BSD.VEND_SEQ 
+			AND BSM.VEND_SALE_SEQ = BSD.VEND_SALE_SEQ 
+			WHERE BSM.AGEN_SEQ = #{agenSeq}
+			AND LEFT(BSM.SALE_DT,4) BETWEEN CONVERT(	VARCHAR(4),	GETDATE() , 23 )-1 AND CONVERT(	VARCHAR(4),	GETDATE() , 23 )
+			AND BSM.USE_YN = 'Y'
+			
+			UNION ALL 
+			
+			SELECT 
+				PD.AGEN_SEQ,
+				D.PRD_SEQ, 
+				D.PRD_DTL_SEQ,
+				LEFT(CONVERT(DATE, PD.DLVY_DT, 23),7) AS SALE_DT,
+				DLVY_QTY,
+				DLVY_UNTPC,
+				DLVY_QTY * DLVY_UNTPC AS SALE_AMT,
+				0, 
+				0,
+				0,
+				0
+			FROM T_CST_PRD_DLVY PD
+			INNER 
+			JOIN T_PRD_DTL D 
+			ON   PD.AGEN_SEQ = D.AGEN_SEQ 
+			AND  PD.PRD_DTL_SEQ  = D.PRD_DTL_SEQ 
+			AND  D.STD_PRD_YN   = 'Y'
+			WHERE PD.AGEN_SEQ = #{agenSeq}
+			AND	LEFT(PD.DLVY_DT,4) BETWEEN CONVERT(	VARCHAR(4),	GETDATE() , 23 )-1 AND CONVERT(	VARCHAR(4),	GETDATE() , 23 )
+			AND PD.USE_YN = 'Y'
+		) a
+		GROUP BY SALE_DT
+		ORDER BY SALE_DT ASC
+	</select>
+	
+	
+	<select id="selectMnthWeekSaleSttsList" parameterType="com.namyang.nyorder.sel.vo.MnthSaleSttsVO" resultType="com.namyang.nyorder.sel.vo.MnthSaleSttsVO">
+	 /* MnthSaleStts-Mapper selectMnthWeekSaleSttsList */
+		SELECT
+			CASE  sale_week WHEN '7' THEN '일'
+									WHEN '1' THEN '월'
+									WHEN '2' THEN '화'
+									WHEN '3' THEN '수'
+									WHEN '4' THEN '목'
+									WHEN '5' THEN '금'
+									WHEN '6' THEN '토'
+					END AS sale_week_kr,
+			sale_week,
+			SUM(week1) as week1,
+			SUM(week2) as week2,
+			SUM(week3) as week3,
+			SUM(week4) as week4,
+			SUM(week5) as week5,
+			SUM(week6) as week6,
+			SUM(week1)+SUM(week2)+SUM(week3)+SUM(week4)+SUM(week5)+SUM(week6) AS SALE_AMT
+		FROM
+ 		(
+	 		SELECT
+					sale_week,
+					IIF(sale_week = num and jucha = 1, SALE_AMT , 0) as week1,
+					IIF(sale_week = num and jucha = 2, SALE_AMT , 0) as week2,
+					IIF(sale_week = num and jucha = 3, SALE_AMT , 0) as week3,
+					IIF(sale_week = num and jucha = 4, SALE_AMT , 0) as week4,
+					IIF(sale_week = num and jucha = 5, SALE_AMT , 0) as week5,
+					IIF(sale_week = num and jucha = 6, SALE_AMT , 0) as week6
+			FROM(
+				SELECT 
+					SALE_DT,
+					sale_week,
+					jucha,
+					SUM(SALE_QTY) SALE_QTY,
+					SUM(RTGD_QTY) RTGD_QTY, 
+					SUM(PRSNT_QTY) PRSNT_QTY, 
+					SUM(EXCHG_QTY) EXCHG_QTY,
+					SUM(RTGD_CT) RTGD_CT,
+					MAX(SALE_CT) SALE_CT,
+					ROUND(((SUM(SALE_AMT)-SUM(RTGD_CT)) * 100) / 110, 2) AS SU_CT,
+					ROUND(((SUM(SALE_AMT)-SUM(RTGD_CT)) * 10) / 110, 2) AS VAT_CT,
+					(SUM(SALE_AMT)-SUM(RTGD_CT)) SALE_AMT
+				FROM
+				(
+					SELECT 
+						BSM.AGEN_SEQ ,
+					 	BSD.PRD_SEQ,
+					 	BSD.PRD_DTL_SEQ,
+					 	BSM.SALE_DT,
+					 	DATEPART(DW, convert(date,BSM.SALE_DT)) AS sale_week,
+					 	DATEDIFF(week, DATEADD(MONTH, DATEDIFF(MONTH, 0, convert(varchar(10),convert(date,BSM.SALE_DT),120)), 0), convert(varchar(10),convert(date,BSM.SALE_DT),120)) +1 as jucha,
+					 	SALE_QTY,
+						SALE_CT,
+						SALE_QTY * SALE_CT	AS SALE_AMT,
+						RTGD_QTY,
+						RTGD_CT,
+						PRSNT_QTY,
+						EXCHG_QTY
+					FROM T_BA_SALE_MST BSM
+					INNER
+					JOIN T_BA_SALE_DTL BSD
+					ON	BSM.AGEN_SEQ = BSD.AGEN_SEQ 
+					AND	BSM.VEND_SEQ  = BSD.VEND_SEQ 
+					AND BSM.VEND_SALE_SEQ = BSD.VEND_SALE_SEQ 
+					WHERE BSM.AGEN_SEQ = #{agenSeq}
+					AND LEFT(BSM.SALE_DT,6) = CONVERT(VARCHAR(6),	GETDATE() ,112 )
+					AND BSM.USE_YN = 'Y'
+		
+					UNION ALL 
+		
+					SELECT 
+						PD.AGEN_SEQ,
+						D.PRD_SEQ, 
+						D.PRD_DTL_SEQ,
+						PD.DLVY_DT as SALE_DT,
+						DATEPART(DW, CONVERT(date, PD.DLVY_DT)) AS sale_week,
+					 	DATEDIFF(week, DATEADD(MONTH, DATEDIFF(MONTH, 0, convert(varchar(10),convert(date,PD.DLVY_DT),120)), 0), convert(varchar(10),convert(date,PD.DLVY_DT),120)) +1 as jucha ,
+						DLVY_QTY as SALE_QTY,
+						DLVY_UNTPC,
+						DLVY_QTY * DLVY_UNTPC AS SALE_AMT,
+						0, 
+						0,
+						0,
+						0
+					FROM T_CST_PRD_DLVY PD
+					INNER 
+					JOIN T_PRD_DTL D 
+					ON   PD.AGEN_SEQ = D.AGEN_SEQ 
+					AND  PD.PRD_DTL_SEQ  = D.PRD_DTL_SEQ 
+					AND  D.STD_PRD_YN   = 'Y'
+					WHERE PD.AGEN_SEQ = #{agenSeq}
+					AND	LEFT(PD.DLVY_DT,6) = CONVERT(VARCHAR(6),	GETDATE() ,112 )
+					AND PD.USE_YN = 'Y'
+				) a
+				GROUP BY AGEN_SEQ, SALE_DT, sale_week, jucha 
+			) a , 
+			(
+				SELECT 1 as num
+				UNION
+				SELECT 2
+				UNION
+				SELECT 3
+				UNION
+				SELECT 4
+				UNION
+				SELECT 5
+				UNION
+				SELECT 6
+				UNION
+				SELECT 7
+			) b
+		) a
+		GROUP BY SALE_WEEK
+	</select>
+	
+</mapper>

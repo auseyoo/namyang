@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.cst.dao.DlvMngMapper">
+	
+	<select id="selectDailDlvAreaList" parameterType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO" resultType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO">
+		/* dlvMng-Mapper selectDailDlvAreaList */
+		
+
+		EXEC P_OPEN_KEY
+		
+		
+		SELECT 
+			AGEN_SEQ,
+			EMPL_SEQ,
+			EMPL_CD,
+			EMPL_NM,
+			AREA_SEQ ,
+			AREA_NM ,
+			AGEN_AREA_CD,
+			DLV_ORDR,
+			AREA_ORDR
+		FROM (
+		
+			SELECT 	
+					PD.AGEN_SEQ,
+					AE.EMPL_SEQ , 
+					CONVERT(varchar, DecryptByKey(EMPL_NM)) as EMPL_NM,
+					AE.EMPL_CD, 
+					AA.AREA_SEQ , 
+					AA.AREA_NM , 
+					AA.AGEN_AREA_CD, 
+					AA.DLV_ORDR,
+					AA.AREA_ORDR,
+					IIF(LEN(AA.AREA_ORDR) = 0 ,1, 0) ordr
+			FROM 	T_CST_PRD_DLVY PD
+			INNER 
+			JOIN 	T_AGEN_AREA AA
+			ON 		PD.AGEN_SEQ = AA.AGEN_SEQ 
+			AND 	PD.AREA_SEQ = AA.AREA_SEQ 
+			INNER 
+			JOIN	T_AGEN_EMPL AE
+			ON 		AA.AGEN_SEQ = AE.AGEN_SEQ 
+			AND		AA.EMPL_SEQ = AE.EMPL_SEQ
+			WHERE 	AA.AGEN_SEQ = #{agenSeq}
+			AND	  	PD.DLVY_DT  = replace(#{srcDate},'-','')
+			<if test="srcKeyword != null and srcKeyword != '' ">
+				AND PD.PRD_SEQ IN (
+									SELECT M.PRD_SEQ
+									FROM T_PRD_MST M 
+									INNER JOIN T_PRD_DTL D
+									ON M.PRD_SEQ = D.PRD_SEQ
+									AND D.STD_PRD_YN = 'Y'
+									WHERE D.AGEN_SEQ = #{agenSeq}
+									AND	  M.PRD_NM like '%'+#{srcKeyword}+'%'
+								)
+			</if>
+			GROUP BY PD.AGEN_SEQ, AE.EMPL_SEQ , AE.EMPL_NM, AE.EMPL_CD, AA.AREA_SEQ, AA.AREA_NM, AA.AGEN_AREA_CD, AA.DLV_ORDR , AA.AREA_ORDR
+		) A
+		ORDER BY ORDR ASC, CONVERT(int, AREA_ORDR) ASC, CONVERT(int, AGEN_AREA_CD) ASC
+	</select>
+	
+	
+	<select id="selectDailDlvDetailList" parameterType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO" resultType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO">
+		/* dlvMng-Mapper selectDailDlvDetailList */
+		SELECT 
+			M.PRD_NM,
+			D.abrv_Nm,
+			D.SHTN_NM,
+			PD.PRD_QTY,
+			M.FALT_QTY,
+			FLOOR(PD.PRD_QTY/M.FALT_QTY) AS BOX_QTY,
+			PD.PRD_QTY % M.FALT_QTY AS UNIT_QTY
+		FROM
+		(
+			SELECT 
+				SUM(DLVY_QTY) PRD_QTY,
+				PRD_DTL_SEQ,
+				AGEN_SEQ
+			FROM T_CST_PRD_DLVY PD
+			WHERE PD.AGEN_SEQ = #{agenSeq}
+			AND PD.DLVY_DT = replace(#{srcDate},'-','')
+			AND PD.AREA_SEQ = #{areaSeq}
+			GROUP BY PRD_DTL_SEQ, AGEN_SEQ
+		) PD
+		LEFT
+		OUTER JOIN T_PRD_DTL D
+		ON	D.PRD_DTL_SEQ =  PD.PRD_DTL_SEQ
+		AND D.AGEN_SEQ = PD.AGEN_SEQ
+		INNER JOIN T_PRD_MST M
+		ON D.PRD_SEQ = M.PRD_SEQ
+		ORDER BY M.PRD_NM ASC;
+	</select>
+
+	<select id="selectDailDlvCstDetailList" parameterType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO" resultType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO">
+		/* dlvMng-Mapper selectDailDlvCstDetailList */
+		EXEC P_OPEN_KEY
+		SELECT 
+			PD.CST_PRD_DLVY_SEQ,
+			CM.CST_AGEN_CD,
+			CM.CST_SEQ,
+			CONVERT(varchar, DecryptByKey(CM.CST_NM)) as CST_NM,
+			CONVERT(varchar, DecryptByKey(CM.DLV_ADDR1)) DLV_ADDR1,
+			CONVERT(varchar, DecryptByKey(CM.DLV_ADDR2)) DLV_ADDR2,
+			D.PRD_SEQ,
+			M.PRD_NM,
+			D.abrv_Nm,
+			D.SHTN_NM,
+			PD.DLVY_QTY,
+			CM.ORDR AS DLV_ORDR,
+			MAP_LATU,
+			MAP_LOTU,
+			LALO_YN,
+			dbo.F_GET_INPUT_DAY(PD.PTTN_SEQ) pttn
+		FROM T_CST_PRD_DLVY PD
+
+		INNER JOIN T_CST_PRD CP
+		ON PD.AGEN_SEQ = CP.AGEN_SEQ 
+		AND PD.AREA_SEQ = CP.AREA_SEQ 
+		AND PD.CST_SEQ  = CP.CST_SEQ 
+		AND PD.CST_PRD_SEQ = CP.CST_PRD_SEQ 
+
+		INNER JOIN T_CST_MST CM
+		ON CP.AGEN_SEQ = CM.AGEN_SEQ 
+		AND CP.AREA_SEQ = CM.AREA_SEQ 
+		AND CP.CST_SEQ  = CM.CST_SEQ
+
+		INNER JOIN T_PRD_DTL D
+		ON	PD.AGEN_SEQ = D.AGEN_SEQ
+		AND CP.PRD_DTL_SEQ = D.PRD_DTL_SEQ
+
+		INNER JOIN T_PRD_MST M
+		ON D.PRD_SEQ = M.PRD_SEQ
+
+		<!-- LEFT JOIN T_CST_PTTN CPT
+		ON CP.AGEN_SEQ 	= CPT.AGEN_SEQ 
+		AND CP.AREA_SEQ = CPT.AREA_SEQ 
+		AND CP.CST_SEQ  = CPT.CST_SEQ  
+		AND CP.CST_PRD_SEQ = CPT.CST_PRD_SEQ 
+		AND CPT.USE_YN = 'Y'
+		 -->
+		WHERE PD.AGEN_SEQ = #{agenSeq}
+		AND PD.DLVY_DT = replace(#{srcDate},'-','')
+		AND PD.AREA_SEQ = #{areaSeq}
+		ORDER BY CONVERT(int, ISNULL(CM.ORDR,9999) ) ASC , PD.CST_SEQ, M.PRD_NM ASC 
+	</select>
+	
+	<select id="selectCstDlvNtcList" parameterType="com.namyang.nyorder.cst.vo.CstDlvNtcVO" resultType="com.namyang.nyorder.cst.vo.CstDlvNtcVO">
+		/* dlvMng-Mapper selectCstDlvNtcList */
+		EXEC P_OPEN_KEY
+		SELECT 
+			A.DLV_NTC_SEQ,
+			A.AGEN_SEQ,
+			A.AREA_SEQ,
+			A.CST_SEQ,
+			A.CNTT,
+			A.NTC_SEC_CD,
+			CASE WHEN A.NTC_SEC_CD = '' or A.NTC_SEC_CD is null then '전체'
+			 	ELSE M.COMM_NM
+			END AS NTC_TYPE,
+			CASE WHEN A.NTC_SEC_CD = 'AREA' AND A.AREA_SEQ > 0  THEN  AA.AREA_NM 
+				 WHEN A.NTC_SEC_CD = 'CST' AND A.CST_SEQ > 0  	THEN  CONVERT(varchar, DecryptByKey(CM.CST_NM))
+				 ELSE '전체'
+			END AS NTC_TRGT,
+			A.OPT_DT,
+			A.OPT_YN,
+			A.USE_YN,
+			A.REG_DTM,
+			CONVERT(varchar, DecryptByKey((SELECT EMPL_NM FROM T_AGEN_EMPL E WHERE E.EMPL_SEQ = A.REG_SEQ))) as  REG_NM, 
+			A.REG_SEQ,
+			A.UPD_DTM,
+			A.UPD_SEQ,
+			CONVERT(varchar, DecryptByKey((SELECT EMPL_NM FROM T_AGEN_EMPL E WHERE E.EMPL_SEQ = A.UPD_SEQ))) as UPD_NM, 
+			A.ORDR,
+			CONVERT(varchar, DecryptByKey(CM.DLV_ADDR1)) DLV_ADDR1,
+			CONVERT(varchar, DecryptByKey(CM.DLV_ADDR2)) DLV_ADDR2
+		FROM(
+			SELECT
+					DLV_NTC_SEQ,
+					AGEN_SEQ,
+					AREA_SEQ,
+					CST_SEQ,
+					CNTT,
+					NTC_SEC_CD,
+					OPT_DT,
+					OPT_YN,
+					USE_YN,
+					REG_DTM,
+					REG_SEQ,
+					UPD_DTM,
+					UPD_SEQ,
+					CASE WHEN NTC_SEC_CD IS NULL THEN 0 
+						 WHEN NTC_SEC_CD = 'AREA' AND AREA_SEQ IS NULL THEN 1
+						 WHEN NTC_SEC_CD = 'AREA' AND AREA_SEQ > 0 THEN 2
+						 WHEN NTC_SEC_CD = 'CST' AND CST_SEQ IS NULL THEN 3
+						 WHEN NTC_SEC_CD = 'CST' AND CST_SEQ > 0 THEN 3
+					END ORDR
+			FROM	T_CST_DLV_NTC
+			WHERE	AGEN_SEQ = #{agenSeq}
+			AND 	OPT_DT = replace(#{srcDate},'-','')
+			AND		(NTC_SEC_CD IS NULL OR NTC_SEC_CD = '' OR AREA_SEQ = #{areaSeq} )
+			AND		USE_YN = 'Y'
+		) A
+		LEFT JOIN T_COMM M
+		ON A.NTC_SEC_CD = M.COMM_CD
+		AND M.COMM_GRP_CD = 'CST_DLV_NTC_TYPE'
+		LEFT JOIN T_AGEN_AREA AA 
+		ON  A.AREA_SEQ = AA.AREA_SEQ 
+		AND A.AGEN_SEQ = AA.AGEN_SEQ 
+		LEFT JOIN T_CST_MST CM
+		ON	A.AGEN_SEQ = CM.AGEN_SEQ 
+		AND A.CST_SEQ = CM.CST_SEQ 
+		ORDER BY A.ORDR ASC, REG_DTM DESC
+	</select>
+	
+	<select id="selectDlvCstList" parameterType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO" resultType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO">
+		/* dlvMng-Mapper selectDlvCstList */
+		
+		EXEC P_OPEN_KEY
+		
+		SELECT
+				CPD.CST_SEQ,
+				CONVERT(varchar, DecryptByKey(CM.CST_NM)) as CST_NM
+		FROM 	T_CST_PRD_DLVY	CPD
+		INNER
+		JOIN	T_CST_MST	CM
+		ON		CPD.CST_SEQ = CM.CST_SEQ
+		AND		CPD.AGEN_SEQ = CM.AGEN_SEQ
+		AND		CPD.AREA_SEQ = CM.AREA_SEQ
+		WHERE	CPD.DLVY_DT	=	replace(#{srcDate},'-','')
+		AND		CPD.AGEN_SEQ = #{agenSeq}
+		AND		CPD.AREA_SEQ = #{areaSeq}
+		GROUP BY CPD.CST_SEQ, CM.CST_NM
+	</select>
+	
+	<select id="selectDlvAreaList" parameterType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO" resultType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO">
+		/* dlvMng-Mapper selectDlvAreaList */
+		
+		SELECT
+				CPD.AREA_SEQ,
+				AA.AREA_NM
+		FROM 	T_CST_PRD_DLVY	CPD
+		INNER
+		JOIN	T_AGEN_AREA AA
+		ON		CPD.AGEN_SEQ = AA.AGEN_SEQ
+		AND		CPD.AREA_SEQ = AA.AREA_SEQ	
+	
+		WHERE	DLVY_DT	=	replace(#{srcDate},'-','')
+		AND		CPD.AGEN_SEQ = #{agenSeq}
+		GROUP BY CPD.AREA_SEQ, AA.AREA_NM
+	</select>
+	
+	<update id="addCstDlvNtc" parameterType="com.namyang.nyorder.cst.vo.CstDlvNtcVO">
+		/* dlvMng-Mapper addCstDlvNtc */
+		INSERT INTO NY_ORDER.dbo.T_CST_DLV_NTC
+		(	DLV_NTC_SEQ, 
+			AGEN_SEQ,
+			AREA_SEQ,
+			CST_SEQ,
+			CNTT,
+			NTC_SEC_CD,
+			OPT_DT,
+			OPT_YN,
+			USE_YN,
+			REG_DTM,
+			REG_SEQ,
+			UPD_DTM,
+			UPD_SEQ
+		)
+		VALUES(
+			NEXT VALUE FOR SQ_CST_DLV_NTC,
+			#{agenSeq},
+			<choose>
+				<when test='@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(ntcTrgt) and ntcType == "AREA" '> 
+					#{ntcTrgt},
+					null,
+				</when>
+				<when test='@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(ntcTrgt) and ntcType == "CST" '> 
+					#{areaSeq},
+					#{ntcTrgt},
+				</when>
+				<otherwise>
+					null, null,
+				</otherwise>
+			</choose>
+			#{cntt},
+			#{ntcType},
+			replace(#{srcDate},'-',''),
+			'Y',
+			'Y',
+			CURRENT_TIMESTAMP,
+			#{emplSeq},
+			CURRENT_TIMESTAMP,
+			#{emplSeq}
+		)
+	</update>
+	
+	<update id="rmvCstDlvNtc" parameterType="com.namyang.nyorder.cst.vo.CstDlvNtcVO">
+		/* dlvMng-Mapper rmvCstDlvNtc */
+		UPDATE NY_ORDER.dbo.T_CST_DLV_NTC
+		SET USE_YN = 'N',
+			UPD_DTM = CURRENT_TIMESTAMP,
+			UPD_SEQ = #{emplSeq}
+		WHERE DLV_NTC_SEQ = #{dlvNtcSeq}
+	</update>
+	
+	<update id="saveAreaDlvOrdr" parameterType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO" >
+		/* dlvMng-Mapper saveAreaDlvOrdr */
+		UPDATE	T_AGEN_AREA
+		SET 	AREA_ORDR = #{areaOrdr},
+				UPD_DTM = CURRENT_TIMESTAMP,
+				UPD_SEQ = #{emplSeq}
+		WHERE	AGEN_SEQ = #{agenSeq}
+		AND		AREA_SEQ = #{areaSeq}
+	</update>
+
+	<update id="saveDlvCstDtl" parameterType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO" >
+		/* dlvMng-Mapper saveDlvCstDtl */
+		
+		UPDATE	T_CST_MST
+		SET 	ORDR = #{dlvOrdr},
+				UPD_DTM = CURRENT_TIMESTAMP,
+				UPD_SEQ = #{emplSeq}
+		WHERE	CST_SEQ = #{cstSeq}
+		AND		AGEN_SEQ = #{agenSeq}
+	</update>
+	<update id="updateDlvCstAddrLalo" parameterType="com.namyang.nyorder.cst.vo.CstPrdDlvyVO" >
+		/* dlvMng-Mapper updateDlvCstAddrLalo */
+		
+		UPDATE	T_CST_MST
+		SET 	MAP_LATU= #{mapLatu},
+			 	MAP_LOTU= #{mapLotu},
+			 	LALO_YN = #{laloYn},
+				UPD_DTM = CURRENT_TIMESTAMP,
+				UPD_SEQ = #{emplSeq}
+		WHERE	CST_SEQ = #{cstSeq}
+		AND		AGEN_SEQ = #{agenSeq}
+	</update>
+	
+</mapper>

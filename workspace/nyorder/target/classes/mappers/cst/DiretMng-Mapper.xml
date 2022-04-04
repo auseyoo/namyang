@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.cst.dao.CstDiretMngMapper">
+
+	<select id="selectCstDiretHis" parameterType="com.namyang.nyorder.cst.vo.CstDiretHisVO" resultType="com.namyang.nyorder.cst.vo.CstDiretHisVO">
+		EXEC P_OPEN_KEY 
+		
+		SELECT
+			tcdh.CST_DIRET_SEQ,
+			CONVERT(CHAR(19), tcdh.REG_DTM, 23) AS REG_DTM,
+			CONVERT(VARCHAR, DecryptByKey(tcm.CST_NM)) AS CST_NM,
+			beftaa.AREA_SEQ AS BEF_AREA_SEQ,
+			beftaa.AREA_NM AS BEF_AREA_NM,
+			beftam.AGEN_SEQ AS BEF_AGEN_SEQ,
+			beftam.AGEN_NM AS BEF_AGEN_NM,
+			afttaa.AREA_SEQ AS AFT_AREA_SEQ,
+			afttaa.AREA_NM AS AFT_AREA_NM,
+			afttam.AGEN_SEQ AS AFT_AGEN_SEQ,
+			afttam.AGEN_NM AS AFT_AGEN_NM,
+			CONVERT(CHAR(19), tcdh.DIRET_DTM, 23) AS DIRET_DTM,
+			tc.COMM_NM AS CNTR_STUS,
+			CONVERT(CHAR(19), tcdh.DCSN_DTM, 23) AS DCSN_DTM,
+			CONVERT(VARCHAR, DecryptByKey(tae.EMPL_NM)) AS EMPL_NM
+		FROM 	T_CST_DIRET_HIS tcdh
+		JOIN	T_CST_MST tcm
+		ON		tcm.CST_SEQ = tcdh.CST_SEQ
+		AND 	tcm.USE_YN = 'Y'
+		AND 	tcm.STPG_YN = 'N'
+		JOIN	T_AGEN_AREA beftaa
+		ON		beftaa.AGEN_SEQ = tcdh.BEF_AGEN_SEQ
+		AND 	beftaa.AREA_SEQ = tcdh.BEF_AREA_SEQ
+		JOIN	T_AGEN_AREA afttaa
+		ON		afttaa.AGEN_SEQ = tcdh.AFT_AGEN_SEQ
+		AND 	afttaa.AREA_SEQ = tcdh.AFT_AREA_SEQ
+		JOIN	T_AGEN_MST beftam
+		ON		beftam.AGEN_SEQ = tcdh.BEF_AGEN_SEQ
+		JOIN	T_AGEN_MST afttam
+		ON		afttam.AGEN_SEQ = tcdh.AFT_AGEN_SEQ
+		JOIN	T_AGEN_EMPL tae
+		ON		tae.EMPL_SEQ = tcdh.UPD_SEQ
+		JOIN	T_COMM tc
+		ON	 	tc.COMM_GRP_CD = 'DIRET_CNTR_STUS_SEC'
+		AND		tc.COMM_CD = tcdh.CNTR_STUS
+		WHERE	1=1
+		AND 	(tcdh.AFT_AGEN_SEQ = #{curAgenSeq} OR tcdh.BEF_AGEN_SEQ = #{curAgenSeq})
+		AND 
+		<if test="dateFlag == 'reg'">
+			tcdh.REG_DTM
+		</if>
+		<if test="dateFlag == 'dcsn'">
+			tcdh.DCSN_DTM
+		</if>
+		BETWEEN #{startDt} AND #{endDt}
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(name)">
+			AND CONVERT(VARCHAR, DecryptByKey(tcm.CST_NM)) LIKE '%'+#{name}+'%'
+		</if>
+	</select>
+
+	<select id="selectCstDiretDtl" parameterType="com.namyang.nyorder.cst.vo.CstDiretHisVO" resultType="com.namyang.nyorder.cst.vo.CstDiretHisVO">
+	    /* 이사고객 정보 상세 조회 */
+		
+		EXEC P_OPEN_KEY
+		
+		SELECT	
+			tcdh.CST_SEQ ,
+			CONVERT(VARCHAR, DecryptByKey(tcm.CST_NM)) AS CST_NM,
+			CONVERT(CHAR(19), tcdh.DIRET_DTM, 23) AS DIRET_DTM ,
+			CONVERT(VARCHAR, DecryptByKey(tcm.MOB_NO)) AS MOB_NO,
+			CONVERT(VARCHAR, DecryptByKey(tcm.TEL_NO)) AS TEL_NO,
+			CONVERT(CHAR(19), tcdh.REG_DTM, 23) AS REG_DTM,
+			CONVERT(CHAR(19), tcdh.DCSN_DTM, 23) AS DCSN_DTM,
+			tcdh.CNTR_STUS,
+			tcdh.RJCT_RSON ,
+			beftam.AGEN_SEQ AS BEF_AGEN_SEQ,
+			beftam.AGEN_NM  AS BEF_AGEN_NM,
+			beftaa.AREA_SEQ AS BEF_AREA_SEQ,
+			beftaa.AREA_NM  AS BEF_AREA_NM,
+			CONVERT(VARCHAR, DecryptByKey(beftam.TEL_NO)) AS BEF_TEL_NO,
+			tcdh.BEF_DLV_ZIP_CD ,
+			tcdh.BEF_DLV_ADDR1 ,
+			CONVERT(VARCHAR, DecryptByKey(tcdh.BEF_DLV_ADDR2)) AS BEF_DLV_ADDR2,
+			tcdh.DIRET_CT ,
+			tcdh.BEF_RMK ,
+			afttam.AGEN_SEQ AS AFT_AGEN_SEQ ,
+			afttam.AGEN_NM AS AFT_AGEN_NM,
+			afttaa.AREA_SEQ AS AFT_AREA_SEQ,
+			afttaa.AREA_NM AS AFT_AREA_NM,
+			CONVERT(VARCHAR, DecryptByKey(tae.EMPL_NM)) AS EMPL_NM,
+			CONVERT(VARCHAR, DecryptByKey(tae.TEL_NO)) AS AFT_EMPL_TEL_NO,
+			CONVERT(VARCHAR, DecryptByKey(afttam.TEL_NO)) AS AFT_AGEN_TEL_NO,
+			tcdh.AFT_DLV_ZIP_CD ,
+			tcdh.AFT_DLV_ADDR1 ,
+			CONVERT(VARCHAR, DecryptByKey(tcdh.AFT_DLV_ADDR2)) AS AFT_DLV_ADDR2,
+			tcdh.AFT_RMK,
+			tbm.BHFC_SEQ ,
+			tbm.BHFC_NM,
+			tc.COMM_NM AS BILCT_MTH_NM
+		FROM	T_CST_DIRET_HIS tcdh
+		JOIN	T_CST_MST tcm
+		ON		tcm.CST_SEQ = tcdh.CST_SEQ
+		JOIN	T_AGEN_MST beftam
+		ON		beftam.AGEN_SEQ = tcdh.BEF_AGEN_SEQ
+		JOIN	T_AGEN_AREA beftaa
+		ON		beftaa.AGEN_SEQ = tcdh.BEF_AGEN_SEQ
+		AND 	beftaa.AREA_SEQ = tcdh.BEF_AREA_SEQ
+		JOIN	T_AGEN_MST afttam
+		ON		afttam.AGEN_SEQ = tcdh.AFT_AGEN_SEQ
+		LEFT
+		JOIN	T_AGEN_AREA afttaa
+		ON		afttaa.AGEN_SEQ = tcdh.AFT_AGEN_SEQ 
+		AND 	afttaa.AREA_SEQ = tcdh.AFT_AREA_SEQ
+		JOIN	T_AGEN_EMPL tae
+		ON		tae.EMPL_SEQ = tcdh.EMPL_SEQ
+		JOIN	T_BHFC_AGEN tba
+		ON		tba.AGEN_SEQ = tcdh.AFT_AGEN_SEQ
+		JOIN	T_BHFC_MST tbm 
+		ON		tbm.BHFC_SEQ = tba.BHFC_SEQ
+		JOIN	T_COMM tc
+		ON		tc.COMM_CD = tcm.BILCT_MTH
+		WHERE	tcdh.CST_DIRET_SEQ = #{cstDiretSeq}
+	</select>
+
+	<select id="selectCstCntrList" parameterType="com.namyang.nyorder.cst.vo.CstDiretHisVO" resultType="com.namyang.nyorder.cst.vo.CstCntrVO">
+		SELECT	
+			tcp.CST_PRD_SEQ ,
+			ISNULL(tpm.PRD_NM, ISNULL(tpd.SHTN_NM, tpd.STD_PRD_NM)) AS PRD_NM,
+			tpd.PRD_DTL_CD ,
+			tcp.STDR_QTY ,
+			tcp.HOP,
+			tcp.CNTR_MONTH,
+			tcpu.STAT_DT ,
+			DATEDIFF(MONTH, CURRENT_TIMESTAMP, tcpu.END_DT) AS REMR_DT,
+			CONCAT(tcp2.MON_QTY, tcp2.TUE_QTY, tcp2.WED_QTY, tcp2.THU_QTY, tcp2.FRI_QTY, tcp2.SAT_QTY, tcp2.SUN_QTY) AS QTYS,
+			C.PRMT
+		FROM 	T_CST_PRD tcp
+		JOIN	T_PRD_DTL tpd
+		ON		tpd.PRD_DTL_SEQ = tcp.PRD_DTL_SEQ
+		AND 	tpd.USE_YN = 'Y'
+		AND 	tpd.AGEN_SEQ = #{curAgenSeq}
+		LEFT
+		JOIN 	T_PRD_MST tpm
+		ON		tpm.PRD_SEQ = tpd.PRD_SEQ
+		AND		tpm.USE_YN = 'Y'
+		JOIN	T_CST_PTTN tcp2
+		ON		tcp2.CST_PRD_SEQ = tcp.CST_PRD_SEQ
+		AND 	tcp2.WEEKS = 1
+		AND 	tcp2.LAST_YN = 'Y'
+		AND 	tcp2.USE_YN = 'Y'
+		JOIN	T_CST_PRD_UNTPC tcpu
+		ON		tcpu.CST_PRD_SEQ = tcp.CST_PRD_SEQ
+		AND 	tcpu.LAST_YN = 'Y'
+		AND 	CURRENT_TIMESTAMP BETWEEN tcpu.STAT_DT AND tcpu.END_DT
+		JOIN
+		(
+			SELECT
+				B.CST_PRD_SEQ,
+				STUFF((
+					SELECT
+						', ' + CASE A.PRMT_SEC_CD
+							WHEN 'FREE' THEN CONCAT('무료 ', A.PRMT_MONTH , '월')
+							WHEN 'DSCT' THEN CONCAT('할인 ', A.PRMT_MONTH , '월')
+							WHEN 'PRD' THEN A.PRMT_NM
+						END
+					FROM T_CST_PRD_PRMT AS A
+					WHERE	A.CST_PRD_SEQ = B.CST_PRD_SEQ 
+					FOR XML PATH('')
+				), 1,2, '') AS PRMT
+			FROM T_CST_PRD_PRMT B
+			GROUP BY B.CST_PRD_SEQ
+		) AS C
+		ON		C.CST_PRD_SEQ = tcp.CST_PRD_SEQ
+		WHERE	1=1
+		AND 	tcp.CST_SEQ = #{cstSeq}
+		AND 	tcp.STPG_YN = 'N'
+		AND 	tcp.LAST_YN = 'Y'
+	</select>
+
+	<select id="searchAftAgenAreaList" parameterType="com.namyang.nyorder.cst.vo.CstDiretHisVO" resultType="com.namyang.nyorder.cst.vo.CstDiretHisVO">
+		EXEC P_OPEN_KEY
+
+		SELECT
+			taa.AREA_NM,
+			taa.AREA_SEQ ,
+			tae.EMPL_SEQ ,
+			CONVERT(VARCHAR, DecryptByKey(tae.EMPL_NM)) AS EMPL_NM
+		FROM	T_AGEN_AREA taa
+		JOIN	T_AGEN_EMPL tae
+		ON		tae.EMPL_SEQ = taa.EMPL_SEQ
+		WHERE 	1=1
+		AND 	taa.AGEN_SEQ = #{curAgenSeq}
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(areaNm) and @com.namyang.nyorder.util.MyBatisCmpr@isEmpty(emplNm)">
+			AND taa.AREA_NM LIKE '%'+#{areaNm}+'%'
+		</if>
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(emplNm) and @com.namyang.nyorder.util.MyBatisCmpr@isEmpty(areaNm)">
+			AND CONVERT(VARCHAR, DecryptByKey(tae.EMPL_NM)) LIKE '%'+#{emplNm}+'%'
+		</if>
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(areaNm) and @com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(emplNm)">
+			AND taa.AREA_NM LIKE '%'+#{areaNm}+'%' OR CONVERT(VARCHAR, DecryptByKey(tae.EMPL_NM)) LIKE '%'+#{emplNm}+'%'
+		</if>
+	</select>
+
+	<update id="updateCstDiret" parameterType="com.namyang.nyorder.cst.vo.CstDiretHisVO">
+		UPDATE T_CST_DIRET_HIS
+			<if test="curAgenSeq == befAgenSeq">
+				SET	BEF_RMK = #{befRmk},
+					DIRET_CT = #{diretCt}
+			</if>
+			<if test="curAgenSeq == aftAgenSeq">
+				SET AFT_RMK = #{aftRmk},
+					RJCT_RSON = #{rjctRson},
+					CNTR_STUS = #{cntrStus},
+					AFT_AREA_SEQ = #{aftAreaSeq}
+			</if>
+		WHERE	CST_DIRET_SEQ = #{cstDiretSeq}
+	</update>
+</mapper>

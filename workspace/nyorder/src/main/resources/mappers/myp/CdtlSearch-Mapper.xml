@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.myp.dao.CdtlSearchMapper">
+
+	
+    <select id="selectAgentMngList" parameterType="com.namyang.nyorder.myp.vo.MrtgInfoVO" resultType="com.namyang.nyorder.myp.vo.MrtgInfoVO">
+    	SELECT EMPL_SEQ, AGEN_SEQ
+		FROM dbo.T_AGEN_EMPL tae
+		WHERE AGEN_SEQ = #{agenSeq}
+				
+    </select>
+    
+    <select id="selectAgentMngOne" parameterType="com.namyang.nyorder.myp.vo.MrtgInfoVO" resultType="com.namyang.nyorder.myp.vo.MrtgInfoVO">
+    	SELECT EMPL_SEQ, AGEN_SEQ
+		FROM dbo.T_AGEN_EMPL tae
+		WHERE AGEN_SEQ = #{agenSeq}
+		ORDER BY EMPL_SEQ 
+		OFFSET 0 ROW 
+		FETCH NEXT 1 ROW ONLY				
+    </select>
+    
+    <insert id="basicInsert" parameterType="com.namyang.nyorder.myp.vo.MrtgInfoVO" >
+    	INSERT INTO NY_ORDER.dbo.T_BASICT_TEST
+		(EMPL_SEQ, AGEN_SEQ)
+		VALUES(#{emplSeq}, #{agenSeq})
+				
+    </insert>
+    
+    <update id="basicUpdate" parameterType="com.namyang.nyorder.myp.vo.MrtgInfoVO" >
+    	UPDATE NY_ORDER.dbo.T_BASICT_TEST
+			SET AGEN_SEQ=#{agenSeq}
+		WHERE EMPL_SEQ=#{emplSeq}
+				
+    </update>
+</mapper>    

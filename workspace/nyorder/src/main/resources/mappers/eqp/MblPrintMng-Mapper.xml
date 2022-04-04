@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.eqp.dao.MblPrintMngMapper">
+	
+	<select id="selectMblPrintMngList"
+		parameterType="com.namyang.nyorder.eqp.vo.AgenEqpVO"
+		resultType="com.namyang.nyorder.eqp.vo.AgenEqpVO">
+		<!-- MblPrintMng-Mapper : selectMblPrintMngList -->
+		EXEC P_OPEN_KEY
+		
+		SELECT 
+				AGEN_EQP_SEQ,
+				AGEN_SEQ,
+				EMPL_SEQ AS CHAG_EMPL_SEQ, 
+				CONVERT(varchar, DecryptByKey((SELECT EMPL_NM FROM T_AGEN_EMPL WHERE EMPL_SEQ = A.EMPL_SEQ))) AS CHAG_EMPL_NM,
+				EQP_NM,
+				EQP_CD,
+				EQP_STUS_SEC,
+				(SELECT COMM_NM FROM T_COMM WHERE COMM_GRP_CD = 'EQP_STUS_SEC' AND COMM_CD = A.EQP_STUS_SEC) EQP_STUS_SEC_NM,
+				PYM_DT,
+				COL_DT,
+				REG_DTM,
+				REG_SEQ,
+				UPD_DTM,
+				UPD_SEQ 
+		FROM 	NY_ORDER.dbo.T_AGEN_EQP A
+		<where>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(agenSeq)">
+				AND AGEN_SEQ = #{agenSeq}
+			</if>	
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(eqpStusSec)">
+				AND EQP_STUS_SEC = #{eqpStusSec}
+			</if>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(chagEmplSeq)">
+				AND EMPL_SEQ = #{chagEmplSeq}
+			</if>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(eqpNm)">
+				AND EQP_NM LIKE '%'+#{eqpNm}+'%'
+			</if>
+		</where>
+		ORDER BY AGEN_EQP_SEQ DESC, EMPL_SEQ ASC
+	</select>
+
+	<update id="addMblPrintMng" parameterType="com.namyang.nyorder.eqp.vo.AgenEqpVO">
+		<!-- MblPrintMng-Mapper : addMblPrintMng -->
+		INSERT INTO T_AGEN_EQP
+		(	AGEN_EQP_SEQ,
+			AGEN_SEQ,
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(chagEmplSeq)">
+			EMPL_SEQ,
+			</if>
+			EQP_NM,
+			EQP_CD,
+			EQP_STUS_SEC,
+			PYM_DT,
+			COL_DT,
+			REG_DTM,
+			REG_SEQ,
+			UPD_DTM,
+			UPD_SEQ
+		) 
+		VALUES
+		(	
+			NEXT VALUE FOR SQ_AGEN_EQP, 
+			#{agenSeq},
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(chagEmplSeq)">
+			#{chagEmplSeq},
+			</if> 
+			#{eqpNm}, 
+			#{eqpCd}, 
+			#{eqpStusSec}, 
+			replace(#{pymDt},'-',''), 
+			replace(#{colDt},'-',''), 
+			CURRENT_TIMESTAMP, 
+			0, 
+			CURRENT_TIMESTAMP, 
+			0
+		);
+	</update>
+	
+	<update id="updateMblPrintMng" parameterType="com.namyang.nyorder.eqp.vo.AgenEqpVO">
+		<!-- MblPrintMng-Mapper : updateMblPrintMng -->
+		UPDATE	T_AGEN_EQP
+		SET		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(chagEmplSeq)">
+				EMPL_SEQ	=	#{chagEmplSeq},
+				</if>
+				EQP_NM		=	#{eqpNm},
+				EQP_CD		=	#{eqpCd},
+				EQP_STUS_SEC=	#{eqpStusSec},
+				PYM_DT		=	replace(#{pymDt},'-',''),
+				COL_DT		=	replace(#{colDt},'-',''),
+				UPD_DTM		=	CURRENT_TIMESTAMP,
+				UPD_SEQ		=	#{emplSeq}
+		WHERE 	AGEN_EQP_SEQ = #{agenEqpSeq}
+	</update>
+
+</mapper>

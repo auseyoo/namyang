@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템</title>
+<link rel="stylesheet" type="text/css" href="../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<script type="text/javascript">
+    var myGridID;
+
+	var gridData = [
+        {"id":"#Cust01","code":"X12345","name":"타사제품1"},
+        {"id":"#Cust12","code":"X12345","name":"타사제품1"},
+        {"id":"#Cust01","code":"X12345","name":"타사제품1"},
+        {"id":"#Cust12","code":"X12345","name":"타사제품1"},
+        {"id":"#Cust01","code":"X12345","name":"타사제품1"},
+        {"id":"#Cust12","code":"X12345","name":"타사제품1"},
+        {"id":"#Cust01","code":"X12345","name":"타사제품1"},
+        {"id":"#Cust12","code":"X12345","name":"타사제품1"},
+        {"id":"#Cust01","code":"X12345","name":"타사제품1"},
+        {"id":"#Cust12","code":"X12345","name":"타사제품1"},
+	];
+   
+   $(document).ready(function(){
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid();
+        //createAUIGrid(columnLayout2);
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.        
+        
+		AUIGrid.setGridData(myGridID, gridData);
+    });
+    
+   
+    // AUIGrid 를 생성합니다.
+    function createAUIGrid() {
+        // 그리드 속성 설정
+        var gridPros = {
+                headerHeight : 29,
+                rowHeight : 29,
+                // 편집 가능 여부 (기본값 : false)
+                editable : false,
+                
+                // 엔터키가 다음 행이 아닌 다음 칼럼으로 이동할지 여부 (기본값 : false)
+                enterKeyColumnBase : true,
+                
+                // 셀 선택모드 (기본값: singleCell)
+                selectionMode : "singleRow",
+                showFooter : true,
+                
+                // 컨텍스트 메뉴 사용 여부 (기본값 : false)
+                useContextMenu : true,
+                
+                // 필터 사용 여부 (기본값 : false)
+                enableFilter : true,
+            
+                // 그룹핑 패널 사용
+                useGroupingPanel : false,
+                              
+                // 그룹핑 또는 트리로 만들었을 때 펼쳐지게 할지 여부 (기본값 : false)
+                displayTreeOpen : true,
+                
+                noDataMessage : "출력할 데이터가 없습니다.",
+                
+                groupingMessage : "여기에 칼럼을 드래그하면 그룹핑이 됩니다."
+                
+        };
+
+		var gridPros3 = {
+			headerHeight : 29,
+			rowHeight : 29,
+			editable : false,
+			showFooter : false,
+            selectionMode : "singleRow",
+		}
+    
+        // 실제로 #grid_wrap 에 그리드 생성
+        myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+    }
+
+	var columnLayout = [{
+            dataField : "code",
+			headerText : "제품코드",
+			width : "20%",
+		},{
+			dataField : "name",
+			headerText : "제품명",
+            style : "auiLeft"			
+		}
+	];
+
+    // 푸터 설정
+    var footerLayout = [{
+        labelText : "∑",
+        positionField : "#base"
+        }, {
+            dataField : "code",
+            positionField : "code",
+            operation : "SUM",
+            colSpan : 1, 
+            /*labelFunction : function(value, columnValues, footerValues) {
+               // return "합계 : " + AUIGrid.formatNumber(value, "#,##0");
+               return "합계 : " 
+            }*/
+        }];
+
+        var footerLayout2 = [{
+        labelText : "∑",
+        positionField : "#base"
+        }, {
+            dataField : "code",
+            positionField : "code",
+            operation : "SUM",
+            colSpan : 4, // 자신을 포함하여 4개의 푸터를 가로 병합함.
+            labelFunction : function(value, columnValues, footerValues) {
+               // return "합계 : " + AUIGrid.formatNumber(value, "#,##0");
+               return "합계 : " 
+            }
+        }, {
+            dataField : "name",
+            positionField : "name",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "purchasePrice",
+            positionField : "purchasePrice",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "intake",
+            positionField : "intake",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "totalPrice",
+            positionField : "totalPrice",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }];
+
+
+    function requestJsonData() {
+        
+        // 요청 URL
+        var url = "./data/normal_500.json";
+        
+        // ajax 요청 전 그리드에 로더 표시
+        AUIGrid.showAjaxLoader(myGridID);
+        
+        // ajax (XMLHttpRequest) 로 그리드 데이터 요청
+        ajax( {
+            url : url,
+            onSuccess : function(data) {
+                
+                //console.log(data);
+                    
+                // 그리드에 JSON 데이터 설정
+                // data 는 JSON 을 파싱한 Array-Object 임
+                AUIGrid.setGridData(myGridID, data);
+                
+                // 로더 제거
+                AUIGrid.removeAjaxLoader(myGridID);
+            },
+            onError : function(status, e) {
+                alert("데이터 요청에 실패하였습니다.\r\n status : " + status + "\r\nWAS 를 IIS 로 사용하는 경우 json 확장자가 web.config 의 handler 에 등록되었는지 확인하십시오.");
+                // 로더 제거
+                AUIGrid.removeAjaxLoader(myGridID);
+            }
+        });
+     };
+
+</script>
+</head>
+<body>
+
+    <!-- 실제 개발시 style 모두 지워주세요 (style 퍼블용 preview 입니다.) (가로사이즈 800px)-->
+
+	<div class="modal_bg" style="display:block; position:fixed;top:0;left:0;right:0;bottom:0;z-index:10; background:rgba(0, 0, 0, .43);"></div> <!-- modal 배경 -->
+
+    <div tabindex="-1" role="dialog" class="ui-dialog ui-corner-all ui-widget ui-widget-content ui-front" aria-describedby="readPop" aria-labelledby="ui-id-1" style="width:800px; height:520px; top:170px; left:30%; visibility: visible;">
+        <div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix">
+            <span id="ui-id-1" class="ui-dialog-title">&nbsp;</span>
+            <button type="button" class="ui-button ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-close" title="Close">
+            <span class="ui-button-icon ui-icon ui-icon-closethick"></span>
+            <span class="ui-button-icon-space"> </span>Close</button>
+        </div>
+            
+        <div id="readPop" class="ajaxDialog ui-dialog-content ui-widget-content">
+
+        <!-- 타사제품 조회 -->
+        <div class="popWrap mideum modal_wrap h520" data-popup="modalAgencyViews">
+            <header>
+                <h3>타사제품 조회</h3>
+            </header>  
+
+            <!-- popCon -->
+            <div class="popCon">
+                <div class="popTitArea">
+                    <h3>타사제품 조회</h3>
+        
+                    <div class="popBtnArea">
+                        <!--<button type="button" name="" class="inquBtn">저장</button>-->
+                        <button type="button" name="" class="comBtn" id="modalCloseBtn">닫기</button>                   
+                    </div>
+                </div>
+
+                <div class="inquiryBox">
+                    <dl>
+                        <dt>제품</dt>
+                        <dd>
+                            <div class="formWrap">
+                                <input type="text" id="inp_product01" class="inp w120 mr10" value="" name="" placeholder="제품코드">
+                                <input type="text" id="inp_product02" class="inp w160 mr7" value="프리미엄 200" name="" placeholder="제품명">
+
+                                <button type="button" name="" class="comBtn" id="inp_name01">조회</button>
+                            </div>
+                        </dd>
+                    </dl>
+                </div>
+
+                <p class="numState">
+                    <em>총 <span class="pColor01 fb">100</span></em> 건 이 조회되었습니다.
+                </p>
+
+                <div class="girdBox h350">
+                    <div id="grid_wrap"></div>
+                </div>
+
+                
+            </div>
+            <!-- popCon -->
+        </div>
+        <!--// 타사제품 조회 -->
+    </div>
+</div>
+</body>
+</html>

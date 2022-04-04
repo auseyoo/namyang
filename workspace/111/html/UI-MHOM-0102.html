@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템</title>
+<link rel="stylesheet" type="text/css" href="../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/m_layout.css"/>
+<link rel="stylesheet" type="text/css" href="../css/main.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker_range_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+</head>
+<body>
+	<div class="allWrap">
+		<header>
+            <!-- <h1><a href="#" class="logo" title="남양유업"></a></h1> -->
+
+            <div class="logInfo">
+                <ul>
+                    <li><span class="user">김 남양</span> 님,<br/>을 환영합니다.</li>
+                    <!-- <li>최근접속일시 : <span class="date">2021.12.10 09:30:00</span></li> -->
+                    <li><a href="#" class="logBtn"><span>로그아웃</span></a></li>
+                    <!-- <li><a href="#" class="logBtn"><span>로그인</span></a></li> -->
+                </ul>
+            </div>
+		</header>
+
+		<div class="contentWrap">
+            <!-- lnb -->
+			<div class="lnbWrap">
+                <!-- 검색영역 -->
+                <!-- <div class="leftSearBox">
+                    <input type="text" name="" value="" class="inp type02">
+                    <button type="button" class="searBtn" name="" title="검색하기"></button>
+                </div> -->
+                <!-- 검색영역 -->
+
+                <div class="lnbTabsWrap">
+                    <!-- <ul class="tabs etcMenu">
+                        <li class="active" rel="mtab01"><a href="#" class="allMenu" title="전체메뉴"><span>전체메뉴</span></a></li>
+                        <li class="" rel="mtab02"><a href="#" class="favSearch" title="즐겨찾기"><span>즐겨찾기</span></a></li>
+                    </ul> -->
+
+                    <!-- <a href="#" class="favSearch" title="즐겨찾기"><span>즐겨찾기</span></a> -->
+
+                    <div id="mtab01" class="tabContent lnb" >
+                        <ul>
+                            <li class="depth1 active">
+                                <a href="#" title="기준정보 관리"><span>기준정보 관리</span></a>
+                                <ul class="depth2">
+                                    <li><a href="/std/stdPrdSearch.do">제품 조회</a></li>
+                                    <!-- <li><a href="/std/stdPrdMng.do">표준제품 관리</a></li>
+                                    <li><a href="/std/stdPrdCdMng.do">타사제품코드 관리</a></li>
+                                    <li><a href="/std/stdPchaMng.do">매입처 관리</a></li>
+                                    <li><a href="/std/stdUntpcInfoMng.do">단가정보 관리</a></li> -->
+                                </ul>
+                            </li>
+                            <li class="depth1">
+                                <a href="#" title="주문 관리"><span>주문 관리</span></a>
+                                <ul class="depth2">
+                                    <li><a href="/agn/ordrReg.do">주문 등록</a></li>
+                                    <li><a href="/agn/ordrDcsnDly.do">주문확정/배송 조회</a></li>
+                                    <li><a href="/agn/rtngudList.do">반품/반송 관리</a></li>
+                                    <li><a href="/agn/rtngudReg.do">반품등록</a></li>
+                                    <li><a href="#">학교급식 주문 등록</a></li>
+                                    <li><a href="#">학교급식 주문 조회</a></li>
+                                </ul>
+                            </li>
+                            <li class="depth1">
+                                <a href="#" title="재고 관리"><span>재고 관리</span></a>
+                                <ul class="depth2">
+                                    <li><a href="">재고 관리</a></li>
+                                    <li><a href="">크레이트 반납 관리</a></li>
+                                </ul>
+                            </li>
+                            <li class="depth1">
+                                <a href="#" title="배달 관리"><span>배달 관리</span></a>
+                                <ul class="depth2">
+                                    <li><a href="">배달 관리</a></li>
+                                </ul>
+                            </li>
+                            <li class="depth1">
+                                <a href="#" title="판매 관리"><span>판매 관리</span></a>
+                                <ul class="depth2"><!--style="display:block" -->
+                                    <li><a href="/sale/saleReg.do">판매등록</a></li>
+                                </ul>
+                            </li>
+                            <li class="depth1">
+                                <a href="#" title="커뮤니케이션 관리"><span>커뮤니케이션 관리</span></a>
+                                <ul class="depth2">
+                                    <li><h3>게시판</h3></li>
+                                    <li><a href="/cmmc/notiList.do" class="active">공지사항</a></li>
+                                    <li><a href="">자료실</a></li>
+                                    <li><a href="">알림 내역</a></li>
+                                </ul>
+                            </li>
+                            <li class="depth1">
+                                <a href="#" title="마이페이지"><span>마이페이지</span></a>
+                                <ul class="depth2">
+                                    <li><h3>정보 관리</h3></li>
+                                    <li><a href="/myp/myInfoSearch.do">내 정보 조회</a></li>
+                                    <li><a href="/myp/cdtlSearch.do">여신 조회</a></li>
+                                    <li><a href="">지원 조회</a></li>
+                                    <li><a href="">환경설정</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div id="mtab02" class="tabContent favor" style="display: none;">
+                        <ul>
+                            <li><a href="#">거래처 관리</a></li>
+                            <li><a href="#">거래처별 단가 관리</a></li>
+                            <li><a href="#">직원 관리</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- <a href="#" class="sideBtn"></a> -->
+			</div>
+            <!-- lnb -->
+			
+            <!-- content -->
+            <div class="rContentBox main">
+                <div class="mContent">
+					
+
+					
+                </div>
+            </div>
+            <!-- content -->
+		</div>
+	</div>
+</body>
+</html>

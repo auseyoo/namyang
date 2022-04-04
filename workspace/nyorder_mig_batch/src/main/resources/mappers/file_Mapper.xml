@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 인터페이스의 패키지 경로와 클래스명 -->
+<mapper namespace="com.namyang.common.mapper.FileMapper">
+	
+	<!-- 수행할 sql -->
+    <insert id="deleteFileName" parameterType="java.util.Map">
+	<![CDATA[
+		DELETE FILE_LIST 
+	]]>
+    </insert>
+
+
+	<!-- 수행할 sql -->
+    <insert id="insertFileName" parameterType="java.util.Map">
+    	DECLARE @MIGL_SEQ     numeric(13)
+		SET @MIGL_SEQ = NEXT VALUE FOR NY_ORDER.dbo.SQ_MIG
+		
+    	MERGE INTO NY_ORDER.dbo.T_MIG_FILE A
+		USING(
+			SELECT 	 #{AGEN_CD} AS AGEN_CD						
+		) B
+		ON (
+			A.AGEN_CD = B.AGEN_CD			
+		)
+		WHEN	NOT MATCHED THEN
+			INSERT (
+				MIG_SEQ
+				, AGEN_CD
+				, AGEN_SEQ
+				, SALE_CD
+				, UPD_YN
+				, MIG_YN
+				, REG_DTM
+				, REG_SEQ
+				, MIG_STAT_DTM			
+				)
+			VALUES(
+				@MIGL_SEQ
+				, #{AGEN_CD}
+				, (SELECT AGEN_SEQ FROM NY_ORDER.dbo.T_AGEN_MST WHERE AGEN_CD = #{AGEN_CD})
+				, (SELECT SALE_CD FROM NY_ORDER.dbo.T_AGEN_MST WHERE AGEN_CD = #{AGEN_CD})
+				, 'N'
+				, 'N'
+				, CURRENT_TIMESTAMP
+				, 0
+				, CURRENT_TIMESTAMP
+				);	
+	
+    </insert>
+    
+    <select id="baFileInsertProc" statementType="CALLABLE" parameterType="hashmap"  resultType="hashmap">
+		{call NY_ORDER.dbo.P_BA_MIG(        
+			#{AGEN_CD, mode=IN,  jdbcType=VARCHAR},
+		    #{RESULT, mode=OUT,  jdbcType=VARCHAR}
+			)
+		}
+    </select >
+    
+    <select id="siFileInsertProc" statementType="CALLABLE" parameterType="hashmap"  resultType="hashmap">
+		{call NY_ORDER.dbo.P_SI_MIG(        
+			#{AGEN_CD, mode=IN,  jdbcType=VARCHAR},
+		    #{RESULT, mode=OUT,  jdbcType=VARCHAR}
+			)
+		}
+    </select >
+    
+    <select id="selectFileList"  parameterType="hashmap"  resultType="hashmap">
+		SELECT tmf.MIG_SEQ, tmf.AGEN_CD, tmf.UPD_YN, tmf.UPD_RMK, tmf.MIG_YN, tmf.MIG_RMK, tmf.REG_DTM, tmf.REG_SEQ, tmf.MIG_STAT_DTM, tmf.MIG_END_DTM
+			, tam.BIZ_NO, tam.SALE_CD 
+		FROM NY_ORDER.dbo.T_MIG_FILE tmf
+			, NY_ORDER.dbo.T_AGEN_MST tam
+		WHERE tam.AGEN_CD = tmf.AGEN_CD
+			AND (tmf.MIG_YN = 'N' OR tmf.UPD_YN = 'N')
+		ORDER BY tmf.AGEN_CD	
+		
+    </select >
+    
+    <select id="createFileLink"  parameterType="hashmap"  resultType="hashmap">
+		EXEC master.dbo.sp_addlinkedserver  
+			@server = #{fileName} , 
+			@srvproduct = 'Access' , 
+			@provider = 'Microsoft.ACE.OLEDB.12.0',  
+		    @datasrc =  #{filePath},   
+		    @location =  'PAMS21'   
+		    ;
+    </select >
+    
+    <update id="dropFileLink"  parameterType="hashmap"  >
+		EXEC master.dbo.sp_dropserver 
+			@server = #{fileName}, 
+			@droplogins = 'droplogins'
+		    ;
+    </update >
+    
+   	<update id="updMigFile"  parameterType="hashmap"  >
+		UPDATE NY_ORDER.dbo.T_MIG_FILE
+		SET MIG_YN = #{migYn}
+			, MIG_RMK = #{migRmk}
+			, MIG_END_DTM = CURRENT_TIMESTAMP
+		WHERE MIG_SEQ = #{MIG_SEQ}
+    </update >
+    
+    <update id="updUpdMigFile"  parameterType="hashmap"  >
+		UPDATE NY_ORDER.dbo.T_MIG_FILE
+		SET UPD_YN = #{UPD_YN}
+			,UPD_RMK = #{UPD_RMK}
+		WHERE MIG_SEQ = #{MIG_SEQ}
+    </update >
+    
+    <update id="updMigFileStatDtm"  parameterType="hashmap"  >
+		UPDATE NY_ORDER.dbo.T_MIG_FILE
+		SET  MIG_STAT_DTM = CURRENT_TIMESTAMP
+		WHERE MIG_SEQ = #{MIG_SEQ}
+    </update >
+    
+    <select id="createFileLinkLogin"  parameterType="hashmap"  resultType="hashmap">
+		EXEC sp_addlinkedsrvlogin	
+			@rmtsrvname = #{fileName},	
+			@useself = FALSE,			
+			@locallogin = NULL,		
+			@rmtuser = Admin,		
+			@rmtpassword = NULL
+		    ;
+    </select >
+    
+    
+    
+</mapper>

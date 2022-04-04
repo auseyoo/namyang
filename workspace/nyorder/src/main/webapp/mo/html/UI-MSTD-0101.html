@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, target-densitydpi=medium-dpi" />
+<meta name="format-detection" content="telephone=no, address=no, email=no" />
+<title>MOBILE 남양유업 대리점 주문시스템</title>
+<link rel="stylesheet" type="text/css" href="../../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/m_layout.css"/>
+<script type="text/javascript" src="../../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../../js/datepicker_range_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+</head>
+<body>
+	<div class="subAllWrap">
+		<header>
+			<a href="#" class="pre"></a>
+			<h2>제품조회</h2>
+
+			<div class="allMenu">
+				<div class="box">
+					<div class="allBtn">
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+				</div>
+			</div>
+		</header>
+
+		<nav>
+			<div class="logInfo">
+				<ul>
+					<li><span class="user">김 남양</span> 님,<br/>을 환영합니다.</li>
+					<!-- <li><a href="#" class="logBtn"><span>로그아웃</span></a></li> -->
+					<li><a href="#" class="logBtn"><span>로그인</span></a></li>
+				</ul>
+			</div>
+
+			<!-- lnb -->
+			<div class="lnbWrap">
+				<div class="tabContent lnb" >
+					<ul>
+						<li class="depth1 active">
+							<a href="#" title="기준정보 관리"><span>기준정보 관리</span></a>
+							<ul class="depth2">
+								<li><a href="/std/stdPrdSearch.do">제품 조회</a></li>
+							</ul>
+						</li>
+						<li class="depth1">
+							<a href="#" title="주문 관리"><span>주문 관리</span></a>
+							<ul class="depth2">
+								<li><a href="/agn/ordrReg.do">주문 등록</a></li>
+								<li><a href="/agn/ordrDcsnDly.do">주문확정/배송 조회</a></li>
+								<li><a href="/agn/rtngudList.do">반품/반송 관리</a></li>
+								<li><a href="/agn/rtngudReg.do">반품등록</a></li>
+								<li><a href="#">학교급식 주문 등록</a></li>
+								<li><a href="#">학교급식 주문 조회</a></li>
+							</ul>
+						</li>
+						<li class="depth1">
+							<a href="#" title="재고 관리"><span>재고 관리</span></a>
+							<ul class="depth2">
+								<li><a href="">재고 관리</a></li>
+								<li><a href="">크레이트 반납 관리</a></li>
+							</ul>
+						</li>
+						<li class="depth1">
+							<a href="#" title="배달 관리"><span>배달 관리</span></a>
+							<ul class="depth2">
+								<li><a href="">배달 관리</a></li>
+							</ul>
+						</li>
+						<li class="depth1">
+							<a href="#" title="판매 관리"><span>판매 관리</span></a>
+							<ul class="depth2"><!--style="display:block" -->
+								<li><a href="/sale/saleReg.do">판매등록</a></li>
+							</ul>
+						</li>
+						<li class="depth1">
+							<a href="#" title="커뮤니케이션 관리"><span>커뮤니케이션 관리</span></a>
+							<ul class="depth2">
+								<li><a href="">게시판</a></li>
+								<li><a href="/cmmc/notiList.do" class="active">공지사항</a></li>
+								<li><a href="">자료실</a></li>
+								<li><a href="">알림 내역</a></li>
+							</ul>
+						</li>
+						<li class="depth1">
+							<a href="#" title="마이페이지"><span>마이페이지</span></a>
+							<ul class="depth2">
+								<li><a href="">정보 관리</a></li>
+								<li><a href="/myp/myInfoSearch.do">내 정보 조회</a></li>
+								<li><a href="/myp/cdtlSearch.do">여신 조회</a></li>
+								<li><a href="">지원 조회</a></li>
+								<li><a href="">환경설정</a></li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+			</div>
+            <!-- lnb -->
+		</nav>
+
+		<div class="contents">
+			<!-- 조회 -->
+			<div class="inquiryBox">
+				<div class="inquiry">
+					<a href="#" class="condit down">조건</a>
+
+					<div class="btnGroup">
+						<button type="button" name="" class="comBtn">조회</button>
+						<button type="button" name="" class="inquBtn">저장</button>
+					</div>
+				</div>
+
+				<div class="condition">
+					<dl>
+						<dt>자재 그룹</dt>
+						<dd>
+							<select name="" class="sel">
+								<option>전체</option>
+								<option>제목</option>
+								<option>내용</option>
+								<option>제목+내용</option>
+							</select>
+						</dd>
+					</dl>
+					<dl>
+						<dt>대분류</dt>
+						<dd>
+							<select name="" class="sel">
+								<option>전체</option>
+								<option>제목</option>
+								<option>내용</option>
+								<option>제목+내용</option>
+							</select>
+						</dd>
+					</dl>
+					<dl>
+						<dt>중분류</dt>
+						<dd>
+							<select name="" class="sel">
+								<option>전체</option>
+								<option>제목</option>
+								<option>내용</option>
+								<option>제목+내용</option>
+							</select>
+						</dd>
+					</dl>
+					<dl>
+						<dt>소분류</dt>
+						<dd>
+							<select name="" class="sel">
+								<option>전체</option>
+								<option>제목</option>
+								<option>내용</option>
+								<option>제목+내용</option>
+							</select>
+						</dd>
+					</dl>
+					<dl>
+						<dt>세분류</dt>
+						<dd>
+							<input type="text" id="" class="inp" value="" placeholder="제품코드">
+							<input type="text" id="" class="inp" value="" placeholder="제품명">
+						</dd>
+					</dl>
+				</div>
+
+				<div class="inState">
+					<ul>
+						<li>전체</li>
+						<li>A</li>
+						<li>a</li>
+						<li>가</li>
+						<li>GT 프리미엄 200</li>
+					</ul>
+				</div>
+			</div>
+			<!-- 조회 -->
+
+			<div class="tabsWrap">
+				<ul class="tabs">
+					<li class="active" rel="tab01">전체</li>
+					<li rel="tab02">제품</li>
+					<li rel="tab03">크레이트</li>
+					<li rel="tab04">판촉물</li>
+				</ul>
+
+				<!-- tabContent 전체 -->
+				<div id="tab01" class="tabContent">
+					<p class="numState">
+						총 <span class="pColor01 fb">24</span> 건 이 조회되었습니다.
+					</p>
+
+					<div class="tblWrap">
+                        <table class="tbl">
+                            <caption>전체 상세</caption>
+                            <colgroup>
+                                <col style="width:10%;">
+								<col style="width:12%;">
+                                <col>
+                                <col style="width:15%;">
+                                <col style="width:15%;">
+                            </colgroup>
+							<thead>
+								<tr>
+                                    <th scope="col">No</th>
+									<th scope="col">표준<br/>제품</th>
+									<th scope="col">[제품코드]<br/>제품명</th>
+									<th scope="col">자재유형</th>
+									<th scope="col">상태</th>
+                                </tr>
+							</thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>
+										<input type="checkbox" id="ch01" class="type01" checked=""><label for="ch01"></label>
+                                    </td>
+                                    <td class="al">
+                                        [0000001]<br/> SAP 제품명 1
+                                    </td>
+                                    <td>
+                                        제품
+                                    </td>
+									<td>
+                                        사용
+                                    </td>
+                                </tr>
+								<tr>
+                                    <td>2</td>
+                                    <td>
+										<input type="checkbox" id="ch02" class="type01" checked=""><label for="ch02"></label>
+                                    </td>
+                                    <td class="al">
+                                        [0000001]<br/> SAP 제품명 1
+                                    </td>
+                                    <td>
+                                        제품
+                                    </td>
+									<td>
+                                        사용
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+				</div>
+				<!-- //tabContent 전체 -->
+
+				<!-- tabContent 제품 -->
+				<div id="tab02" class="tabContent" style="display:none;">
+					<p class="numState">
+						총 <span class="pColor01 fb">114</span> 건 이 조회되었습니다.
+					</p>
+
+					<div class="tblWrap">
+                        <table class="tbl">
+                            <caption>제품 상세</caption>
+                            <colgroup>
+                                <col style="width:10%;">
+								<col style="width:12%;">
+                                <col>
+                                <col style="width:15%;">
+                                <col style="width:15%;">
+                            </colgroup>
+							<thead>
+								<tr>
+                                    <th scope="col">No</th>
+									<th scope="col">표준<br/>제품</th>
+									<th scope="col">[제품코드]<br/>제품명</th>
+									<th scope="col">자재유형</th>
+									<th scope="col">상태</th>
+                                </tr>
+							</thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>
+										<input type="checkbox" id="ch01" class="type01" checked=""><label for="ch01"></label>
+                                    </td>
+                                    <td class="al">
+                                        [0000001]<br/> SAP 제품명 2
+                                    </td>
+                                    <td>
+                                        제품
+                                    </td>
+									<td>
+                                        사용
+                                    </td>
+                                </tr>
+								<tr>
+                                    <td>2</td>
+                                    <td>
+										<input type="checkbox" id="ch02" class="type01" checked=""><label for="ch02"></label>
+                                    </td>
+                                    <td class="al">
+                                        [0000001]<br/> SAP 제품명 2
+                                    </td>
+                                    <td>
+                                        제품
+                                    </td>
+									<td>
+                                        사용
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+				</div>
+				<!-- //tabContent 제품 -->
+
+				<!-- tabContent 크레이트 -->
+				<div id="tab03" class="tabContent" style="display:none;">
+					<p class="numState">
+						총 <span class="pColor01 fb">344</span> 건 이 조회되었습니다.
+					</p>
+
+					<div class="tblWrap">
+                        <table class="tbl">
+                            <caption>크레이트 상세</caption>
+                            <colgroup>
+                                <col style="width:10%;">
+								<col style="width:12%;">
+                                <col>
+                                <col style="width:15%;">
+                                <col style="width:15%;">
+                            </colgroup>
+							<thead>
+								<tr>
+                                    <th scope="col">No</th>
+									<th scope="col">표준<br/>제품</th>
+									<th scope="col">[제품코드]<br/>제품명</th>
+									<th scope="col">자재유형</th>
+									<th scope="col">상태</th>
+                                </tr>
+							</thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>
+										<input type="checkbox" id="ch01" class="type01" checked=""><label for="ch01"></label>
+                                    </td>
+                                    <td class="al">
+                                        [0000001]<br/> SAP 제품명 3
+                                    </td>
+                                    <td>
+                                        제품
+                                    </td>
+									<td>
+                                        사용
+                                    </td>
+                                </tr>
+								<tr>
+                                    <td>2</td>
+                                    <td>
+										<input type="checkbox" id="ch02" class="type01" checked=""><label for="ch02"></label>
+                                    </td>
+                                    <td class="al">
+                                        [0000001]<br/> SAP 제품명 3
+                                    </td>
+                                    <td>
+                                        제품
+                                    </td>
+									<td>
+                                        사용
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+				</div>
+				<!-- //tabContent 크레이트 -->
+
+				<!-- tabContent 판촉물 -->
+				<div id="tab04" class="tabContent" style="display:none;">
+					<p class="numState">
+						총 <span class="pColor01 fb">83311</span> 건 이 조회되었습니다.
+					</p>
+
+					<div class="tblWrap">
+                        <table class="tbl">
+                            <caption>판촉물 상세</caption>
+                            <colgroup>
+                                <col style="width:10%;">
+								<col style="width:12%;">
+                                <col>
+                                <col style="width:15%;">
+                                <col style="width:15%;">
+                            </colgroup>
+							<thead>
+								<tr>
+                                    <th scope="col">No</th>
+									<th scope="col">표준<br/>제품</th>
+									<th scope="col">[제품코드]<br/>제품명</th>
+									<th scope="col">자재유형</th>
+									<th scope="col">상태</th>
+                                </tr>
+							</thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>
+										<input type="checkbox" id="ch01" class="type01" checked=""><label for="ch01"></label>
+                                    </td>
+                                    <td class="al">
+                                        [0000001]<br/> SAP 제품명 4
+                                    </td>
+                                    <td>
+                                        제품
+                                    </td>
+									<td>
+                                        사용
+                                    </td>
+                                </tr>
+								<tr>
+                                    <td>2</td>
+                                    <td>
+										<input type="checkbox" id="ch02" class="type01" checked=""><label for="ch02"></label>
+                                    </td>
+                                    <td class="al">
+                                        [0000001]<br/> SAP 제품명 4
+                                    </td>
+                                    <td>
+                                        제품
+                                    </td>
+									<td>
+                                        사용
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+				</div>
+				<!-- //tabContent 판촉물 -->
+			</div>
+		</div>
+
+		<div class="boMenu">
+			<ul>
+				<li><a href="#"></a><span>홈</span></li>
+				<li><a href="#"></a><span>주문등록</span></li>
+				<li><a href="#"></a><span>카메라</span></li>
+				<li><a href="#"></a><span>주문조회</span></li>
+				<li><a href="#"></a><span>내정보조회</span></li>
+			</ul>
+		</div>
+	</div>
+</body>
+</html>

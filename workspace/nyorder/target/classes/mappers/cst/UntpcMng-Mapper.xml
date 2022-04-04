@@ -1,0 +1,937 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.cst.dao.UntpcMngMapper">
+
+	<select id="selectAgenAreaList" parameterType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO" resultType="com.namyang.nyorder.cst.vo.AgenAreaVO">
+		SELECT
+				taa.AREA_SEQ,
+				taa.AREA_NM,
+				taa.AGEN_AREA_CD,
+				taa.AGEN_SEQ
+		FROM    T_AGEN_AREA	taa
+		<if test="((@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdNm)) or (@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdDtlCd))) and (@com.namyang.nyorder.util.MyBatisCmpr@isEmpty(areaNm))">
+			JOIN
+			(
+				SELECT U.AREA_SEQ
+				<choose>
+					<when test="mrgnPrdCd == 'empl'">
+						FROM T_AGEN_PRD_UNTPC U
+					</when>
+					<when test="mrgnPrdCd == 'cst'">
+						FROM T_CST_PRD_SPPRC U
+					</when>
+				</choose>
+				JOIN 
+				(
+						SELECT 
+							tpd.PRD_DTL_SEQ,
+							tpd.PRD_SEQ,
+							tpd.PRD_DTL_CD,
+							ISNULL(tpm.PRD_NM, ISNULL(tpd.STD_PRD_NM, tpd.SHTN_NM)) AS PRD_NM,
+							tpd.AGEN_SEQ
+						FROM T_PRD_DTL tpd
+						LEFT
+						JOIN T_PRD_MST tpm
+						ON tpm.PRD_SEQ = tpd.PRD_SEQ
+						WHERE 	1=1
+						AND 	tpd.AGEN_SEQ = #{agenSeq}
+						AND 	tpm.USE_YN = 'Y'
+						<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdNm)">
+							AND 	tpm.PRD_NM LIKE '%'+#{prdNm}+'%' OR tpd.STD_PRD_NM LIKE '%'+#{prdNm}+'%' OR tpd.SHTN_NM LIKE '%'+#{prdNm}+'%'
+						</if>
+						<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdDtlCd)">
+							AND 	tpd.PRD_DTL_CD LIKE '%'+#{prdDtlCd}+'%'
+						</if>
+				) AS A
+				ON 	A.PRD_DTL_SEQ = U.PRD_DTL_SEQ
+				AND U.LAST_YN = 'Y'
+				GROUP BY AREA_SEQ
+			) AS B
+			ON B.AREA_SEQ = taa.AREA_SEQ
+		</if>
+		WHERE   1=1
+		AND		AGEN_SEQ = #{agenSeq}
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(areaNm)">
+			AND	AREA_NM LIKE '%'+#{areaNm}+'%'
+		</if>
+	</select>
+
+
+	<select id="selectAgenUntpcList" parameterType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO" resultType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO">
+		/* 지역별 판매원 단가 목록 조회 */
+
+		SELECT 
+			B.AGEN_SEQ,
+			B.AREA_SEQ,
+			B.AREA_PRD_SEQ,
+			ISNULL(B.UNTPC, M.EMPL_UNTPC) AS UNTPC,
+			CONVERT(INT , ISNULL(B.UNTPC, M.EMPL_UNTPC) - ( ISNULL(B.UNTPC, M.EMPL_UNTPC) / 1.1) * 0.1) AS SPPRC,
+			CONVERT(INT , (ISNULL(B.UNTPC, M.EMPL_UNTPC) / 1.1) * 0.1) AS VAT_CT,
+			M.PRD_NM,
+			M.PRD_DTL_CD,
+			M.PRD_SEQ,
+			M.PRD_DTL_SEQ,
+			M.PUCH_SEQ,
+			M.PCHA_UNTPC,
+			CONVERT(NUMERIC(13,1), ROUND(((B.UNTPC - M.PCHA_UNTPC)/B.UNTPC) * 100 , 1)) AS MRGN_RATE,
+			CONVERT(INT , B.UNTPC - M.PCHA_UNTPC) AS MRGN_CT
+		FROM 	
+		(
+			SELECT
+				ISNULL(tpm.PRD_NM, ISNULL(tpd.STD_PRD_NM, tpd.SHTN_NM)) AS PRD_NM,
+				tpd.PRD_DTL_CD,
+				tpd.PRD_SEQ,
+				tpd.PRD_DTL_SEQ,
+				tpd.PUCH_SEQ,
+				ISNULL(tsps.UNTPC, tpm.SPPRC + ISNULL(tpm.VAT_SPPRC , 0)) AS PCHA_UNTPC,
+				tsps.EMPL_UNTPC,
+				tpd.PRD_ORDR
+			FROM 	T_PRD_DTL tpd
+			LEFT
+			JOIN 	T_PRD_MST tpm
+			ON   	tpm.PRD_SEQ = tpd.PRD_SEQ
+			LEFT
+			JOIN 	T_STDR_PRD_SPPRC tsps
+			ON 		tsps.PRD_DTL_SEQ = tpd.PRD_DTL_SEQ
+			AND 	tsps.LAST_YN = 'Y'
+			WHERE  	1=1
+			AND 	tpm.USE_YN = 'Y'
+			AND 	tpd.AGEN_SEQ = #{agenSeq}
+		) AS M
+		JOIN
+		(
+				SELECT 
+					tapu.AREA_PRD_SEQ,
+					tapu.PRD_DTL_SEQ,
+					tapu.UNTPC,
+					tapu.AGEN_SEQ,
+					tapu.AREA_SEQ
+				FROM 	T_AGEN_PRD_UNTPC tapu
+				WHERE	1=1
+				AND 	tapu.AGEN_SEQ = #{agenSeq}
+				AND 	tapu.AREA_SEQ = #{areaSeq}
+				AND 	tapu.LAST_YN = 'Y'
+				AND 	tapu.USE_YN = 'Y'
+		) AS B
+		ON 		B.PRD_DTL_SEQ = M.PRD_DTL_SEQ
+		WHERE 	1=1
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdNm)">
+			AND M.PRD_NM LIKE '%'+#{prdNm}+'%'
+		</if>
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdDtlCd)">
+			AND M.PRD_DTL_CD LIKE '%'+#{prdDtlCd}+'%'
+		</if>
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(targetAreaSeq)">
+			AND M.PRD_DTL_SEQ IN (
+				SELECT
+					PRD_DTL_SEQ
+				FROM	T_AGEN_PRD_UNTPC#
+				WHERE	1=1
+				AND 	AGEN_SEQ = #{agenSeq}
+				AND 	AREA_SEQ = #{targetAreaSeq}
+				AND 	USE_YN = 'Y'
+				AND 	LAST_YN = 'Y'
+				GROUP BY PRD_DTL_SEQ
+			)
+		</if>
+		ORDER BY CASE WHEN M.PRD_ORDR IS NULL THEN 999 ELSE M.PRD_ORDR END, M.PRD_DTL_SEQ
+	</select>
+	
+	<select id="selectAgenPrdPopList" parameterType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO" resultType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO">
+		/* 제품 검색 레이어 제품 조회 */
+
+		SELECT
+			tpd.AGEN_SEQ ,
+			tpm.PRD_SEQ,
+			tpd.PRD_DTL_SEQ,
+			tpm.PUCH_SEQ,
+			tpd.PRD_DTL_CD,  
+			ISNULL(tpm.PRD_NM, ISNULL(tpd.STD_PRD_NM, tpd.SHTN_NM)) AS PRD_NM,
+			ISNULL(tsps.UNTPC, tpm.SPPRC + ISNULL(tpm.VAT_SPPRC, 0 )) AS PCHA_UNTPC,
+			ISNULL(tapu.UNTPC, tsps.EMPL_UNTPC) AS EMPL_UNTPC,
+			<if test="mrgnPrdCd == 'empl'">
+				tsps.EMPL_UNTPC AS UNTPC
+			</if>
+			<if test="mrgnPrdCd == 'cst'">
+				tsps.CST_UNTPC AS UNTPC
+			</if>
+		FROM 	T_PRD_DTL tpd
+		LEFT
+		JOIN 	T_PRD_MST tpm
+			ON 	tpm.PRD_SEQ = tpd.PRD_SEQ 
+			AND tpm.USE_YN = 'Y'
+		LEFT
+		JOIN
+		(
+			SELECT	PUCH_SEQ, PUCH_CD, PUCH_NM, USE_CD
+			FROM	T_AGEN_MJR_PUCH
+			WHERE	USE_CD ='USE'
+			UNION ALL
+			SELECT	PUCH_SEQ, PUCH_CD, PUCH_NM, USE_CD
+			FROM T_AGEN_OTR_PUCH
+			WHERE	USE_CD ='USE'
+		)  P
+		ON	tpm.PUCH_SEQ = P.PUCH_SEQ
+		LEFT
+		JOIN T_COMM_PRD_CLS pc
+			ON	PC.LCLS = tpm.LCLS
+			AND PC.MCLS = tpm.MCLS
+			AND PC.SCLS = tpm.SCLS
+			AND PC.DCLS = tpm.DCLS
+		LEFT
+		JOIN 	T_STDR_PRD_SPPRC tsps
+		ON 		tsps.PRD_DTL_SEQ = tpd.PRD_DTL_SEQ
+		AND 	tsps.LAST_YN = 'Y'
+		LEFT
+		JOIN	T_AGEN_PRD_UNTPC tapu
+		ON		tapu.PRD_DTL_SEQ = tpd.PRD_DTL_SEQ
+		AND 	tapu.AREA_SEQ = #{areaSeq}
+		AND 	tapu.USE_YN = 'Y'
+		AND 	tapu.LAST_YN = 'Y'
+		WHERE	1=1
+		AND  	tpd.USE_YN = 'Y'
+		AND  	tpd.AGEN_SEQ = #{agenSeq}
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdNm) and @com.namyang.nyorder.util.MyBatisCmpr@isEmpty(prdDtlCd)">
+			AND (tpm.PRD_NM LIKE '%'+#{prdNm}+'%' OR tpd.STD_PRD_NM LIKE '%'+#{prdNm}+'%' OR tpd.SHTN_NM LIKE '%'+#{prdNm}+'%')
+		</if>
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdDtlCd) and @com.namyang.nyorder.util.MyBatisCmpr@isEmpty(prdNm)">
+			AND tpd.PRD_DTL_CD LIKE '%'+#{prdDtlCd}+'%'
+		</if>
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdNm) and @com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdDtlCd)">
+			AND ((tpm.PRD_NM LIKE '%'+#{prdNm}+'%' OR tpd.STD_PRD_NM LIKE '%'+#{prdNm}+'%' OR tpd.SHTN_NM LIKE '%'+#{prdNm}+'%') OR tpm.PRD_DTL_SEQ LIKE '%'+#{prdDtlCd}+'%')
+		</if>
+	</select>
+
+	<select id="selectUntpcHisPopList" parameterType="com.namyang.nyorder.cst.vo.UntpcHisVO" resultType="com.namyang.nyorder.cst.vo.UntpcHisVO">
+		/* 지역별 단가 변경 이력 조회 */
+
+		EXEC P_OPEN_KEY
+
+		SELECT
+			M.PRD_DTL_SEQ ,
+			M.PRD_NM,
+			tc.COMM_NM AS UNTPC_CHG_TYPE,
+			M.PRD_DTL_CD,
+			CONVERT(varchar, DecryptByKey(tae.EMPL_NM)) as EMPL_NM,
+			taa.AREA_NM,
+			taa.AREA_SEQ,
+			M.PRD_SEQ,
+			M.AFT_UNTPC,
+			CONVERT(NUMERIC, ISNULL(aftm.MRGN_CT , M.AFT_MRGN_CT)) AS AFT_MRGN_CT,
+			ISNULL(aftm.MRGN_RATE, M.AFT_MRGN_RATE) AS AFT_MRGN_RATE,
+			M.REG_SEQ,
+			M.BEF_UNTPC,
+			CONVERT(NUMERIC, befm.MRGN_CT) AS BEF_MRGN_CT,
+			befm.MRGN_RATE AS BEF_MRGN_RATE,
+			M.APPL_DT,
+			M.APPL_YN,
+			CONVERT(CHAR(19), M.REG_DTM , 20) AS REG_DTM
+		FROM
+		(
+				SELECT
+					C.*,
+					D.PCHA_UNTPC,
+					D.EMPL_UNTPC,
+					D.PRD_NM,
+					D.PRD_DTL_CD,
+					CASE C.UNTPC_TYPE 
+						WHEN 'EMPL' THEN CONVERT(INT, C.AFT_UNTPC - D.PCHA_UNTPC)
+						WHEN 'CST'  THEN CONVERT(INT, C.AFT_UNTPC - D.EMPL_UNTPC)
+					END AS AFT_MRGN_CT,
+					CASE C.UNTPC_TYPE
+						WHEN 'EMPL' THEN CONVERT(NUMERIC(13, 1), ROUND(((C.AFT_UNTPC - D.PCHA_UNTPC)/C.AFT_UNTPC) * 100, 1))
+						WHEN 'EMPL' THEN CONVERT(NUMERIC(13, 1), ROUND(((C.AFT_UNTPC - D.EMPL_UNTPC)/C.AFT_UNTPC) * 100, 1))
+					END AS AFT_MRGN_RATE
+				FROM 
+				(
+						SELECT
+							A.PRD_DTL_SEQ,
+							A.PRD_SEQ,
+							A.AREA_SEQ,
+							A.AGEN_SEQ,
+							A.UNTPC,
+							A.REG_SEQ,
+							A.REG_DTM,
+							A.APPL_DT,
+							B.APPL_DT AS BEF_APPL_DT,
+							A.UNTPC AS AFT_UNTPC,
+							B.UNTPC AS BEF_UNTPC,
+							A.AREA_PRD_SEQ AS SEQ,
+							B.AREA_PRD_SEQ AS BEF_SEQ,
+							'EMPL' AS UNTPC_TYPE,
+							tapc.APPL_YN
+						FROM 
+						(
+							SELECT
+								RANK() OVER(PARTITION BY tapu.PRD_DTL_SEQ, tapu.AREA_SEQ ORDER BY tapu.APPL_DT) AS RNK,
+								UNTPC,
+								PRD_SEQ,
+								tapu.PRD_DTL_SEQ,
+								AREA_SEQ,
+								AREA_PRD_SEQ,
+								AGEN_SEQ,
+								REG_SEQ,
+								REG_DTM,
+								tapu.APPL_DT
+							FROM 	T_AGEN_PRD_UNTPC tapu
+							WHERE 	1=1
+							AND 	tapu.AGEN_SEQ = #{agenSeq}
+						) AS A
+						LEFT
+						JOIN
+						(
+							SELECT
+								RANK() OVER(PARTITION BY tapu.PRD_DTL_SEQ , tapu.AREA_SEQ ORDER BY tapu.APPL_DT) AS RNK,
+								UNTPC,
+								PRD_SEQ,
+								PRD_DTL_SEQ,
+								AREA_SEQ,
+								AREA_PRD_SEQ,
+								AGEN_SEQ,
+								APPL_DT
+							FROM 	T_AGEN_PRD_UNTPC tapu
+							WHERE 	1=1
+							AND 	tapu.AGEN_SEQ = #{agenSeq}
+						) AS B
+						ON 		A.RNK = B.RNK + 1
+						AND 	B.AREA_SEQ = A.AREA_SEQ
+						AND 	B.AGEN_SEQ = A.AGEN_SEQ
+						AND 	B.PRD_DTL_SEQ = A.PRD_DTL_SEQ
+						LEFT
+						JOIN	T_AGEN_PRD_CHG tapc
+						ON 		tapc.CHG_TYPE = 'UNTPC_CHG'
+						AND 	tapc.UNTPC_SEC_CD = 'EMPL'
+						AND 	tapc.APPL_DT = A.APPL_DT
+						AND 	tapc.AGEN_SEQ = A.AGEN_SEQ
+						AND 	tapc.AREA_SEQ = A.AREA_SEQ
+						AND 	tapc.BEF_PRD_DTL_SEQ = A.PRD_DTL_SEQ
+						AND 	tapc.AFT_PRD_DTL_SEQ = A.PRD_DTL_SEQ
+						AND 	tapc.USE_YN = 'Y'
+						WHERE 	tapc.APPL_DT BETWEEN #{startDt} AND #{endDt}
+						UNION
+						ALL
+						SELECT
+							A.PRD_DTL_SEQ,
+							A.PRD_SEQ,
+							A.AREA_SEQ,
+							A.AGEN_SEQ,
+							A.UNTPC,
+							A.REG_SEQ,
+							A.REG_DTM,
+							A.APPL_DT,
+							B.APPL_DT AS BEF_APPL_DT,
+							A.UNTPC AS AFT_UNTPC,
+							B.UNTPC AS BEF_UNTPC,
+							A.CST_SPPRC_SEQ AS SEQ,
+							B.CST_SPPRC_SEQ AS BEF_SEQ,
+							'CST' AS UNTPC_TYPE,
+							tapc.APPL_YN
+						FROM
+						(
+								SELECT
+									RANK() OVER(PARTITION BY tcps.PRD_DTL_SEQ, tcps.AREA_SEQ ORDER BY tcps.APPL_DT) AS RNK,
+									UNTPC,
+									PRD_SEQ,
+									PRD_DTL_SEQ,
+									AGEN_SEQ,
+									AREA_SEQ,
+									APPL_DT,
+									REG_DTM,
+									REG_SEQ,
+									CST_SPPRC_SEQ
+								FROM 	T_CST_PRD_SPPRC tcps
+								WHERE 	1=1
+								AND 	AGEN_SEQ = #{agenSeq}
+						) AS A
+						LEFT
+						JOIN
+						(
+								SELECT
+									RANK() OVER(PARTITION BY tcps2.PRD_DTL_SEQ, tcps2.AREA_SEQ ORDER BY tcps2.APPL_DT) AS RNK,
+									UNTPC,
+									PRD_SEQ,
+									PRD_DTL_SEQ,
+									AREA_SEQ,
+									CST_SPPRC_SEQ,
+									AGEN_SEQ,
+									APPL_DT
+								FROM 	T_CST_PRD_SPPRC tcps2
+								WHERE 	1=1
+								AND 	tcps2.AGEN_SEQ = #{agenSeq}
+						) AS B
+						ON		A.RNK = B.RNK + 1
+						AND 	B.AREA_SEQ = A.AREA_SEQ
+						AND 	B.AGEN_SEQ = A.AGEN_SEQ
+						AND 	B.PRD_DTL_SEQ = A.PRD_DTL_SEQ
+						LEFT
+						JOIN	T_AGEN_PRD_CHG tapc
+						ON 		tapc.CHG_TYPE = 'UNTPC_CHG'
+						AND 	tapc.UNTPC_SEC_CD = 'CST'
+						AND 	tapc.APPL_DT = A.APPL_DT
+						AND 	tapc.AGEN_SEQ = A.AGEN_SEQ
+						AND 	tapc.AREA_SEQ = A.AREA_SEQ
+						AND 	tapc.BEF_PRD_DTL_SEQ = A.PRD_DTL_SEQ
+						AND 	tapc.AFT_PRD_DTL_SEQ = A.PRD_DTL_SEQ
+						AND 	tapc.USE_YN = 'Y'
+						WHERE 	tapc.APPL_DT BETWEEN #{startDt} AND #{endDt}
+				) AS C
+				JOIN
+				(
+						SELECT
+							tapu.AREA_SEQ ,
+							tapu.AGEN_SEQ ,
+							ISNULL(tsps.UNTPC , tpm.SPPRC + tpm.VAT_SPPRC) AS PCHA_UNTPC,
+							ISNULL(tapu.UNTPC, tsps.EMPL_UNTPC) AS EMPL_UNTPC,
+							tpd.PRD_DTL_SEQ,
+							ISNULL(tpm.PRD_NM, ISNULL(tpd.STD_PRD_NM, tpd.SHTN_NM)) AS PRD_NM,
+							tpd.PRD_DTL_CD,
+							tpd.PRD_SEQ
+						FROM 	T_PRD_DTL  tpd
+						LEFT
+						JOIN	T_PRD_MST  tpm
+						ON 		tpm.PRD_SEQ = tpd.PRD_SEQ
+						JOIN 	T_STDR_PRD_SPPRC tsps
+						ON 		tsps.PRD_DTL_SEQ = tpd.PRD_DTL_SEQ
+						AND 	tsps.AGEN_SEQ = tpd.AGEN_SEQ
+						AND 	tsps.LAST_YN = 'Y'
+						JOIN 	T_AGEN_PRD_UNTPC tapu
+						ON 		tapu.PRD_DTL_SEQ = tpd.PRD_DTL_SEQ
+						AND 	tapu.LAST_YN = 'Y'
+						WHERE 	1=1
+						AND 	tpd.AGEN_SEQ = #{agenSeq}
+						AND 	tpm.USE_YN = 'Y'
+						AND 	tpd.USE_YN = 'Y'
+				) AS D
+				ON 	D.PRD_DTL_SEQ = C.PRD_DTL_SEQ
+				AND D.AREA_SEQ = C.AREA_SEQ
+		) AS M
+		LEFT
+		JOIN 	T_AGEN_EMPL tae
+		ON 		tae.AGEN_SEQ = M.AGEN_SEQ
+		AND 	tae.EMPL_SEQ = M.REG_SEQ
+		LEFT 
+		JOIN 	T_AGEN_AREA taa
+		ON 		taa.AGEN_SEQ = M.AGEN_SEQ
+		AND 	taa.AREA_SEQ = M.AREA_SEQ
+		LEFT
+		JOIN	T_MRGN_PRD befm
+		ON 		befm.AREA_SEQ = M.AREA_SEQ
+		AND 	befm.APPL_DT = M.BEF_APPL_DT
+		AND		befm.PRD_DTL_SEQ = M.PRD_DTL_SEQ
+		AND 	befm.MRGN_PRD_CD = M.UNTPC_TYPE
+		LEFT
+		JOIN	T_MRGN_PRD aftm
+		ON		aftm.AREA_SEQ = M.AREA_SEQ
+		AND 	aftm.APPL_DT = M.APPL_DT
+		AND 	aftm.PRD_DTL_SEQ = M.PRD_DTL_SEQ
+		AND 	aftm.MRGN_PRD_CD = M.UNTPC_TYPE
+		JOIN	T_COMM tc
+		ON		tc.COMM_GRP_CD = 'MRGN_PRD_CD'
+		AND 	tc.COMM_CD = M.UNTPC_TYPE
+		WHERE 	1=1
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(areaNm)">
+			AND taa.AREA_NM LIKE '%' + #{areaNm} + '%'
+		</if>
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdDtlCd)">
+			AND M.PRD_DTL_CD LIKE '%' + #{prdDtlCd} + '%'
+		</if>
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdNm)">
+			AND M.PRD_NM LIKE '%' + #{prdNm} + '%'
+		</if>
+		ORDER BY M.REG_DTM DESC
+	</select>
+
+
+	<select id="selectCstAreaUntpcList" parameterType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO" resultType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO">
+		/* 애음자 지역별 단가 조회 */
+
+		SELECT
+			B.AREA_SEQ,
+			B.AGEN_SEQ,
+			B.CST_SPPRC_SEQ,
+			tpd.PRD_DTL_CD,
+			ISNULL(tpm.PRD_NM , ISNULL(tpd.STD_PRD_NM, tpd.SHTN_NM)) PRD_NM,
+			tpd.PRD_DTL_SEQ,
+			tpd.PUCH_SEQ,
+			tapu.UNTPC AS EMPL_UNTPC,
+			ISNULL(tsps.UNTPC, tpm.SPPRC + tpm.VAT_SPPRC) AS PCHA_UNTPC,
+			ISNULL(B.UNTPC, tsps.CST_UNTPC) AS UNTPC,
+			CONVERT(INT , ISNULL(B.UNTPC, tsps.CST_UNTPC) - ( ISNULL(B.UNTPC, tsps.CST_UNTPC) / 1.1) * 0.1) AS SPPRC,
+			CONVERT(INT , (ISNULL(B.UNTPC, tsps.CST_UNTPC) / 1.1) * 0.1) AS VAT_CT,
+			CONVERT(NUMERIC(13, 1) , ROUND(( (tapu.UNTPC - ISNULL(tsps.UNTPC, tpm.SPPRC + ISNULL(tpm.VAT_SPPRC,0)) ) / tapu.UNTPC ) * 100 , 1) ) AS EMPL_MRGN_CT,
+			CONVERT(NUMERIC(13, 1) , ROUND(( (ISNULL(B.UNTPC, tsps.CST_UNTPC) - tapu.UNTPC) / ISNULL(B.UNTPC, tsps.CST_UNTPC)) * 100 , 1)) AS MRGN_RATE,
+			CONVERT(INT, ISNULL(B.UNTPC, tsps.CST_UNTPC) - tapu.UNTPC) AS MRGN_CT
+		FROM 	T_PRD_DTL tpd
+		LEFT
+		JOIN 	T_PRD_MST tpm
+		ON		tpm.PRD_SEQ = tpd.PRD_SEQ
+		AND 	tpm.USE_YN = 'Y'
+		LEFT
+		JOIN	T_STDR_PRD_SPPRC tsps
+		ON		tsps.PRD_DTL_SEQ = tpd.PRD_DTL_SEQ
+		AND 	tsps.LAST_YN = 'Y'
+		JOIN
+		(
+				SELECT 
+					tcps2.PRD_DTL_SEQ,
+					tcps2.AREA_SEQ,
+					tcps2.AGEN_SEQ,
+					tcps2.UNTPC,
+					tcps2.CST_SPPRC_SEQ
+				FROM 	T_CST_PRD_SPPRC tcps2
+				WHERE 	1=1
+				AND 	tcps2.AGEN_SEQ = #{agenSeq}
+				AND 	tcps2.AREA_SEQ = #{areaSeq}
+				AND 	tcps2.LAST_YN = 'Y'
+		) AS B
+		ON 		B.PRD_DTL_SEQ = tpd.PRD_DTL_SEQ
+		LEFT
+		JOIN 	T_AGEN_PRD_UNTPC tapu
+		ON		tapu.PRD_DTL_SEQ = tpd.PRD_DTL_SEQ
+		AND 	tapu.AREA_SEQ = B.AREA_SEQ
+		AND 	tapu.LAST_YN = 'Y'
+		WHERE 	1=1
+		AND 	tpd.USE_YN = 'Y'
+		AND 	tpd.AGEN_SEQ = B.AGEN_SEQ
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdNm)">
+			AND (tpm.PRD_NM LIKE '%'+#{prdNm}+'%' OR tpd.STD_PRD_NM LIKE '%'+#{prdNm}+'%' OR tpd.SHTN_NM LIKE '%'+#{prdNm}+'%')
+		</if>
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prdDtlCd)">
+			AND tpd.PRD_DTL_CD LIKE '%'+#{prdDtlCd}+'%'
+		</if>
+		ORDER BY CASE WHEN tpd.PRD_ORDR IS NULL THEN 999 ELSE tpd.PRD_ORDR END, tpd.PRD_DTL_SEQ
+	</select>
+
+	<update id="saveAgenAreaUntpc" parameterType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO">
+		/* 지역별 판매원 단가 변경 */
+
+		DECLARE @AREA_PRD_SEQ	numeric(13)
+		SET @AREA_PRD_SEQ = NEXT VALUE FOR SQ_AREA_PRD
+
+		MERGE INTO T_AGEN_PRD_UNTPC A
+		USING (
+			SELECT #{chgApplDt} as APPL_DT,
+				   #{prdDtlSeq} as PRD_DTL_SEQ,
+				   #{areaSeq} as AREA_SEQ,
+				   #{agenSeq} as AGEN_SEQ
+		) AS B
+		ON (
+				A.AGEN_SEQ = B.AGEN_SEQ
+			AND A.AREA_SEQ = B.AREA_SEQ
+			AND A.PRD_DTL_SEQ = B.PRD_DTL_SEQ
+			AND A.APPL_DT = B.APPL_DT
+		)
+		WHEN	MATCHED THEN
+			UPDATE SET
+				UNTPC = #{chgUntpc},
+				LAST_YN = #{lastYn}
+		WHEN	NOT MATCHED THEN
+				INSERT 
+				(
+					AREA_PRD_SEQ,
+					AGEN_SEQ,
+					AREA_SEQ,
+					PUCH_SEQ,
+					PRD_SEQ,
+					PRD_DTL_SEQ,
+					UNTPC,
+					APPL_DT,
+					LAST_YN,
+					USE_YN,
+					REG_DTM,
+					REG_SEQ,
+					UPD_DTM,
+					UPD_SEQ
+				) 
+				VALUES
+				(
+					@AREA_PRD_SEQ,
+					#{agenSeq},
+					#{areaSeq},
+					#{puchSeq},
+					#{prdSeq},
+					#{prdDtlSeq},
+					#{chgUntpc},
+					#{chgApplDt},
+					#{lastYn},
+					'Y',
+					CURRENT_TIMESTAMP,
+					#{emplSeq},
+					CURRENT_TIMESTAMP,
+					0
+				);
+	</update>
+
+	<insert id="saveMrgnPrd" parameterType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO">
+		DECLARE @MRGN_PRD_SEQ numeric(13)
+		SET @MRGN_PRD_SEQ = NEXT VALUE FOR SQ_MRGN_PRD
+		
+		MERGE INTO T_MRGN_PRD A
+		USING (
+			SELECT #{areaSeq} as AREA_SEQ,
+				   #{agenSeq} as AGEN_SEQ,
+				   #{prdDtlSeq} as PRD_DTL_SEQ,
+				   #{mrgnPrdCd} as MRGN_PRD_CD,
+				   #{chgApplDt} as APPL_DT
+		) AS B
+		ON (
+				A.AREA_SEQ = B.AREA_SEQ
+			AND A.AGEN_SEQ = B.AGEN_SEQ
+			AND A.PRD_DTL_SEQ = B.PRD_DTL_SEQ
+			AND A.MRGN_PRD_CD = B.MRGN_PRD_CD
+			AND A.APPL_DT = B.APPL_DT
+		)
+		WHEN	MATCHED THEN
+				UPDATE SET
+					LAST_YN = #{lastYn},
+					MRGN_CT = #{chgMrgnCt},
+					MRGN_RATE = #{chgMrgnRate}
+		WHEN 	NOT MATCHED THEN
+				INSERT 
+				(
+					MRGN_PRD_SEQ,
+					AGEN_SEQ,
+					AREA_SEQ,
+					PUCH_SEQ,
+					PRD_SEQ,
+					PRD_DTL_SEQ,
+					MRGN_PRD_CD,
+					MRGN_RATE,
+					MRGN_CT,
+					APPL_DT,
+					LAST_YN,
+					REG_DTM,
+					REG_SEQ
+				)
+				VALUES
+				(	
+					@MRGN_PRD_SEQ,
+					#{agenSeq},
+					#{areaSeq},
+					#{puchSeq},
+					#{prdSeq},
+					#{prdDtlSeq},
+					#{mrgnPrdCd},
+					#{chgMrgnRate},
+					#{chgMrgnCt},
+					#{chgApplDt},
+					#{lastYn},
+					CURRENT_TIMESTAMP,
+					#{emplSeq}
+				);
+
+	</insert>
+
+	<update id="updateAgenAreaUntpcLastYn" parameterType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO">
+		UPDATE
+			<if test="mrgnPrdCd == 'EMPL'">
+				T_AGEN_PRD_UNTPC
+			</if>
+			<if test="mrgnPrdCd == 'CST'">
+				T_CST_PRD_SPPRC
+			</if>
+		SET 
+			LAST_YN = 'N'
+		WHERE
+			AGEN_SEQ = #{agenSeq}
+			AND AREA_SEQ = #{areaSeq}
+			AND PRD_DTL_SEQ = #{prdDtlSeq}
+	</update>
+
+	<update id="removeAreaPrdUntpc" parameterType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO">
+		UPDATE
+		<if test="mrgnPrdCd == 'EMPL'">
+			T_AGEN_PRD_UNTPC
+		</if>
+		<if test="mrgnPrdCd == 'CST'">
+			T_CST_PRD_SPPRC
+		</if>
+		SET 	USE_YN = 'N'
+		WHERE	
+			AREA_SEQ = #{areaSeq}
+			AND AGEN_SEQ = #{agenSeq}
+			AND PRD_DTL_SEQ = #{prdDtlSeq}
+			AND APPL_DT >= FORMAT(CURRENT_TIMESTAMP, 'yyyyMMdd')
+	</update>
+
+	<update id="saveCstAreaUntpc" parameterType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO">
+		/* 애음자 지역단가 저장 */
+
+		DECLARE @CST_SPPRC_SEQ 	numeric(13)
+		SET @CST_SPPRC_SEQ = NEXT VALUE FOR SQ_CST_SPPRC
+
+		MERGE INTO T_CST_PRD_SPPRC A
+		USING (
+			SELECT #{chgApplDt} as APPL_DT,
+				   #{prdDtlSeq} as PRD_DTL_SEQ,
+				   #{areaSeq} as AREA_SEQ,
+				   #{agenSeq} as AGEN_SEQ
+		) AS B
+		ON (
+				A.AGEN_SEQ = B.AGEN_SEQ
+			AND A.AREA_SEQ = B.AREA_SEQ
+			AND A.APPL_DT = B.APPL_DT
+			AND A.PRD_DTL_SEQ = B.PRD_DTL_SEQ	
+		)
+		WHEN 	MATCHED THEN
+			UPDATE SET
+				UNTPC = #{chgUntpc},
+				LAST_YN = #{lastYn}
+		WHEN  	NOT MATCHED THEN
+				INSERT
+				(
+					CST_SPPRC_SEQ,
+					AGEN_SEQ,
+					AREA_SEQ,
+					PUCH_SEQ,
+					PRD_DTL_SEQ,
+					PRD_SEQ,
+					UNTPC,
+					APPL_DT,
+					LAST_YN,
+					USE_YN,
+					REG_DTM,
+					REG_SEQ
+				)
+				VALUES
+				(
+					@CST_SPPRC_SEQ,
+					#{agenSeq},
+					#{areaSeq},
+					#{puchSeq},
+					#{prdDtlSeq},
+					#{prdSeq},
+					#{chgUntpc},
+					#{chgApplDt},
+					#{lastYn},
+					'Y',
+					CURRENT_TIMESTAMP,
+					#{emplSeq}
+				);
+	</update>
+
+	<update id="saveAreaPrdChg" parameterType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO">
+		/* 제품 변경 이력 저장 (단가 변경) */
+		DECLARE @AGEN_PRD_CHG_SEQ	numeric(13)
+		SET @AGEN_PRD_CHG_SEQ = NEXT VALUE FOR SQ_AGEN_PRD_CHG
+
+		MERGE T_AGEN_PRD_CHG A
+		USING (
+			SELECT #{agenSeq} as AGEN_SEQ,
+				   #{areaSeq} as AREA_SEQ,
+				   #{prdDtlSeq} as PRD_DTL_SEQ,
+				   #{chgApplDt} as APPL_DT,
+				   #{mrgnPrdCd} AS UNTPC_SEC_CD,
+				   #{chgType} as CHG_TYPE
+		) AS B
+		ON (
+				A.AGEN_SEQ = B.AGEN_SEQ
+			AND A.AREA_SEQ = B.AREA_SEQ
+			AND A.BEF_PRD_DTL_SEQ = B.PRD_DTL_SEQ
+			AND A.AFT_PRD_DTL_SEQ = B.PRD_DTL_SEQ
+			AND A.APPL_DT = B.APPL_DT
+			AND A.CHG_TYPE = B.CHG_TYPE
+			AND A.UNTPC_SEC_CD = B.UNTPC_SEC_CD
+			AND A.USE_YN = 'Y'
+		)
+		WHEN 	MATCHED AND #{removeYn} = 'Y' AND A.APPL_YN != 'Y' THEN
+				UPDATE SET
+					USE_YN = 'N'
+		WHEN 	NOT MATCHED THEN
+				INSERT
+				(
+					AGEN_PRD_CHG_SEQ,
+					AGEN_SEQ,
+					AREA_SEQ,
+					PUCH_SEQ,
+					BEF_PRD_DTL_SEQ,
+					AFT_PRD_DTL_SEQ,
+					UNTPC_SEC_CD,
+					CHG_TYPE,
+					APPL_DT,
+					APPL_YN,
+					USE_YN,
+					REG_DTM,
+					REG_SEQ
+				)
+				VALUES
+				(
+					@AGEN_PRD_CHG_SEQ,
+					#{agenSeq},
+					#{areaSeq},
+					#{puchSeq},
+					#{befPrdDtlSeq},
+					#{aftPrdDtlSeq},
+					#{mrgnPrdCd},
+					#{chgType},
+					#{chgApplDt},
+					#{lastYn},
+					'Y',
+					CURRENT_TIMESTAMP,
+					#{emplSeq}
+				);
+	</update>
+	
+	<update id="saveAreaPrdBndChg" parameterType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO">
+		/* 제품 변경 이력 저장 (제품 일괄 변경) */
+		DECLARE @AGEN_PRD_CHG_SEQ	numeric(13)
+		SET @AGEN_PRD_CHG_SEQ = NEXT VALUE FOR SQ_AGEN_PRD_CHG
+
+		MERGE T_AGEN_PRD_CHG A
+		USING (
+			SELECT #{agenSeq} as AGEN_SEQ,
+				   #{areaSeq} as AREA_SEQ,
+				   #{befPrdDtlSeq} as BEF_PRD_DTL_SEQ,
+				   #{aftPrdDtlSeq} as AFT_PRD_DTL_SEQ,
+				   #{chgApplDt} as APPL_DT,
+				   #{mrgnPrdCd} AS UNTPC_SEC_CD,
+				   #{chgType} as CHG_TYPE
+		) AS B
+		ON (
+				A.AGEN_SEQ = B.AGEN_SEQ
+			AND A.AREA_SEQ = B.AREA_SEQ
+			AND A.BEF_PRD_DTL_SEQ = B.BEF_PRD_DTL_SEQ
+			AND A.AFT_PRD_DTL_SEQ = B.AFT_PRD_DTL_SEQ
+			AND A.APPL_DT = B.APPL_DT
+			AND A.CHG_TYPE = B.CHG_TYPE
+			AND A.UNTPC_SEC_CD = B.UNTPC_SEC_CD
+			AND A.USE_YN = 'Y'
+		)
+		WHEN 	NOT MATCHED THEN
+				INSERT
+				(
+					AGEN_PRD_CHG_SEQ,
+					AGEN_SEQ,
+					AREA_SEQ,
+					PUCH_SEQ,
+					BEF_PRD_DTL_SEQ,
+					AFT_PRD_DTL_SEQ,
+					UNTPC_SEC_CD,
+					CHG_TYPE,
+					APPL_DT,
+					APPL_YN,
+					USE_YN,
+					REG_DTM,
+					REG_SEQ
+				)
+				VALUES
+				(
+					@AGEN_PRD_CHG_SEQ,
+					#{agenSeq},
+					#{areaSeq},
+					#{puchSeq},
+					#{befPrdDtlSeq},
+					#{aftPrdDtlSeq},
+					#{mrgnPrdCd},
+					#{chgType},
+					#{chgApplDt},
+					#{lastYn},
+					'Y',
+					CURRENT_TIMESTAMP,
+					#{emplSeq}
+				);
+	</update>
+
+	<select id="deleteAbleCheck" parameterType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO" resultType="java.util.Map">
+		/* 제품 삭제 가능 여부 조회 */
+		SELECT	
+			COUNT(*) AS CNT,
+			'PRD' AS RSON
+		FROM 	T_AGEN_PRD_CHG tapc
+		WHERE 	1=1
+		AND 	tapc.CHG_TYPE = 'UNTPC_CHG'
+		AND 	tapc.AGEN_SEQ = #{agenSeq}
+		AND 	tapc.AREA_SEQ = #{areaSeq}
+		AND 	tapc.UNTPC_SEC_CD = #{mrgnPrdCd}
+		AND 	(#{prdDtlSeq} LIKE '%|' + CONVERT(VARCHAR, tapc.BEF_PRD_DTL_SEQ) + '|%' 
+			OR #{prdDtlSeq} LIKE '%|' + CONVERT(VARCHAR, tapc.AFT_PRD_DTL_SEQ) + '|%')
+		AND 	APPL_YN = 'N'
+		AND 	USE_YN = 'Y'
+		UNION
+		ALL
+		SELECT
+			COUNT(*) AS CNT,
+			'CST' AS RSON
+		FROM 	T_CST_PRD tcp
+		WHERE	1=1
+		AND 	tcp.AGEN_SEQ = #{agenSeq}
+		AND 	tcp.AREA_SEQ = #{areaSeq}
+		AND 	tcp.STPG_YN = 'N'
+		AND 	tcp.LAST_YN = 'Y'
+		AND		#{prdDtlSeq} LIKE '%|' + CONVERT(VARCHAR, tcp.PRD_DTL_SEQ) + '|%'
+	</select>
+
+	<update id="updateCstPrdDlvy" parameterType="com.namyang.nyorder.cst.vo.AgenAreaUntpcVO">
+		UPDATE T_CST_PRD_DLVY
+			SET	DLVY_UNTPC = CONVERT(INT , DLVY_QTY * #{chgUntpc}),
+				UPD_DTM = CURRENT_TIMESTAMP,
+				UPD_SEQ = #{emplSeq}
+		WHERE	1=1
+		AND 	PTTN_SEQ IN (
+			SELECT	tcp2.PTTN_SEQ
+			FROM 	T_CST_PTTN tcp2
+			JOIN	T_CST_PRD tcp
+			ON		tcp.PRD_DTL_SEQ = #{prdDtlSeq}
+			AND 	tcp.AGEN_SEQ = #{agenSeq}
+			AND 	tcp.AREA_SEQ = #{areaSeq}
+			AND		tcp.STPG_YN = 'N'
+			AND 	tcp.LAST_YN = 'Y'
+			AND 	(tcp.UNTPC = 0 OR tcp.UNTPC IS NULL)
+			WHERE  	1=1
+			AND 	tcp2.CST_PRD_SEQ = tcp.CST_PRD_SEQ
+			AND 	tcp2.USE_YN = 'Y'
+		)
+		AND 	DLVY_DT > #{chgApplDt}
+	</update>
+
+	<insert id="insertCstUntpcHis" parameterType="com.namyang.nyorder.cst.vo.AgenAreaVO">
+		INSERT INTO T_CST_PRD_HIS
+		(
+			CST_PRD_HIS_SEQ,
+			AGEN_SEQ,
+			AREA_SEQ,
+			CST_SEQ,
+			CST_PRD_SEQ,
+			PUCH_SEQ,
+			PRD_DTL_SEQ,
+			CHG_SEC_CD,
+			RMK,
+			BEF_RMK,
+			AFT_RMK,
+			APPL_STAT_DT,
+			APPL_END_DT,
+			DLVY_DT,
+			REG_DTM,
+			REG_SEQ,
+			UPD_DTM,
+			UPD_SEQ
+		)
+		SELECT
+			NEXT VALUE FOR SQ_CST_PRD_HIS,
+			AGEN_SEQ,
+			AREA_SEQ,
+			CST_SEQ,
+			CST_PRD_SEQ,
+			PUCH_SEQ,
+			PRD_DTL_SEQ,
+			'UNTPC_CHG',
+			'',
+			#{untpc},
+			#{chgUntpc},
+			#{chgApplDt},
+			NULL,
+			#{chgApplDt},
+			CURRENT_TIMESTAMP,
+			#{emplSeq},
+			NULL,
+			0
+		FROM	T_CST_PRD
+		WHERE	1=1
+		AND 	AGEN_SEQ = #{agenSeq}
+		AND 	AREA_SEQ = #{areaSeq}
+		AND 	PRD_DTL_SEQ = #{prdDtlSeq}
+		AND 	(UNTPC = 0 OR UNTPC IS NULL)
+		AND 	LAST_YN = 'Y'
+		AND 	STPG_YN = 'N'
+	</insert>
+</mapper>

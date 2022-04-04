@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.cst.dao.CstRecpNdBilctMapper">
+	<select id="selectRecpTargetList" parameterType="com.namyang.nyorder.cst.vo.CstRecpNdBilctVO" resultType="com.namyang.nyorder.cst.vo.CstRecpNdBilctVO">
+		EXEC P_OPEN_KEY
+		SELECT
+			CB.CST_BILCT_SEQ,
+			CM.AGEN_SEQ,
+			CM.AREA_SEQ,
+			CM.CST_SEQ,
+			CM.CST_AGEN_CD,
+			CONVERT(varchar, DecryptByKey(CM.CST_NM)) as CST_NM,
+			CM.DLV_ADDR1,
+			CONVERT(varchar, DecryptByKey(CM.DLV_ADDR2)) as DLV_ADDR2,
+			CM.DLV_ADDR1 +' '+ CONVERT(varchar, DecryptByKey(CM.DLV_ADDR2)) as FULL_ADDR,
+			NY_ORDER.dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(CM.MOB_NO ))) as MOB_NO,
+			CB.RPMY_MONTH ,
+			CB.RQEST_CT,
+			CB.BILCT_MTH,
+			(SELECT T_COMM.COMM_NM FROM T_COMM WHERE COMM_GRP_CD ='BILCT_MTH' AND COMM_CD = CB.BILCT_MTH) AS BILCT_MTH_NM
+		FROM
+			T_CST_BILCT CB
+		INNER JOIN
+			T_CST_MST CM
+			ON CM.CST_SEQ = CB.CST_SEQ
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(bilctMth)">
+				AND CB.BILCT_MTH = #{bilctMth}
+			</if>
+		WHERE
+			CB.RPMY_MONTH = REPLACE(#{rpmyMonth},'-','')
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(areaSeq)">
+				AND CM.AREA_SEQ = #{areaSeq}
+			</if>
+			<choose>
+				<when test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(schType)">
+					<choose>
+						<when test="schType == 'CODE'">
+							AND CM.CST_AGEN_CD LIKE '%' + #{schTxt} + '%'
+						</when>
+						<when test="schType == 'NM'">
+							AND CONVERT(varchar, DecryptByKey(CM.CST_NM)) like '%'+#{schTxt}+'%'
+						</when>
+						<when test="schType == 'ADDR'">
+							AND (CM.DLV_ADDR1 + CONVERT(varchar, DecryptByKey(CM.DLV_ADDR2))) like '%'+#{schTxt}+'%'
+						</when>
+						<when test="schType == 'MOBNO'">
+							AND CONVERT(varchar, DecryptByKey(CM.MOB_NO)) like '%'+#{schTxt}+'%'
+						</when>
+					</choose>
+				</when>
+				<otherwise>
+					<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(schTxt)">
+					AND (
+							CM.CST_AGEN_CD LIKE '%' + #{schTxt} + '%'
+						OR
+							CONVERT(varchar, DecryptByKey(CM.CST_NM)) like '%'+#{schTxt}+'%'
+						OR
+							(CM.DLV_ADDR1 + CONVERT(varchar, DecryptByKey(CM.DLV_ADDR2))) like '%'+#{schTxt}+'%'
+						OR
+							CONVERT(varchar, DecryptByKey(CM.MOB_NO)) like '%'+#{schTxt}+'%'
+					)
+					</if>
+				</otherwise>
+			</choose>
+	</select>
+</mapper>

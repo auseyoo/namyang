@@ -1,0 +1,715 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.agn.dao.OrdrRegMapper">
+
+	<sql id="selectStdPrdMngBaseWhere">
+		<where>
+			<if test="prdType != null and prdType != '' ">
+				AND M.PRD_TYPE = #{prdType}
+			</if>
+			<if test="lcls != null and lcls != '' ">
+				AND M.lcls = #{lcls}
+			</if>
+			<if test="mcls != null and mcls != '' ">
+				AND M.mcls = #{mcls}
+			</if>
+			<if test="scls != null and scls != '' ">
+				AND M.scls = #{scls}
+			</if>
+			<if test="dcls != null and dcls != '' ">
+				AND M.dcls = #{dcls}
+			</if>
+			<if test="srcType != null and srcType != '' ">
+				<choose>
+					<when test="srcType == 'prdCd' and srcKeyword != null and srcKeyword != ''">
+						AND M.PRD_SAP_CD LIKE '%'+ #{srcPrdCd} + '%'
+					</when>
+					<when test="srcType == 'prdNm' and srcKeyword != null and srcKeyword != ''">
+						AND M.prd_nm LIKE '%'+ #{srcPrdNm} + '%'
+					</when>
+				</choose>
+			</if>
+			<if test="srcPrdCd != null and srcPrdCd != '' ">
+				AND M.PRD_SAP_CD LIKE '%'+ #{srcPrdCd} + '%'
+			</if>
+			<if test="srcPrdNm != null and srcPrdNm != '' ">
+				AND M.prd_nm LIKE '%'+ #{srcPrdNm} + '%'
+			</if>
+			<if test="baseChk != null ">
+				AND M.PRD_SEQ NOT IN (
+										SELECT	PRD_SEQ
+										FROM 	T_PRD_DTL
+										WHERE	USE_YN = 'Y'
+										AND		AGEN_SEQ = #{agenSeq}
+										AND		LAST_YN = 'Y'
+									 )
+			</if>
+				AND M.ORD_USE_YN = 'Y'
+		</where>
+	</sql>
+	
+	<select id="selectSdtPrdList" parameterType="com.namyang.nyorder.agn.vo.OrdRegVO" resultType="com.namyang.nyorder.agn.vo.OrdRegVO">
+        /* OrdrReg-Mapper - selectSdtPrdList */
+        SELECT tpm.PRD_SEQ
+             , tpm.PUCH_SEQ
+             , tpm.PRD_SAP_CD
+             , tpm.PRD_NM
+             , IIF(tpm.ORD_USE_YN = 'Y', '가능', '불가') AS ORD_USE_YN_TX
+             , IIF(tpm.ORD_USE_YN = 'Y', 'Y', 'N') AS ORD_USE_YN
+             , tpd.STD_PRD_NM
+             , tpd.PRD_ORDR
+             , tpd.PRD_DTL_SEQ
+             , tpm.FALT_QTY
+             , ISNULL( tsps.SPPRC , 0 ) + ISNULL( tsps.VAT , 0 ) AS UNTPC
+             , tpm.TAXT_CD
+             , CONCAT( '+' , tpm.ORD_PD ) AS ORD_PD
+             , IIF( tpm.IDDY_BRCD is null , 'N', 'Y') AS IDDY_UNT_YN
+             , IIF( tpm.IDDY_BRCD is null , '불가', '가능') AS IDDY_UNT_YN_TX
+             , B.STOR_REQ_BOX_QTY
+             , B.STOR_REQ_IDDY_QTY
+             , B.GRFR_REQ_BOX_QTY
+             , B.GRFR_REQ_IDDY_QTY
+             , tim.INVRY_BOX_QTY
+             , tim.INVRY_IDDY_QTY
+          FROM T_PRD_MST tpm
+         INNER JOIN T_PRD_DTL tpd 
+            ON tpm.PRD_SEQ = tpd.PRD_SEQ
+          LEFT JOIN T_STDR_PRD_SPPRC tsps 
+            ON tpd.AGEN_SEQ = tsps.AGEN_SEQ
+           AND tpd.PUCH_SEQ = tsps.PUCH_SEQ
+           AND tpd.PRD_DTL_SEQ = tsps.PRD_DTL_SEQ
+          LEFT JOIN (
+                     SELECT PUCH_SEQ , PUCH_CD , PUCH_NM , USE_CD
+                       FROM T_AGEN_MJR_PUCH
+                      WHERE 1=1
+                        AND USE_CD ='USE'
+                        AND PUCH_CD = 1
+                        AND PUCH_SEQ = 1
+                     ) A
+            ON tpm.PUCH_SEQ = A.PUCH_SEQ
+          LEFT JOIN (
+                     SELECT i.PRD_DTL_SEQ
+                          , f.REQ_BOX_QTY AS STOR_REQ_BOX_QTY
+                          , f.REQ_IDDY_QTY AS STOR_REQ_IDDY_QTY
+                          , h.REQ_BOX_QTY AS GRFR_REQ_BOX_QTY
+                          , h.REQ_IDDY_QTY AS GRFR_REQ_IDDY_QTY
+                       FROM T_ORD_MST a
+                       LEFT OUTER JOIN ( /* 골격 맥스값 */
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , AGEN_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD
+                                         GROUP BY ORD_SEQ , AGEN_SEQ , PRD_DTL_SEQ
+                                        ) b
+                         ON a.AGEN_SEQ = b.AGEN_SEQ
+                        AND a.ORD_SEQ = b.ORD_SEQ
+                      /*골격 데이터들*/
+                      INNER JOIN T_ORD_PRD c
+                         ON c.ORD_PRD_SEQ = b.ORD_PRD_SEQ
+                       LEFT OUTER JOIN ( /* 오너 골격 맥스값 */
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD a
+                                         INNER JOIN T_AGEN_EMPL b
+                                            ON a.EMPL_SEQ = b.EMPL_SEQ 
+                                           AND b.EMPL_SEC_CD = 'STOR_OWNR'
+                                         GROUP BY ORD_SEQ, PRD_DTL_SEQ
+                                        ) d
+                         ON d.ORD_SEQ = c.ORD_SEQ
+                        AND d.PRD_DTL_SEQ = c.PRD_DTL_SEQ
+                       LEFT OUTER JOIN T_ORD_PRD f
+                         ON f.ORD_PRD_SEQ = d.ORD_PRD_SEQ
+                        AND f.AGEN_SEQ = #{agenSeq}
+                       LEFT OUTER JOIN (/*오너 골격 맥스값*/
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD a
+                                         INNER JOIN T_AGEN_EMPL b
+                                            ON a.EMPL_SEQ = b.EMPL_SEQ
+                                           AND b.EMPL_SEC_CD = 'GRFR_EMPL'
+                                         GROUP BY ORD_SEQ , PRD_DTL_SEQ
+                                        ) g
+                         ON g.ORD_SEQ = c.ORD_SEQ
+                        AND g.PRD_DTL_SEQ = c.PRD_DTL_SEQ
+                       LEFT OUTER JOIN T_ORD_PRD h
+                         ON h.ORD_PRD_SEQ = g.ORD_PRD_SEQ
+                        AND h.AGEN_SEQ = #{agenSeq}
+                      INNER JOIN T_PRD_DTL i
+                         ON c.PRD_DTL_SEQ = i.PRD_DTL_SEQ
+                      WHERE 1=1
+                        AND a.AGEN_SEQ = #{agenSeq}
+                        AND a.ORD_DT = #{ordDt}
+                        AND a.ORD_TYPE = #{ordType}
+                     ) B
+            ON tpd.PRD_DTL_SEQ = B.PRD_DTL_SEQ
+          LEFT JOIN T_INVRY_MST tim
+            ON tpd.AGEN_SEQ = tim.AGEN_SEQ
+           AND tpd.PUCH_SEQ = tim.PUCH_SEQ
+           AND tpd.PRD_DTL_SEQ = tim.PRD_DTL_SEQ
+           AND tim.STDR_DT = #{ordDt}
+         WHERE 1=1
+           AND tpm.USE_YN = 'Y'
+           AND tpd.USE_YN = 'Y'
+           AND tpd.STD_PRD_YN = 'Y'
+           AND tpd.AGEN_SEQ = #{agenSeq}
+         ORDER BY ISNULL( tpd.PRD_ORDR , 999 ) , tpm.PRD_SAP_CD ASC;
+	</select>
+	
+	<select id="selectMkslPrdList" parameterType="com.namyang.nyorder.agn.vo.OrdRegVO" resultType="com.namyang.nyorder.agn.vo.OrdRegVO">
+        /* OrdrReg-Mapper - selectMkslPrdList */
+        SELECT tpm.PRD_SEQ
+             , tpm.PUCH_SEQ
+             , tpm.PRD_SAP_CD
+             , tpm.PRD_NM
+             , IIF(tpm.ORD_USE_YN = 'Y', '가능', '불가') AS ORD_USE_YN_TX
+             , IIF(tpm.ORD_USE_YN = 'Y', 'Y', 'N') AS ORD_USE_YN
+             , tpd.STD_PRD_NM
+             , tpd.PRD_ORDR
+             , tpd.PRD_DTL_SEQ
+             , tpm.FALT_QTY
+             , ISNULL( tsps.SPPRC , 0 ) + ISNULL( tsps.VAT , 0 ) AS UNTPC
+             , tpm.TAXT_CD
+             , CONCAT( '+' , tpm.ORD_PD ) AS ORD_PD
+             , IIF( tpm.IDDY_BRCD is null , 'N', 'Y') AS IDDY_UNT_YN
+             , IIF( tpm.IDDY_BRCD is null , '불가', '가능') AS IDDY_UNT_YN_TX
+             , B.STOR_REQ_BOX_QTY
+             , B.STOR_REQ_IDDY_QTY
+             , B.GRFR_REQ_BOX_QTY
+             , B.GRFR_REQ_IDDY_QTY
+             , C.YTD_REQ_BOX_QTY
+             , C.YTD_REQ_IDDY_QTY
+             , D.BFYTD_REQ_BOX_QTY
+             , D.BFYTD_REQ_IDDY_QTY
+             , tim.INVRY_BOX_QTY
+             , tim.INVRY_IDDY_QTY
+          FROM T_PRD_MST tpm
+         INNER JOIN T_PRD_DTL tpd 
+            ON tpm.PRD_SEQ = tpd.PRD_SEQ
+          LEFT JOIN T_STDR_PRD_SPPRC tsps 
+            ON tpd.AGEN_SEQ = tsps.AGEN_SEQ
+           AND tpd.PUCH_SEQ = tsps.PUCH_SEQ
+           AND tpd.PRD_DTL_SEQ = tsps.PRD_DTL_SEQ
+          LEFT JOIN (
+                     SELECT PUCH_SEQ , PUCH_CD , PUCH_NM , USE_CD
+                       FROM T_AGEN_MJR_PUCH
+                      WHERE 1=1
+                        AND USE_CD ='USE'
+                        AND PUCH_CD = 1
+                        AND PUCH_SEQ = 1
+                     ) A
+            ON tpm.PUCH_SEQ = A.PUCH_SEQ
+          LEFT JOIN (
+                     SELECT i.PRD_DTL_SEQ 
+                          , f.REQ_BOX_QTY AS STOR_REQ_BOX_QTY
+                          , f.REQ_IDDY_QTY AS STOR_REQ_IDDY_QTY
+                          , h.REQ_BOX_QTY AS GRFR_REQ_BOX_QTY
+                          , h.REQ_IDDY_QTY AS GRFR_REQ_IDDY_QTY
+                       FROM T_ORD_MST a
+                       LEFT OUTER JOIN ( /*골격 맥스값*/
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , AGEN_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD
+                                         GROUP BY ORD_SEQ, AGEN_SEQ, PRD_DTL_SEQ
+                                        ) b
+                         ON a.AGEN_SEQ = b.AGEN_SEQ
+                        AND a.ORD_SEQ = b.ORD_SEQ
+                      /*골격 데이터들*/
+                      INNER JOIN T_ORD_PRD c
+                         ON c.ORD_PRD_SEQ = b.ORD_PRD_SEQ
+                       LEFT OUTER JOIN ( /*오너 골격 맥스값*/
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD a
+                                         INNER JOIN T_AGEN_EMPL b
+                                            ON a.EMPL_SEQ  = b.EMPL_SEQ
+                                           AND b.EMPL_SEC_CD  = 'STOR_OWNR'
+                                         GROUP BY ORD_SEQ, PRD_DTL_SEQ
+                                        ) d
+                         ON d.ORD_SEQ = c.ORD_SEQ
+                        AND d.PRD_DTL_SEQ = c.PRD_DTL_SEQ
+                       LEFT OUTER JOIN T_ORD_PRD f
+                         ON f.ORD_PRD_SEQ = d.ORD_PRD_SEQ
+                        AND f.AGEN_SEQ = #{agenSeq}
+                       LEFT OUTER JOIN ( /* 오너 골격 맥스값 */
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD a
+                                         INNER JOIN T_AGEN_EMPL b
+                                            ON a.EMPL_SEQ = b.EMPL_SEQ
+                                           AND b.EMPL_SEC_CD = 'GRFR_EMPL'
+                                         GROUP BY ORD_SEQ, PRD_DTL_SEQ
+                                        ) g
+                         ON g.ORD_SEQ = c.ORD_SEQ
+                        AND g.PRD_DTL_SEQ = c.PRD_DTL_SEQ
+                       LEFT OUTER JOIN T_ORD_PRD h
+                         ON h.ORD_PRD_SEQ = g.ORD_PRD_SEQ
+                        AND h.AGEN_SEQ = #{agenSeq}
+                      INNER JOIN T_PRD_DTL i
+                         ON c.PRD_DTL_SEQ = i.PRD_DTL_SEQ
+                      WHERE 1=1
+                        AND a.AGEN_SEQ = #{agenSeq}
+                        AND a.ORD_DT = #{ordDt}
+                        AND a.ORD_TYPE = #{ordType}
+                     ) B
+            ON tpd.PRD_DTL_SEQ = B.PRD_DTL_SEQ
+          LEFT JOIN (/* 전날 주문량 */
+                     SELECT i.PRD_DTL_SEQ 
+                          , ISNULL( f.REQ_BOX_QTY , 0 ) + ISNULL( h.REQ_BOX_QTY , 0) AS YTD_REQ_BOX_QTY
+                          , ISNULL( f.REQ_IDDY_QTY , 0 ) + ISNULL( h.REQ_IDDY_QTY , 0 ) AS YTD_REQ_IDDY_QTY
+                       FROM T_ORD_MST a
+                       LEFT OUTER JOIN (/*골격 맥스값*/
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , AGEN_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD
+                                         GROUP BY ORD_SEQ, AGEN_SEQ, PRD_DTL_SEQ
+                                        ) b
+                         ON a.AGEN_SEQ = b.AGEN_SEQ
+                        AND a.ORD_SEQ = b.ORD_SEQ
+                      /*골격 데이터들*/
+                      INNER JOIN T_ORD_PRD c
+                         ON c.ORD_PRD_SEQ = b.ORD_PRD_SEQ
+                       LEFT OUTER JOIN ( /* 오너 골격 맥스값 */
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD a
+                                         INNER JOIN T_AGEN_EMPL b
+                                            ON a.EMPL_SEQ  = b.EMPL_SEQ 
+                                           AND b.EMPL_SEC_CD  = 'STOR_OWNR'
+                                         GROUP BY ORD_SEQ, PRD_DTL_SEQ
+                                        ) d
+                         ON d.ORD_SEQ = c.ORD_SEQ
+                        AND d.PRD_DTL_SEQ = c.PRD_DTL_SEQ
+                       LEFT OUTER JOIN T_ORD_PRD f
+                         ON f.ORD_PRD_SEQ = d.ORD_PRD_SEQ
+                        AND f.AGEN_SEQ = #{agenSeq}
+                       LEFT OUTER JOIN (/* 오너 골격 맥스값 */
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD a
+                                         INNER JOIN T_AGEN_EMPL b
+                                            ON a.EMPL_SEQ  = b.EMPL_SEQ 
+                                           AND b.EMPL_SEC_CD  = 'GRFR_EMPL'
+                                         GROUP BY ORD_SEQ, PRD_DTL_SEQ
+                                        ) g
+                         ON g.ORD_SEQ = c.ORD_SEQ
+                        AND g.PRD_DTL_SEQ = c.PRD_DTL_SEQ
+                       LEFT OUTER JOIN T_ORD_PRD h
+                         ON h.ORD_PRD_SEQ = g.ORD_PRD_SEQ
+                        AND h.AGEN_SEQ = #{agenSeq}
+                      INNER JOIN T_PRD_DTL i 
+                         ON c.PRD_DTL_SEQ = i.PRD_DTL_SEQ 
+                      WHERE 1=1
+                        AND a.AGEN_SEQ = #{agenSeq}
+                        AND a.ORD_DT = CONVERT(VARCHAR(8), DATEADD( D , -1 , CONVERT(DATETIME2, #{ordDt}, 112) ), 112)
+                        AND a.ORD_TYPE = #{ordType}
+                     ) C
+            ON tpd.PRD_DTL_SEQ = C.PRD_DTL_SEQ
+          LEFT JOIN ( /* 전전날날 주문량 */
+                     SELECT i.PRD_DTL_SEQ 
+                          , ISNULL( f.REQ_BOX_QTY , 0 ) + ISNULL( h.REQ_BOX_QTY , 0 ) AS BFYTD_REQ_BOX_QTY
+                          , ISNULL( f.REQ_IDDY_QTY , 0 ) + ISNULL( h.REQ_IDDY_QTY , 0 ) AS BFYTD_REQ_IDDY_QTY
+                       FROM T_ORD_MST a
+                       LEFT OUTER JOIN ( /* 골격 맥스값 */
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , AGEN_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD
+                                         GROUP BY ORD_SEQ, AGEN_SEQ, PRD_DTL_SEQ
+                                        ) b
+                         ON a.AGEN_SEQ = b.AGEN_SEQ
+                        AND a.ORD_SEQ = b.ORD_SEQ
+                      /*골격 데이터들*/
+                      INNER JOIN T_ORD_PRD c
+                         ON c.ORD_PRD_SEQ = b.ORD_PRD_SEQ
+                       LEFT OUTER JOIN (/* 오너 골격 맥스값 */
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD a
+                                         INNER JOIN T_AGEN_EMPL b
+                                            ON a.EMPL_SEQ  = b.EMPL_SEQ 
+                                           AND b.EMPL_SEC_CD  = 'STOR_OWNR'
+                                         GROUP BY ORD_SEQ, PRD_DTL_SEQ
+                                        ) d
+                         ON d.ORD_SEQ = c.ORD_SEQ 
+                        AND d.PRD_DTL_SEQ = c.PRD_DTL_SEQ
+                       LEFT OUTER JOIN T_ORD_PRD f 
+                         ON f.ORD_PRD_SEQ = d.ORD_PRD_SEQ
+                        AND f.AGEN_SEQ = #{agenSeq}
+                       LEFT OUTER JOIN (/* 오너 골격 맥스값 */
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD a
+                                         INNER JOIN T_AGEN_EMPL b
+                                            ON a.EMPL_SEQ  = b.EMPL_SEQ 
+                                           AND b.EMPL_SEC_CD  = 'GRFR_EMPL'
+                                         GROUP BY ORD_SEQ, PRD_DTL_SEQ
+                                        ) g
+                         ON g.ORD_SEQ = c.ORD_SEQ
+                        AND g.PRD_DTL_SEQ = c.PRD_DTL_SEQ
+                       LEFT OUTER JOIN T_ORD_PRD h
+                         ON h.ORD_PRD_SEQ = g.ORD_PRD_SEQ
+                        AND h.AGEN_SEQ = #{agenSeq}
+                      INNER JOIN T_PRD_DTL i 
+                         ON c.PRD_DTL_SEQ = i.PRD_DTL_SEQ
+                      WHERE 1=1
+                        AND a.AGEN_SEQ = #{agenSeq}
+                        AND a.ORD_DT = CONVERT(VARCHAR(8), DATEADD(D , -2 , CONVERT(DATETIME2 , #{ordDt} , 112)), 112)
+                        AND a.ORD_TYPE = #{ordType}
+                     ) D
+            ON tpd.PRD_DTL_SEQ = D.PRD_DTL_SEQ
+          LEFT JOIN T_INVRY_MST tim
+            ON tpd.AGEN_SEQ = tim.AGEN_SEQ
+           AND tpd.PUCH_SEQ = tim.PUCH_SEQ
+           AND tpd.PRD_DTL_SEQ = tim.PRD_DTL_SEQ
+           AND tim.STDR_DT = #{ordDt}
+         WHERE 1=1
+           AND tpm.USE_YN = 'Y'
+           AND tpd.USE_YN = 'Y'
+           AND tpd.STD_PRD_YN = 'Y'
+           AND tpd.AGEN_SEQ = #{agenSeq}
+         ORDER BY ISNULL( tpd.PRD_ORDR , 999 ), tpm.PRD_SAP_CD ASC
+	</select>
+	
+	<select id="selectTmprtPrdList" parameterType="com.namyang.nyorder.agn.vo.OrdRegVO" resultType="com.namyang.nyorder.agn.vo.OrdRegVO">
+        /* OrdrReg-Mapper - selectTmprtPrdList */
+        SELECT tpm.PRD_SEQ
+             , tpm.PUCH_SEQ
+             , tpm.PRD_SAP_CD
+             , tpm.PRD_NM
+             , IIF(tpm.ORD_USE_YN = 'Y', '가능', '불가') AS ORD_USE_YN_TX
+             , IIF(tpm.ORD_USE_YN = 'Y', 'Y', 'N') AS ORD_USE_YN
+             , tpd.STD_PRD_NM
+             , tpd.PRD_ORDR
+             , tpd.PRD_DTL_SEQ
+             , tpm.FALT_QTY
+             , ISNULL( tsps.SPPRC , 0 ) + ISNULL( tsps.VAT , 0 ) AS UNTPC
+             , tpm.TAXT_CD
+             , CONCAT( '+' , tpm.ORD_PD ) AS ORD_PD
+             , IIF( tpm.IDDY_BRCD is null , 'N', 'Y') AS IDDY_UNT_YN
+             , IIF( tpm.IDDY_BRCD is null , '불가', '가능') AS IDDY_UNT_YN_TX
+             , B.STOR_REQ_BOX_QTY
+             , B.STOR_REQ_IDDY_QTY
+             , B.GRFR_REQ_BOX_QTY
+             , B.GRFR_REQ_IDDY_QTY
+             , tim.INVRY_BOX_QTY
+             , tim.INVRY_IDDY_QTY
+          FROM T_PRD_MST tpm
+         INNER JOIN T_PRD_DTL tpd 
+            ON tpm.PRD_SEQ = tpd.PRD_SEQ
+          LEFT JOIN T_STDR_PRD_SPPRC tsps 
+            ON tpd.AGEN_SEQ = tsps.AGEN_SEQ
+           AND tpd.PUCH_SEQ = tsps.PUCH_SEQ
+           AND tpd.PRD_DTL_SEQ = tsps.PRD_DTL_SEQ
+          LEFT JOIN (
+                     SELECT PUCH_SEQ , PUCH_CD , PUCH_NM , USE_CD
+                       FROM T_AGEN_MJR_PUCH
+                      WHERE 1=1
+                        AND USE_CD ='USE'
+                        AND PUCH_CD = 1
+                        AND PUCH_SEQ = 1
+                     ) A
+            ON tpm.PUCH_SEQ = A.PUCH_SEQ
+          LEFT JOIN (
+                     SELECT i.PRD_DTL_SEQ
+                          , f.REQ_BOX_QTY AS STOR_REQ_BOX_QTY
+                          , f.REQ_IDDY_QTY AS STOR_REQ_IDDY_QTY
+                          , h.REQ_BOX_QTY AS GRFR_REQ_BOX_QTY
+                          , h.REQ_IDDY_QTY AS GRFR_REQ_IDDY_QTY
+                       FROM T_ORD_MST a
+                       LEFT OUTER JOIN ( /* 골격 맥스값 */
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , AGEN_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD
+                                         GROUP BY ORD_SEQ , AGEN_SEQ , PRD_DTL_SEQ
+                                        ) b
+                         ON a.AGEN_SEQ = b.AGEN_SEQ
+                        AND a.ORD_SEQ = b.ORD_SEQ
+                      /*골격 데이터들*/
+                      INNER JOIN T_ORD_PRD c
+                         ON c.ORD_PRD_SEQ = b.ORD_PRD_SEQ
+                       LEFT OUTER JOIN ( /* 오너 골격 맥스값 */
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD a
+                                         INNER JOIN T_AGEN_EMPL b
+                                            ON a.EMPL_SEQ = b.EMPL_SEQ 
+                                           AND b.EMPL_SEC_CD = 'STOR_OWNR'
+                                         GROUP BY ORD_SEQ, PRD_DTL_SEQ
+                                        ) d
+                         ON d.ORD_SEQ = c.ORD_SEQ
+                        AND d.PRD_DTL_SEQ = c.PRD_DTL_SEQ
+                       LEFT OUTER JOIN T_ORD_PRD f
+                         ON f.ORD_PRD_SEQ = d.ORD_PRD_SEQ
+                        AND f.AGEN_SEQ = #{agenSeq}
+                       LEFT OUTER JOIN (/*오너 골격 맥스값*/
+                                        SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                             , ORD_SEQ
+                                             , PRD_DTL_SEQ
+                                          FROM T_ORD_PRD a
+                                         INNER JOIN T_AGEN_EMPL b
+                                            ON a.EMPL_SEQ = b.EMPL_SEQ
+                                           AND b.EMPL_SEC_CD = 'GRFR_EMPL'
+                                         GROUP BY ORD_SEQ , PRD_DTL_SEQ
+                                        ) g
+                         ON g.ORD_SEQ = c.ORD_SEQ
+                        AND g.PRD_DTL_SEQ = c.PRD_DTL_SEQ
+                       LEFT OUTER JOIN T_ORD_PRD h
+                         ON h.ORD_PRD_SEQ = g.ORD_PRD_SEQ
+                         AND h.AGEN_SEQ = #{agenSeq}
+                      INNER JOIN T_PRD_DTL i
+                         ON c.PRD_DTL_SEQ = i.PRD_DTL_SEQ
+                      WHERE 1=1
+                        AND a.AGEN_SEQ = #{agenSeq}
+                        AND a.ORD_DT = #{ordDt}
+                        AND c.DLV_DT = #{dlvDt}
+                        AND a.ORD_TYPE = #{ordType}
+                     ) B
+            ON tpd.PRD_DTL_SEQ = B.PRD_DTL_SEQ
+          LEFT JOIN T_INVRY_MST tim
+            ON tpd.AGEN_SEQ = tim.AGEN_SEQ
+           AND tpd.PUCH_SEQ = tim.PUCH_SEQ
+           AND tpd.PRD_DTL_SEQ = tim.PRD_DTL_SEQ
+           AND tim.STDR_DT = #{ordDt}
+         WHERE 1=1
+           AND tpm.USE_YN = 'Y'
+           AND tpd.USE_YN = 'Y'
+           AND tpd.STD_PRD_YN = 'Y'
+           AND tpd.AGEN_SEQ = #{agenSeq}
+         ORDER BY ISNULL( tpd.PRD_ORDR , 999 ) , tpm.PRD_SAP_CD ASC;
+	</select>
+	
+	<select id="selectGrfeCnt" parameterType="com.namyang.nyorder.agn.vo.OrdRegVO" resultType="int">
+        /* OrdrReg-Mapper - selectGrfeCnt */
+        SELECT count(*) AS cnt
+          FROM T_AGEN_EMPL tae
+             , T_AGEN_MST tam
+         WHERE 1=1
+           AND tae.AGEN_SEQ = tam.AGEN_SEQ
+           AND tam.AGEN_SEQ = #{agenSeq}
+           AND tae.EMPL_SEC_CD  = 'GRFR_EMPL'
+	</select>
+	
+	<insert id="insertOrdMst" parameterType="com.namyang.nyorder.agn.vo.OrdRegVO" >
+	/* OrdrReg-Mapper - insertOrdMst */
+	<selectKey resultType="int" keyProperty="ordSeq" order="BEFORE">
+        SELECT ISNULL ( MAX( ORD_SEQ ) , 0 ) + 1
+          FROM T_ORD_MST
+         WHERE 1=1
+           <!-- AND AGEN_SEQ = #{agenSeq} -->
+	</selectKey>
+	INSERT INTO T_ORD_MST
+	(
+		ORD_SEQ,
+		AGEN_SEQ,
+		PUCH_SEQ,
+		ORD_DT,
+		ORD_STUS,
+		REG_DTM,
+		REG_SEQ,
+	<if test="vendSeq gt 0 ">
+		VEND_SEQ,
+	</if>
+		ORD_TYPE
+	)
+	VALUES
+	(
+		#{ordSeq},
+		#{agenSeq},
+		#{puchSeq},
+		#{ordDt},
+		#{ordStus},
+		CURRENT_TIMESTAMP,
+		#{emplSeq},
+	<if test="vendSeq gt 0 ">
+		#{vendSeq},
+	</if>
+		#{ordType}
+	)
+	</insert>
+	
+	<insert id="insertOrdPrd" parameterType="com.namyang.nyorder.agn.vo.OrdRegVO" >
+	/* OrdrReg-Mapper - insertOrdPrd */
+    <selectKey resultType="int" keyProperty="ordPrdSeq" order="BEFORE">
+        SELECT ISNULL ( MAX( ORD_PRD_SEQ ) , 0 ) + 1
+          FROM T_ORD_PRD
+         WHERE 1=1
+           <!-- AND AGEN_SEQ = #{agenSeq} -->
+	</selectKey>
+	INSERT INTO T_ORD_PRD
+	(
+		ORD_PRD_SEQ,
+		ORD_SEQ,
+		AGEN_SEQ,
+		PRD_DTL_SEQ,
+		EMPL_SEQ,
+		REQ_BOX_QTY,
+		REQ_IDDY_QTY,
+		UNTPC,
+		TAXT_CD,
+	<if test="dlvDt != null and dlvDt != ''">
+		DLV_DT,
+	</if>
+		REG_DTM,
+		REG_SEQ
+	)
+	VALUES
+	(
+		#{ordPrdSeq},
+		#{ordSeq},
+		#{agenSeq},
+		#{prdDtlSeq},
+		#{emplSeq},
+		#{reqBoxQty},
+		#{reqIddyQty},
+		#{untpc},
+		#{taxtCd},
+	<if test="dlvDt != null and dlvDt != ''">
+		#{dlvDt},
+	</if>
+		CURRENT_TIMESTAMP,
+		#{emplSeq}
+	)
+	</insert>
+	
+	<select id="selectOrdRegConfirm" parameterType="com.namyang.nyorder.agn.vo.OrdRegVO" resultType="int">
+		/* OrdrReg-Mapper - selectOrdRegConfirm */
+        SELECT count(*)
+          FROM T_ORD_MST tom
+         WHERE 1=1
+           AND tom.AGEN_SEQ = #{agenSeq}
+           AND tom.ORD_DT = #{ordDt}
+           AND tom.ORD_TYPE = #{ordType}
+        <if test="vendSeq gt 0 ">
+           AND tom.VEND_SEQ = #{vendSeq}
+        </if>
+           AND tom.ORD_STUS = 'PCHA'
+	</select>
+	
+	<select id="selectOrdSeqKey" parameterType="com.namyang.nyorder.agn.vo.OrdRegVO" resultType="com.namyang.nyorder.agn.vo.OrdRegVO">
+		/* OrdrReg-Mapper - selectOrdSeqKey */
+        SELECT tom.ORD_SEQ
+          FROM T_ORD_MST tom
+         WHERE 1=1
+           AND tom.AGEN_SEQ = #{agenSeq}
+           AND tom.ORD_DT = #{ordDt}
+           AND tom.ORD_TYPE = #{ordType}
+        <if test="vendSeq gt 0 ">
+           AND tom.VEND_SEQ = #{vendSeq}
+        </if>
+           AND tom.ORD_STUS = 'PCHA'
+	</select>
+	
+	<select id="selectPrdMstSapList" parameterType="com.namyang.nyorder.agn.vo.OrdRegVO" resultType="com.namyang.nyorder.agn.vo.OrdRegVO">
+	/* OrdrReg-Mapper - selectPrdMstList : 	제품 마스터 조회 */
+		SELECT
+			 M.PRD_SEQ
+			,M.PUCH_SEQ
+			,M.PRD_SAP_CD
+			,M.PRD_NM
+			,M.PRD_TYPE
+			,(SELECT COMM_NM FROM T_COMM WHERE COMM_GRP_CD = 'SD0001' AND COMM_CD = M.PRD_TYPE) PRD_TYPE_NM
+			,PC.LCLS_NM
+			,M.MCLS
+			,PC.MCLS_NM
+			,M.SCLS
+			,PC.SCLS_NM
+			,M.DCLS
+			,PC.DCLS_NM
+			,M.PRMT_CD
+			,M.FALT_CT
+			,M.BRCD
+			,M.IDDY_BRCD
+			,M.FALT_QTY
+			,M.PRD_STRD
+			,M.PUCH_YN
+			,M.TAXT_CD
+			,M.ORD_USE_YN
+			,M.FEE_UNTPC
+			,M.IDDY_UNTPC
+			,M.SPPRC
+			,M.VAT_SPPRC
+			,M.VALD_PD
+			,M.PRD_UNIT
+			,M.RTGD_PERM_TN
+			,M.UNTPC_APPL_DT
+			,M.REG_DTM
+			,M.REG_SEQ
+			,M.UPD_DTM
+			,M.UPD_SEQ
+			,M.SHTN_NM
+			,M.PRD_TYPE
+			,M.ORD_PD
+			,M.ETC_BRCD
+			,M.USE_YN
+			,IIF(M.USE_YN = 'Y', '사용', '미사용') AS USE_YN_TX
+			,IIF(M.ORD_USE_YN = 'Y', '가능', '불가') AS ORD_USE_YN_TX
+			,ISNULL( M.SPPRC , 0 ) + ISNULL( M.VAT_SPPRC , 0 ) AS UNTPC
+		FROM	T_PRD_MST M
+		LEFT
+		JOIN T_COMM_PRD_CLS pc
+		ON	PC.LCLS = M.LCLS
+		AND PC.MCLS = M.MCLS
+		AND PC.SCLS = M.SCLS
+		AND PC.DCLS = M.DCLS
+		<include refid="selectStdPrdMngBaseWhere"/>
+	</select>
+	
+	<select id="selectOrderCnt" parameterType="com.namyang.nyorder.agn.vo.OrdRegVO" resultType="int">
+		/* OrdrReg-Mapper - selectOrderCnt */
+        SELECT count(*)
+          FROM T_ORD_MST tom
+         WHERE 1=1
+           AND tom.AGEN_SEQ = #{agenSeq}
+           AND tom.ORD_DT = #{ordDt}
+           AND tom.ORD_TYPE = #{ordType}
+           AND tom.ORD_STUS = 'PCHA'
+       <if test="vendSeq gt 0 ">
+           AND tom.VEND_SEQ = #{vendSeq}
+       </if>
+	</select>
+	
+	<select id="selectGrfrOrdCnt" parameterType="com.namyang.nyorder.agn.vo.OrdRegVO" resultType="int">
+		/* OrdrReg-Mapper - selectGrfrOrdCnt */
+        SELECT count(*)
+          FROM T_ORD_MST tom 
+         INNER JOIN T_ORD_PRD top2 
+            ON tom.ORD_SEQ = top2.ORD_SEQ 
+         INNER JOIN T_AGEN_EMPL tae 
+            ON tae.EMPL_SEQ  = top2.EMPL_SEQ 
+           AND tae.EMPL_SEC_CD  = 'GRFR_EMPL'
+         WHERE 1=1
+           AND tom.AGEN_SEQ = #{agenSeq}
+           AND tom.ORD_DT = #{ordDt}
+           AND tom.ORD_TYPE = #{ordType}
+       <if test="vendSeq gt 0 ">
+           AND tom.VEND_SEQ = #{vendSeq}
+       </if>
+           AND tom.ORD_STUS = 'PCHA'
+	</select>
+	
+	<select id="selectAgenClsTmInfo" parameterType="com.namyang.nyorder.agn.vo.OrdRegVO" resultType="String">
+		/* OrdrReg-Mapper - selectAgenClsTmInfo */
+        SELECT CLS_TM
+          FROM T_AGEN_MST 
+         WHERE 1=1
+           AND AGEN_USE_YN = 'Y'
+           AND AGEN_SEQ = #{agenSeq}
+	</select>
+</mapper>

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.prdbndchg.mapper.StdPrdBndChgMapper">
+	
+	<update id="update">
+		{CALL NY_ORDER.dbo.P_PRD_BND_CHG()}
+	</update>
+</mapper>

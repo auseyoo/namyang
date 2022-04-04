@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템 - 거래명세표</title>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+</head>
+<style>
+   body,html{margin:0; padding:0; font-size:12pt; overflow-y:auto;}
+	* {color-adjust: exact!important; -webkit-print-color-adjust: exact!important; print-color-adjust: exact!important; box-sizing:border-box; -moz-box-sizing: border-box;}
+     .page {width:29.7cm; min-height:1cm; padding:0.5cm; margin:1cm auto; background:#fff; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);}
+	/*.subpage {padding:1cm; height:256mm;}*/
+	@page {
+		/*size: A4 landscape;*/    /*Portrait*/
+		size: A4 Portrait; /* 가로 */ 
+		margin:5px 0 5px;	
+	}
+	@media print {
+		html, body {margin:0; padding:0; overflow-y:inherit;}
+		.page {margin:0; border:initial; border-radius:initial; width:initial; min-height:initial; box-shadow:initial; background:initial; size: A4 landscape;}
+		.tbl tbody th {background:#f5f5f5 !important;}
+		.aui-grid .aui-grid-table td{font-size:9pt;}
+	}
+
+    
+    .details_wrap { display: flex; flex-wrap: wrap;}
+    .details_wrap .content {width:50%; padding-left: 5pt; padding-right:5pt; border-right: 1px dashed #000; border-top: 1px dashed #000; padding-top: 5pt; padding-bottom: 5pt;}
+    .details_wrap .content:last-child {border-right:0;}
+    .details_wrap .content:nth-child(even) {border-right:0;} 
+    .details_wrap .content:nth-child(1) {border-top:0;}
+    .details_wrap .content:nth-child(2) {border-top:0;}
+    .details_wrap .tbl th {height:auto; padding:2px 5px; font-size:8pt; line-height:11pt;border:1px solid #bdbdbd;border-width: 1px 1px 1px 0;word-break:break-all; white-space:initial; text-align:left; background:#fff !important;}
+    .details_wrap .tbl .center {text-align:center;}
+    .details_wrap .tbl .right {text-align:right;}
+    .details_wrap .tbl td {height: 14.8pt; padding:2px 5px;border:1px solid #bdbdbd;border-width: 1px 1px 1px 0;font-size:6.5pt;}
+    .details_wrap .tbl .jBetween {display: flex; width: 100%; padding-right:10pt; justify-content: space-between;}
+    .details_wrap .tbl td.right {padding-right:7px;}
+    .details_wrap .tbl td.center {padding:2px 5px;}
+    .details_wrap .tbl tbody td.vTop {line-height:1.2;}
+    .details_wrap .tbl tr {border: 1px solid #bdbdbd; border-width: 0 1px;}
+    .details_wrap .tbl tr.bg {background:#efefef !important;}
+    .details_wrap .tbl tr.bg th {background:#efefef !important;}
+    .details_wrap .tbl tr.bg td {background:#efefef !important;}
+    .details_wrap .tbl tr.bg th span {letter-spacing: 5px;}
+    .details_wrap .tbl .row th {width: 100%;}
+    .details_wrap .tbl .row td {width: 100%;}
+    .details_wrap .arTxt {text-align: right;}
+    .details_wrap td.arTxt {padding-right:4px;}
+    .details_wrap .alTxt {text-align: left;}
+    .details_wrap td.alTxt {padding-left:4px;}
+    .details_wrap .acTxt {text-align: center;}
+
+    .data_form {line-height:normal;}
+    .data_form .data01 {display:inline-block; width: 33.333%;}
+    .data_form .data02 {display:inline-block;}
+    .details_wrap .titleArea {display: flex; justify-content: center; align-items:baseline;}
+    .details_wrap .titleArea h3 {display:inline-block; font-size: 12pt;  text-align: center; letter-spacing: 10px; font-weight: normal; line-height:14pt;}
+    .details_wrap .titleArea h3.stit {letter-spacing: 0;}
+    .details_wrap .titleArea span {font-size: 9pt;}
+    .details_wrap .titleArea_box span{border-right: 1px solid blue;color:blue;padding: 2px 10px; letter-spacing: 1px; text-align: center;}
+    .details_wrap .titleArea_item {font-size:9pt;}
+    .details_wrap .titleArea_box p {display: inline-flex; font-size: 6.5pt;padding:0 10px;}
+    .details_wrap .vTop { vertical-align: top;}
+    .details_wrap .top {font-weight: 600; font-size:9pt; margin-bottom:2pt;}
+    .details_wrap .tbl tbody td p {padding-left:0;}
+    .details_wrap .tbl tbody td p.pl {line-height:11pt; font-size:9pt;}
+    .details_wrap .tbl tbody .num {font-size:6.5pt;}
+    .details_wrap .tbl tbody .bl {font-weight:900; font-size:10pt;}
+</style>
+<body>
+    <div class="printWrap">
+		<div class="page">
+            <div class="details_wrap">
+                <div class="content">
+                    <div class="titleArea">
+                        <h3>청구서</h3>
+                    </div>
+                    <div class="top">
+                        <span>지역명 :</span>
+                        <span>논현1동</span>
+                    </div>
+                    <table class="tbl">
+                        <caption>배달 내역</caption>
+                        <colgroup>
+                            <col style="width:14%;">
+                            <col>
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th>월분</th>
+                                <td colspan="4">2021-12</td>
+                                <th scope="row" colspan="2" class="center">청구금액</th>
+                                <td class="right" colspan="5">50,000원</td>
+                            </tr>
+                            <tr>
+                                <th>성명</th>
+                                <td colspan="4">김비티</td>
+                                <th scope="row" colspan="2" class="center">당월애음</th>
+                                <td class="right" colspan="5">50,000원</td>
+                            </tr>
+                            <tr>
+                                <th>주소</th>
+                                <td colspan="4">학동로 100-10, 1층</td>
+                                <th scope="row" colspan="2" class="center">전월미수</th>
+                                <td class="right" colspan="5">0원</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2" rowspan="8">
+                                    <p>
+                                        <span>제품명(투입개수, 가격)</span>
+                                        <span>GT대(14,900)</span>
+                                        <span>깜유홈(20, 1,530)</span> 
+                                    </p>
+                                </th>
+                                <th scope="row" class="num left bl">
+                                    1
+                                </th>
+                                <th scope="row" class="num left bl">
+                                    2
+                                </th>
+                                <th scope="row" class="num left bl">
+                                    3
+                                </th>
+                                <th scope="row" class="num left bl">
+                                    4
+                                </th>
+                                <th scope="row" class="num left bl">
+                                    5
+                                </th>
+                                <th scope="row" class="num left bl">
+                                    6
+                                </th>
+                                <th scope="row" class="num left bl">
+                                    7
+                                </th>
+                                <th scope="row" class="num left bl">
+                                    8
+                                </th>
+                                <th scope="row" class="num left bl">
+                                    9
+                                </th>
+                                <th scope="row" class="num left bl">
+                                    10
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    11
+                                </th>
+                                <th scope="row" class="left">
+                                    12
+                                </th>
+                                <th scope="row" class="left">
+                                    13
+                                </th>
+                                <th scope="row" class="left">
+                                    14
+                                </th>
+                                <th scope="row" class="left">
+                                    15
+                                </th>
+                                <th scope="row" class="left">
+                                    16
+                                </th>
+                                <th scope="row" class="left">
+                                    17
+                                </th>
+                                <th scope="row" class="left">
+                                    18
+                                </th>
+                                <th scope="row" class="left">
+                                    19
+                                </th>
+                                <th scope="row" class="left">
+                                    20
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    21
+                                </th>
+                                <th scope="row" class="left">
+                                    22
+                                </th>
+                                <th scope="row" class="left">
+                                    23
+                                </th>
+                                <th scope="row" class="left">
+                                    24
+                                </th>
+                                <th scope="row" class="left">
+                                    25
+                                </th>
+                                <th scope="row" class="left">
+                                    26
+                                </th>
+                                <th scope="row" class="left">
+                                    27
+                                </th>
+                                <th scope="row" class="left">
+                                    28
+                                </th>
+                                <th scope="row" class="left">
+                                    29
+                                </th>
+                                <th scope="row" class="left">
+                                    30
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    31
+                                </th>
+                                <td scope="row" class="left" colspan="9" rowspan="2">
+                                    <p class="pl">
+                                        <span>현금영수증: 010-0000-0000</span><br>
+                                        <span>가상계좌: 농협: 000-0000-0000-00 대표자</span><br>
+                                        <span>메모내용</span>
+                                    </p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td class="">  
+                                </td>
+                            </tr>
+                            <tr>
+                                <th rowspan="2">계좌정보</th>
+                                <td colspan="11">은행명: 계좌번호 예금주</td>
+                            </tr>
+                            <tr>
+                                <td colspan="11">농협: 000-0000-0000-00 대표자</td>
+                            </tr>
+                            <tr>
+                                <th>담당자</th>
+                                <td colspan="4">이티티</td>
+                                <th scope="row" colspan="2" class="center">전화번호</th>
+                                <td class="left" colspan="5">010-0000-0000</td>
+                            </tr>
+                             <tr>
+                                <th>상호명</th>
+                                <td colspan="4">비티소프트</td>
+                                <th scope="row" colspan="2" class="center">전화번호</th>
+                                <td class="left" colspan="5">010-0000-0000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="content">
+                    <div class="titleArea">
+                        <h3>청구서</h3>
+                    </div>
+                    <div class="top">
+                        <span>지역명 :</span>
+                        <span>논현1동</span>
+                    </div>
+                    <table class="tbl">
+                        <caption>배달 내역</caption>
+                        <colgroup>
+                            <col style="width:14%;">
+                            <col>
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th>월분</th>
+                                <td colspan="4">2021-12</td>
+                                <th scope="row" colspan="2" class="center">청구금액</th>
+                                <td class="right" colspan="5">50,000원</td>
+                            </tr>
+                            <tr>
+                                <th>성명</th>
+                                <td colspan="4">김비티</td>
+                                <th scope="row" colspan="2" class="center">당월애음</th>
+                                <td class="right" colspan="5">50,000원</td>
+                            </tr>
+                            <tr>
+                                <th>주소</th>
+                                <td colspan="4">학동로 100-10, 1층</td>
+                                <th scope="row" colspan="2" class="center">전월미수</th>
+                                <td class="right" colspan="5">0원</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2" rowspan="8">
+                                    <p>
+                                        <span>제품명(투입개수, 가격)</span>
+                                        <span>GT대(14,900)</span>
+                                        <span>깜유홈(20, 1,530)</span> 
+                                    </p>
+                                </th>
+                                <th scope="row" class="left">
+                                    1
+                                </th>
+                                <th scope="row" class="left">
+                                    2
+                                </th>
+                                <th scope="row" class="left">
+                                    3
+                                </th>
+                                <th scope="row" class="left">
+                                    4
+                                </th>
+                                <th scope="row" class="left">
+                                    5
+                                </th>
+                                <th scope="row" class="left">
+                                    6
+                                </th>
+                                <th scope="row" class="left">
+                                    7
+                                </th>
+                                <th scope="row" class="left">
+                                    8
+                                </th>
+                                <th scope="row" class="left">
+                                    9
+                                </th>
+                                <th scope="row" class="left">
+                                    10
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    11
+                                </th>
+                                <th scope="row" class="left">
+                                    12
+                                </th>
+                                <th scope="row" class="left">
+                                    13
+                                </th>
+                                <th scope="row" class="left">
+                                    14
+                                </th>
+                                <th scope="row" class="left">
+                                    15
+                                </th>
+                                <th scope="row" class="left">
+                                    16
+                                </th>
+                                <th scope="row" class="left">
+                                    17
+                                </th>
+                                <th scope="row" class="left">
+                                    18
+                                </th>
+                                <th scope="row" class="left">
+                                    19
+                                </th>
+                                <th scope="row" class="left">
+                                    20
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    21
+                                </th>
+                                <th scope="row" class="left">
+                                    22
+                                </th>
+                                <th scope="row" class="left">
+                                    23
+                                </th>
+                                <th scope="row" class="left">
+                                    24
+                                </th>
+                                <th scope="row" class="left">
+                                    25
+                                </th>
+                                <th scope="row" class="left">
+                                    26
+                                </th>
+                                <th scope="row" class="left">
+                                    27
+                                </th>
+                                <th scope="row" class="left">
+                                    28
+                                </th>
+                                <th scope="row" class="left">
+                                    29
+                                </th>
+                                <th scope="row" class="left">
+                                    30
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    31
+                                </th>
+                                <td scope="row" class="left" colspan="9" rowspan="2">
+                                    <p class="pl">
+                                        <span>현금영수증: 010-0000-0000</span><br>
+                                        <span>가상계좌: 농협: 000-0000-0000-00 대표자</span><br>
+                                        <span>메모내용</span>
+                                    </p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td class="">  
+                                </td>
+                            </tr>
+                            <tr>
+                                <th rowspan="2">계좌정보</th>
+                                <td colspan="11">은행명: 계좌번호 예금주</td>
+                            </tr>
+                            <tr>
+                                <td colspan="11">농협: 000-0000-0000-00 대표자</td>
+                            </tr>
+                            <tr>
+                                <th>담당자</th>
+                                <td colspan="4">이티티</td>
+                                <th scope="row" colspan="2" class="center">전화번호</th>
+                                <td class="left" colspan="5">010-0000-0000</td>
+                            </tr>
+                             <tr>
+                                <th>상호명</th>
+                                <td colspan="4">비티소프트</td>
+                                <th scope="row" colspan="2" class="center">전화번호</th>
+                                <td class="left" colspan="5">010-0000-0000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="content">
+                    <div class="titleArea">
+                        <h3>청구서</h3>
+                    </div>
+                    <div class="top">
+                        <span>지역명 :</span>
+                        <span>논현1동</span>
+                    </div>
+                    <table class="tbl">
+                        <caption>배달 내역</caption>
+                        <colgroup>
+                            <col style="width:14%;">
+                            <col>
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th>월분</th>
+                                <td colspan="4">2021-12</td>
+                                <th scope="row" colspan="2" class="center">청구금액</th>
+                                <td class="right" colspan="5">50,000원</td>
+                            </tr>
+                            <tr>
+                                <th>성명</th>
+                                <td colspan="4">김비티</td>
+                                <th scope="row" colspan="2" class="center">당월애음</th>
+                                <td class="right" colspan="5">50,000원</td>
+                            </tr>
+                            <tr>
+                                <th>주소</th>
+                                <td colspan="4">학동로 100-10, 1층</td>
+                                <th scope="row" colspan="2" class="center">전월미수</th>
+                                <td class="right" colspan="5">0원</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2" rowspan="8">
+                                    <p>
+                                        <span>제품명(투입개수, 가격)</span>
+                                        <span>GT대(14,900)</span>
+                                        <span>깜유홈(20, 1,530)</span> 
+                                    </p>
+                                </th>
+                                <th scope="row" class="left">
+                                    1
+                                </th>
+                                <th scope="row" class="left">
+                                    2
+                                </th>
+                                <th scope="row" class="left">
+                                    3
+                                </th>
+                                <th scope="row" class="left">
+                                    4
+                                </th>
+                                <th scope="row" class="left">
+                                    5
+                                </th>
+                                <th scope="row" class="left">
+                                    6
+                                </th>
+                                <th scope="row" class="left">
+                                    7
+                                </th>
+                                <th scope="row" class="left">
+                                    8
+                                </th>
+                                <th scope="row" class="left">
+                                    9
+                                </th>
+                                <th scope="row" class="left">
+                                    10
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    11
+                                </th>
+                                <th scope="row" class="left">
+                                    12
+                                </th>
+                                <th scope="row" class="left">
+                                    13
+                                </th>
+                                <th scope="row" class="left">
+                                    14
+                                </th>
+                                <th scope="row" class="left">
+                                    15
+                                </th>
+                                <th scope="row" class="left">
+                                    16
+                                </th>
+                                <th scope="row" class="left">
+                                    17
+                                </th>
+                                <th scope="row" class="left">
+                                    18
+                                </th>
+                                <th scope="row" class="left">
+                                    19
+                                </th>
+                                <th scope="row" class="left">
+                                    20
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    21
+                                </th>
+                                <th scope="row" class="left">
+                                    22
+                                </th>
+                                <th scope="row" class="left">
+                                    23
+                                </th>
+                                <th scope="row" class="left">
+                                    24
+                                </th>
+                                <th scope="row" class="left">
+                                    25
+                                </th>
+                                <th scope="row" class="left">
+                                    26
+                                </th>
+                                <th scope="row" class="left">
+                                    27
+                                </th>
+                                <th scope="row" class="left">
+                                    28
+                                </th>
+                                <th scope="row" class="left">
+                                    29
+                                </th>
+                                <th scope="row" class="left">
+                                    30
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    31
+                                </th>
+                                <td scope="row" class="left" colspan="9" rowspan="2">
+                                    <p class="pl">
+                                        <span>현금영수증: 010-0000-0000</span><br>
+                                        <span>가상계좌: 농협: 000-0000-0000-00 대표자</span><br>
+                                        <span>메모내용</span>
+                                    </p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td class="">  
+                                </td>
+                            </tr>
+                            <tr>
+                                <th rowspan="2">계좌정보</th>
+                                <td colspan="11">은행명: 계좌번호 예금주</td>
+                            </tr>
+                            <tr>
+                                <td colspan="11">농협: 000-0000-0000-00 대표자</td>
+                            </tr>
+                            <tr>
+                                <th>담당자</th>
+                                <td colspan="4">이티티</td>
+                                <th scope="row" colspan="2" class="center">전화번호</th>
+                                <td class="left" colspan="5">010-0000-0000</td>
+                            </tr>
+                             <tr>
+                                <th>상호명</th>
+                                <td colspan="4">비티소프트</td>
+                                <th scope="row" colspan="2" class="center">전화번호</th>
+                                <td class="left" colspan="5">010-0000-0000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="content">
+                    <div class="titleArea">
+                        <h3>청구서</h3>
+                    </div>
+                    <div class="top">
+                        <span>지역명 :</span>
+                        <span>논현1동</span>
+                    </div>
+                    <table class="tbl">
+                        <caption>배달 내역</caption>
+                        <colgroup>
+                            <col style="width:14%;">
+                            <col>
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th>월분</th>
+                                <td colspan="4">2021-12</td>
+                                <th scope="row" colspan="2" class="center">청구금액</th>
+                                <td class="right" colspan="5">50,000원</td>
+                            </tr>
+                            <tr>
+                                <th>성명</th>
+                                <td colspan="4">김비티</td>
+                                <th scope="row" colspan="2" class="center">당월애음</th>
+                                <td class="right" colspan="5">50,000원</td>
+                            </tr>
+                            <tr>
+                                <th>주소</th>
+                                <td colspan="4">학동로 100-10, 1층</td>
+                                <th scope="row" colspan="2" class="center">전월미수</th>
+                                <td class="right" colspan="5">0원</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2" rowspan="8">
+                                    <p>
+                                        <span>제품명(투입개수, 가격)</span>
+                                        <span>GT대(14,900)</span>
+                                        <span>깜유홈(20, 1,530)</span> 
+                                    </p>
+                                </th>
+                                <th scope="row" class="left">
+                                    1
+                                </th>
+                                <th scope="row" class="left">
+                                    2
+                                </th>
+                                <th scope="row" class="left">
+                                    3
+                                </th>
+                                <th scope="row" class="left">
+                                    4
+                                </th>
+                                <th scope="row" class="left">
+                                    5
+                                </th>
+                                <th scope="row" class="left">
+                                    6
+                                </th>
+                                <th scope="row" class="left">
+                                    7
+                                </th>
+                                <th scope="row" class="left">
+                                    8
+                                </th>
+                                <th scope="row" class="left">
+                                    9
+                                </th>
+                                <th scope="row" class="left">
+                                    10
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    11
+                                </th>
+                                <th scope="row" class="left">
+                                    12
+                                </th>
+                                <th scope="row" class="left">
+                                    13
+                                </th>
+                                <th scope="row" class="left">
+                                    14
+                                </th>
+                                <th scope="row" class="left">
+                                    15
+                                </th>
+                                <th scope="row" class="left">
+                                    16
+                                </th>
+                                <th scope="row" class="left">
+                                    17
+                                </th>
+                                <th scope="row" class="left">
+                                    18
+                                </th>
+                                <th scope="row" class="left">
+                                    19
+                                </th>
+                                <th scope="row" class="left">
+                                    20
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    21
+                                </th>
+                                <th scope="row" class="left">
+                                    22
+                                </th>
+                                <th scope="row" class="left">
+                                    23
+                                </th>
+                                <th scope="row" class="left">
+                                    24
+                                </th>
+                                <th scope="row" class="left">
+                                    25
+                                </th>
+                                <th scope="row" class="left">
+                                    26
+                                </th>
+                                <th scope="row" class="left">
+                                    27
+                                </th>
+                                <th scope="row" class="left">
+                                    28
+                                </th>
+                                <th scope="row" class="left">
+                                    29
+                                </th>
+                                <th scope="row" class="left">
+                                    30
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    31
+                                </th>
+                                <td scope="row" class="left" colspan="9" rowspan="2">
+                                    <p class="pl">
+                                        <span>현금영수증: 010-0000-0000</span><br>
+                                        <span>가상계좌: 농협: 000-0000-0000-00 대표자</span><br>
+                                        <span>메모내용</span>
+                                    </p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td class="">  
+                                </td>
+                            </tr>
+                            <tr>
+                                <th rowspan="2">계좌정보</th>
+                                <td colspan="11">은행명: 계좌번호 예금주</td>
+                            </tr>
+                            <tr>
+                                <td colspan="11">농협: 000-0000-0000-00 대표자</td>
+                            </tr>
+                            <tr>
+                                <th>담당자</th>
+                                <td colspan="4">이티티</td>
+                                <th scope="row" colspan="2" class="center">전화번호</th>
+                                <td class="left" colspan="5">010-0000-0000</td>
+                            </tr>
+                             <tr>
+                                <th>상호명</th>
+                                <td colspan="4">비티소프트</td>
+                                <th scope="row" colspan="2" class="center">전화번호</th>
+                                <td class="left" colspan="5">010-0000-0000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="content">
+                    <div class="titleArea">
+                        <h3>청구서</h3>
+                    </div>
+                    <div class="top">
+                        <span>지역명 :</span>
+                        <span>논현1동</span>
+                    </div>
+                    <table class="tbl">
+                        <caption>배달 내역</caption>
+                        <colgroup>
+                            <col style="width:14%;">
+                            <col>
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th>월분</th>
+                                <td colspan="4">2021-12</td>
+                                <th scope="row" colspan="2" class="center">청구금액</th>
+                                <td class="right" colspan="5">50,000원</td>
+                            </tr>
+                            <tr>
+                                <th>성명</th>
+                                <td colspan="4">김비티</td>
+                                <th scope="row" colspan="2" class="center">당월애음</th>
+                                <td class="right" colspan="5">50,000원</td>
+                            </tr>
+                            <tr>
+                                <th>주소</th>
+                                <td colspan="4">학동로 100-10, 1층</td>
+                                <th scope="row" colspan="2" class="center">전월미수</th>
+                                <td class="right" colspan="5">0원</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2" rowspan="8">
+                                    <p>
+                                        <span>제품명(투입개수, 가격)</span>
+                                        <span>GT대(14,900)</span>
+                                        <span>깜유홈(20, 1,530)</span> 
+                                    </p>
+                                </th>
+                                <th scope="row" class="left">
+                                    1
+                                </th>
+                                <th scope="row" class="left">
+                                    2
+                                </th>
+                                <th scope="row" class="left">
+                                    3
+                                </th>
+                                <th scope="row" class="left">
+                                    4
+                                </th>
+                                <th scope="row" class="left">
+                                    5
+                                </th>
+                                <th scope="row" class="left">
+                                    6
+                                </th>
+                                <th scope="row" class="left">
+                                    7
+                                </th>
+                                <th scope="row" class="left">
+                                    8
+                                </th>
+                                <th scope="row" class="left">
+                                    9
+                                </th>
+                                <th scope="row" class="left">
+                                    10
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    11
+                                </th>
+                                <th scope="row" class="left">
+                                    12
+                                </th>
+                                <th scope="row" class="left">
+                                    13
+                                </th>
+                                <th scope="row" class="left">
+                                    14
+                                </th>
+                                <th scope="row" class="left">
+                                    15
+                                </th>
+                                <th scope="row" class="left">
+                                    16
+                                </th>
+                                <th scope="row" class="left">
+                                    17
+                                </th>
+                                <th scope="row" class="left">
+                                    18
+                                </th>
+                                <th scope="row" class="left">
+                                    19
+                                </th>
+                                <th scope="row" class="left">
+                                    20
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    21
+                                </th>
+                                <th scope="row" class="left">
+                                    22
+                                </th>
+                                <th scope="row" class="left">
+                                    23
+                                </th>
+                                <th scope="row" class="left">
+                                    24
+                                </th>
+                                <th scope="row" class="left">
+                                    25
+                                </th>
+                                <th scope="row" class="left">
+                                    26
+                                </th>
+                                <th scope="row" class="left">
+                                    27
+                                </th>
+                                <th scope="row" class="left">
+                                    28
+                                </th>
+                                <th scope="row" class="left">
+                                    29
+                                </th>
+                                <th scope="row" class="left">
+                                    30
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    31
+                                </th>
+                                <td scope="row" class="left" colspan="9" rowspan="2">
+                                    <p class="pl">
+                                        <span>현금영수증: 010-0000-0000</span><br>
+                                        <span>가상계좌: 농협: 000-0000-0000-00 대표자</span><br>
+                                        <span>메모내용</span>
+                                    </p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td class="">  
+                                </td>
+                            </tr>
+                            <tr>
+                                <th rowspan="2">계좌정보</th>
+                                <td colspan="11">은행명: 계좌번호 예금주</td>
+                            </tr>
+                            <tr>
+                                <td colspan="11">농협: 000-0000-0000-00 대표자</td>
+                            </tr>
+                            <tr>
+                                <th>담당자</th>
+                                <td colspan="4">이티티</td>
+                                <th scope="row" colspan="2" class="center">전화번호</th>
+                                <td class="left" colspan="5">010-0000-0000</td>
+                            </tr>
+                             <tr>
+                                <th>상호명</th>
+                                <td colspan="4">비티소프트</td>
+                                <th scope="row" colspan="2" class="center">전화번호</th>
+                                <td class="left" colspan="5">010-0000-0000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="content">
+                    <div class="titleArea">
+                        <h3>청구서</h3>
+                    </div>
+                    <div class="top">
+                        <span>지역명 :</span>
+                        <span>논현1동</span>
+                    </div>
+                    <table class="tbl">
+                        <caption>배달 내역</caption>
+                        <colgroup>
+                            <col style="width:14%;">
+                            <col>
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                            <col style="width:7%;">
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th>월분</th>
+                                <td colspan="4">2021-12</td>
+                                <th scope="row" colspan="2" class="center">청구금액</th>
+                                <td class="right" colspan="5">50,000원</td>
+                            </tr>
+                            <tr>
+                                <th>성명</th>
+                                <td colspan="4">김비티</td>
+                                <th scope="row" colspan="2" class="center">당월애음</th>
+                                <td class="right" colspan="5">50,000원</td>
+                            </tr>
+                            <tr>
+                                <th>주소</th>
+                                <td colspan="4">학동로 100-10, 1층</td>
+                                <th scope="row" colspan="2" class="center">전월미수</th>
+                                <td class="right" colspan="5">0원</td>
+                            </tr>
+                            <tr>
+                                <th colspan="2" rowspan="8">
+                                    <p>
+                                        <span>제품명(투입개수, 가격)</span>
+                                        <span>GT대(14,900)</span>
+                                        <span>깜유홈(20, 1,530)</span> 
+                                    </p>
+                                </th>
+                                <th scope="row" class="left">
+                                    1
+                                </th>
+                                <th scope="row" class="left">
+                                    2
+                                </th>
+                                <th scope="row" class="left">
+                                    3
+                                </th>
+                                <th scope="row" class="left">
+                                    4
+                                </th>
+                                <th scope="row" class="left">
+                                    5
+                                </th>
+                                <th scope="row" class="left">
+                                    6
+                                </th>
+                                <th scope="row" class="left">
+                                    7
+                                </th>
+                                <th scope="row" class="left">
+                                    8
+                                </th>
+                                <th scope="row" class="left">
+                                    9
+                                </th>
+                                <th scope="row" class="left">
+                                    10
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    11
+                                </th>
+                                <th scope="row" class="left">
+                                    12
+                                </th>
+                                <th scope="row" class="left">
+                                    13
+                                </th>
+                                <th scope="row" class="left">
+                                    14
+                                </th>
+                                <th scope="row" class="left">
+                                    15
+                                </th>
+                                <th scope="row" class="left">
+                                    16
+                                </th>
+                                <th scope="row" class="left">
+                                    17
+                                </th>
+                                <th scope="row" class="left">
+                                    18
+                                </th>
+                                <th scope="row" class="left">
+                                    19
+                                </th>
+                                <th scope="row" class="left">
+                                    20
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    21
+                                </th>
+                                <th scope="row" class="left">
+                                    22
+                                </th>
+                                <th scope="row" class="left">
+                                    23
+                                </th>
+                                <th scope="row" class="left">
+                                    24
+                                </th>
+                                <th scope="row" class="left">
+                                    25
+                                </th>
+                                <th scope="row" class="left">
+                                    26
+                                </th>
+                                <th scope="row" class="left">
+                                    27
+                                </th>
+                                <th scope="row" class="left">
+                                    28
+                                </th>
+                                <th scope="row" class="left">
+                                    29
+                                </th>
+                                <th scope="row" class="left">
+                                    30
+                                </th>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td></td>
+                                <td class="right">5</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="right">1</td>
+                                <td></td>
+                                <td class="right">3</td>                                
+                                <td class="right">4</td>
+                            </tr>
+                            <tr>
+                                <th scope="row" class="left">
+                                    31
+                                </th>
+                                <td scope="row" class="left" colspan="9" rowspan="2">
+                                    <p class="pl">
+                                        <span>현금영수증: 010-0000-0000</span><br>
+                                        <span>가상계좌: 농협: 000-0000-0000-00 대표자</span><br>
+                                        <span>메모내용</span>
+                                    </p>
+                                </th>
+                            </tr>
+                            <tr>
+                                <td class="">  
+                                </td>
+                            </tr>
+                            <tr>
+                                <th rowspan="2">계좌정보</th>
+                                <td colspan="11">은행명: 계좌번호 예금주</td>
+                            </tr>
+                            <tr>
+                                <td colspan="11">농협: 000-0000-0000-00 대표자</td>
+                            </tr>
+                            <tr>
+                                <th>담당자</th>
+                                <td colspan="4">이티티</td>
+                                <th scope="row" colspan="2" class="center">전화번호</th>
+                                <td class="left" colspan="5">010-0000-0000</td>
+                            </tr>
+                             <tr>
+                                <th>상호명</th>
+                                <td colspan="4">비티소프트</td>
+                                <th scope="row" colspan="2" class="center">전화번호</th>
+                                <td class="left" colspan="5">010-0000-0000</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+</body>
+</html>

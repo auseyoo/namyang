@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.sale.dao.BcncUntpcMngMapper">
+	<select id="selectUntpcMngList" parameterType="com.namyang.nyorder.sale.vo.BcncUntpcVO" resultType="com.namyang.nyorder.sale.vo.BcncUntpcVO">
+		/* BcncUntpcMng-Mapper - selectUntpcMngList */
+		SELECT
+			AVU.VEND_UNTPC_SEQ,
+			AVU.VEND_SEQ,
+			AVU.AGEN_SEQ,
+			AVU.PRD_DTL_SEQ,
+			CONVERT(INT,AVU.SALE_UNTPC) SALE_UNTPC ,
+			CONVERT(INT, AVU.SALE_UNTPC * 100 / 110) AS SALE_UNTPC_CT,
+			CONVERT(INT, AVU.SALE_UNTPC * 10 / 110) AS SALE_UNTPC_VAT,
+			AVU.USE_YN,
+			AVU.REG_DTM,
+			AVU.REG_SEQ,
+			AVU.UPT_DTM,
+			AVU.UPT_SEQ,
+			AVU.PUCH_SEQ,
+			PD.SHTN_NM PRD_NM,
+			PD.PRD_DTL_CD,
+			PD.PRD_SEQ,
+			ISNULL(SPS.UNTPC ,
+				(SELECT
+					ISNULL(PM.SPPRC,0)+ISNULL(PM.VAT_SPPRC,0)
+				 FROM
+				 	T_PRD_MST PM
+				 WHERE
+				 	PM.PRD_SEQ = PD.PRD_SEQ
+				)
+			) AS IDDY_PCHA_CT,
+			CONVERT(INT,(1-(SPS.UNTPC/AVU.SALE_UNTPC))*100) MRGN_RATE,
+			CONVERT(INT,AVU.SALE_UNTPC * (1-(SPS.UNTPC/AVU.SALE_UNTPC))) MRGN,
+			(
+				SELECT
+					CASE
+					WHEN COUNT(1) > 0 THEN  'Y'
+					ELSE 'N'
+					END
+				FROM
+					T_BA_SALE_MST BSM
+				INNER JOIN
+					T_BA_SALE_DTL BSD
+					ON	BSD.AGEN_SEQ= AVU.AGEN_SEQ
+					AND	BSD.VEND_SEQ= AVU.VEND_SEQ
+					AND BSD.VEND_SALE_SEQ  = BSM.VEND_SALE_SEQ
+					AND BSD.PRD_DTL_SEQ  =AVU.PRD_DTL_SEQ
+				WHERE
+					BSM.USE_YN ='Y'
+			) AS SALE_YN,
+			(
+				SELECT
+					CASE
+					WHEN COUNT(1) > 0 THEN  'Y'
+					ELSE 'N'
+					END
+				FROM
+					T_VEND_UNTPC_CHG VUC
+				WHERE
+						VUC.AGEN_SEQ= AVU.AGEN_SEQ
+					AND	VUC.VEND_SEQ= AVU.VEND_SEQ
+					AND	(VUC.BEF_PRD_DTL_SEQ= AVU.PRD_DTL_SEQ  OR VUC.AFT_PRD_DTL_SEQ= AVU.PRD_DTL_SEQ)
+					AND VUC.USE_YN ='Y'
+					AND VUC.APPL_YN = 'N'
+					AND VUC.CHG_TYPE ='BND'
+			) AS BND_YN,
+			P.PUCH_CD,
+			P.PUCH_NM
+		FROM
+			T_AGEN_VEND_UNTPC AVU
+			LEFT JOIN T_PRD_DTL PD ON AVU.PRD_DTL_SEQ = PD.PRD_DTL_SEQ AND AVU.AGEN_SEQ = PD.AGEN_SEQ
+			<choose>
+				<when test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(puchSeq)">
+					AND PD.PUCH_SEQ = #{puchSeq}
+				</when>
+				<otherwise>
+					AND PD.PUCH_SEQ = 1
+				</otherwise>
+			</choose>
+			LEFT JOIN
+			(
+				SELECT	PUCH_SEQ, PUCH_CD, PUCH_NM, USE_CD
+				FROM	T_AGEN_MJR_PUCH
+				WHERE	USE_CD ='Y'
+				UNION ALL
+				SELECT	PUCH_SEQ, PUCH_CD, PUCH_NM, USE_CD
+				FROM T_AGEN_OTR_PUCH
+				WHERE	USE_CD ='Y'
+				AND 	AGEN_SEQ =#{agenSeq}
+			)  P
+			ON	PD.PUCH_SEQ = P.PUCH_SEQ
+			LEFT JOIN T_STDR_PRD_SPPRC  SPS ON SPS.PRD_DTL_SEQ = PD.PRD_DTL_SEQ AND LAST_YN ='Y'
+
+		WHERE 1=1
+			AND AVU.AGEN_SEQ = #{agenSeq}
+			AND AVU.VEND_SEQ = #{vendSeq}
+			AND AVU.USE_YN	 = 'Y'
+			AND AVU.APPL_YN  = 'Y'
+
+	</select>
+	<select id="selectAllBcncUntpc" parameterType="com.namyang.nyorder.sale.vo.BcncUntpcVO" resultType="com.namyang.nyorder.sale.vo.BcncUntpcVO">
+		/* BcncUntpcMng-Mapper - selectUntpcMngList */
+		SELECT
+			AV.AGEN_SEQ,
+			AV.VEND_SEQ,
+			VU.VEND_UNTPC_SEQ,
+			VU.PRD_DTL_SEQ,
+			AV.VEND_NM,
+			AV.VEND_CD,
+			PD.SHTN_NM PRD_NM,
+			PD.PRD_DTL_CD,
+			PD.PUCH_SEQ,
+			VU.SALE_UNTPC,
+			VU.USE_YN
+		FROM
+			T_AGEN_VEND AV
+		INNER JOIN
+			(SELECT
+				RANK() OVER(PARTITION BY  VEND_SEQ ORDER BY APPL_DT DESC, VEND_UNTPC_SEQ DESC) AS RNK,
+				VEND_UNTPC_SEQ,AGEN_SEQ,VEND_SEQ,PRD_DTL_SEQ, SALE_UNTPC,APPL_DT,USE_YN
+			FROM T_AGEN_VEND_UNTPC
+			WHERE
+				AGEN_SEQ = #{agenSeq}
+				AND PRD_DTL_SEQ = #{prdDtlSeq}
+				AND USE_YN	 = 'Y'
+			<![CDATA[AND APPL_DT <= #{applDt} ]]>
+			) VU ON
+				RNK=1
+				AND VU.VEND_SEQ = AV.VEND_SEQ
+		LEFT JOIN T_PRD_DTL PD
+			ON
+				PD.PRD_DTL_SEQ = VU.PRD_DTL_SEQ
+			AND PD.AGEN_SEQ = VU.AGEN_SEQ
+		WHERE
+			AV.AGEN_SEQ = #{agenSeq}
+		ORDER BY AV.VEND_CD
+	</select>
+	<select id="selectBcncPrdChgHis" parameterType="com.namyang.nyorder.sale.vo.BcncUntpcVO" resultType="com.namyang.nyorder.sale.vo.BcncUntpcVO">
+		SELECT
+			VUC.VEND_UNTPC_CHG_SEQ ,
+			VUC.BEF_PRD_DTL_SEQ ,
+			VUC.AFT_PRD_DTL_SEQ ,
+			VUC.VEND_SEQ ,
+			AV.VEND_NM,
+			AV.VEND_CD,
+			PD.SHTN_NM AS BEF_PRD_NM,
+			PD.PRD_DTL_CD AS BEF_PRD_CD,
+			CASE VUC.CHG_TYPE
+				WHEN 'BND' THEN '일괄'
+				WHEN 'NORM' THEN '개별'
+				ELSE '특별단가'
+			END CHG_TYPE_NM,
+			VUC.SPECL_UNTPC_YN,
+			CASE
+				WHEN VUC.CHG_TYPE  ='BND' OR VUC.CHG_TYPE ='SALE' THEN
+				(
+					SELECT TAVU.SALE_UNTPC
+					FROM
+					(
+						SELECT
+							RANK() OVER(PARTITION BY PRD_DTL_SEQ  ORDER BY APPL_DT DESC) AS RNK,
+							AVU.SALE_UNTPC,PRD_DTL_SEQ
+						FROM
+							T_AGEN_VEND_UNTPC AVU
+						WHERE
+							AVU.AGEN_SEQ  = VUC.AGEN_SEQ
+							AND AVU.VEND_SEQ  = VUC.VEND_SEQ
+							<![CDATA[AND AVU.APPL_DT  <= VUC.APPL_DT ]]>
+							AND AVU.PRD_DTL_SEQ = VUC.BEF_PRD_DTL_SEQ
+					) TAVU
+					WHERE TAVU.RNK=1
+				)
+				ELSE
+				(
+					SELECT
+						CASE
+							WHEN TAVU.DEL_YN ='Y'
+							THEN NULL
+						ELSE
+							TAVU.SALE_UNTPC
+						END SALE_UNTPC
+					FROM
+					(
+						SELECT
+							RANK() OVER(PARTITION BY PRD_DTL_SEQ ORDER BY APPL_DT DESC, VEND_UNTPC_SEQ DESC) AS RNK,
+							AVU.SALE_UNTPC,PRD_DTL_SEQ,AVU.USE_YN , AVU.APPL_YN , AVU.DEL_YN
+						FROM
+							T_AGEN_VEND_UNTPC AVU
+						WHERE
+							AVU.AGEN_SEQ  = VUC.AGEN_SEQ
+							AND AVU.VEND_SEQ  = VUC.VEND_SEQ
+							<![CDATA[AND AVU.APPL_DT  <= VUC.APPL_DT ]]>
+							AND AVU.PRD_DTL_SEQ = VUC.BEF_PRD_DTL_SEQ
+					) TAVU
+					WHERE TAVU.RNK=2
+				)
+			END BEF_SALE_UNTPC,
+			PD2.SHTN_NM AS AFT_PRD_NM,
+			PD2.PRD_DTL_CD AS AFT_PRD_CD,
+			CASE VUC.CHG_TYPE
+				WHEN 'SALE' THEN VUC.SALE_CT
+				ELSE
+					(
+						SELECT TAVU.SALE_UNTPC
+						FROM
+						(
+							SELECT
+								RANK() OVER(PARTITION BY PRD_DTL_SEQ ORDER BY VEND_UNTPC_SEQ DESC) AS RNK,
+								AVU.SALE_UNTPC,PRD_DTL_SEQ
+							FROM
+								T_AGEN_VEND_UNTPC AVU
+							WHERE
+								AVU.AGEN_SEQ  = VUC.AGEN_SEQ
+								AND AVU.VEND_SEQ  = VUC.VEND_SEQ
+								AND AVU.APPL_DT  = VUC.APPL_DT
+								AND AVU.PRD_DTL_SEQ = VUC.AFT_PRD_DTL_SEQ
+						) TAVU
+						WHERE TAVU.RNK=1
+					)
+			END AS AFT_SALE_UNTPC,
+			VUC.APPL_DT,
+			VUC.APPL_YN
+		FROM
+			(
+				SELECT
+					AGEN_SEQ ,
+					VEND_SEQ ,
+					VEND_UNTPC_CHG_SEQ ,
+					BEF_PRD_DTL_SEQ ,
+					AFT_PRD_DTL_SEQ ,
+					CHG_TYPE,
+					APPL_DT ,
+					APPL_YN,
+					USE_YN,
+					0 AS SALE_CT,
+					'N' AS SPECL_UNTPC_YN
+				FROM
+					T_VEND_UNTPC_CHG VUC
+			UNION ALL
+				SELECT
+					BSD.AGEN_SEQ ,
+					BSD.VEND_SEQ ,
+					NULL AS VEND_UNTPC_CHG_SEQ ,
+					BSD.PRD_DTL_SEQ AS BEF_PRD_DTL_SEQ ,
+					BSD.PRD_DTL_SEQ AS AFT_PRD_DTL_SEQ ,
+					'SALE' AS CHG_TYPE,
+					BSM.SALE_DT AS APPL_DT ,
+					CASE
+						<![CDATA[WHEN (SELECT CONVERT(CHAR(6),GETDATE(),12)) >= BSM.SALE_DT THEN]]>
+						'Y'
+						ELSE 'N'
+					END AS APPL_YN,
+					'Y' AS USE_YN,
+					BSD.SALE_CT ,
+					BSD.SPECL_UNTPC_YN
+				FROM
+					T_BA_SALE_MST BSM
+				LEFT JOIN
+					T_BA_SALE_DTL BSD
+				ON
+					BSD.VEND_SALE_SEQ  = BSM.VEND_SALE_SEQ
+			) VUC
+		LEFT JOIN
+			T_AGEN_VEND AV
+		ON
+			AV.VEND_SEQ  = VUC.VEND_SEQ
+		LEFT JOIN
+			T_PRD_DTL PD
+		ON
+				PD.PRD_DTL_SEQ  = VUC.BEF_PRD_DTL_SEQ
+		LEFT JOIN
+			T_PRD_DTL PD2
+		ON
+				PD2.PRD_DTL_SEQ  = VUC.AFT_PRD_DTL_SEQ
+		WHERE
+			VUC.USE_YN ='Y'
+		ORDER BY VUC.VEND_UNTPC_CHG_SEQ DESC
+
+	</select>
+	<select id="selectStdrPrdList" parameterType="Map"  resultType="java.util.Map">
+		SELECT
+			AVU.VEND_SEQ stdrVendSeq ,
+			AVU.PRD_DTL_SEQ stdrPrdDtlSeq ,
+			AVU.SALE_UNTPC stdrSaleUntpc ,
+			AVU2.VEND_UNTPC_SEQ vendUntpcSeq,
+			AVU2.VEND_SEQ vendSeq,
+			AVU2.PRD_DTL_SEQ prdDtlSeq,
+			AVU2.SALE_UNTPC saleUntpc
+		FROM
+			T_AGEN_VEND_UNTPC AVU
+		INNER JOIN
+			T_AGEN_VEND_UNTPC AVU2
+			ON
+				AVU2.AGEN_SEQ =AVU.AGEN_SEQ
+				AND AVU2.VEND_SEQ = #{vendSeq}
+				AND AVU2.PRD_DTL_SEQ = AVU.PRD_DTL_SEQ
+				AND AVU2.USE_YN = 'Y'
+				AND AVU2.APPL_YN = 'Y'
+		WHERE
+				AVU.AGEN_SEQ = #{agenSeq}
+			AND AVU.VEND_SEQ = #{stdrVendSeq}
+			AND AVU.USE_YN = 'Y'
+			AND AVU.APPL_YN = 'Y'
+	</select>
+	<update id="updateUntpcEnd" parameterType="com.namyang.nyorder.sale.vo.BcncUntpcVO">
+		UPDATE T_AGEN_VEND_UNTPC SET
+			USE_YN= 'N',
+		<if test ='removeYn=="Y"'>
+			DEL_YN ='Y',
+		</if>
+			UPT_DTM = CURRENT_TIMESTAMP,
+			UPT_SEQ = #{emplSeq}
+		WHERE AGEN_SEQ = #{agenSeq}
+			AND VEND_SEQ = #{vendSeq}
+			AND PRD_DTL_SEQ =  #{aftPrdDtlSeq}
+		<if test ='removeYn=="N"'>
+			AND USE_YN = 'Y'
+			AND APPL_YN = 'Y'
+		</if>
+	</update>
+	<update id="megAgenVendUntpc" parameterType="com.namyang.nyorder.sale.vo.BcncUntpcVO">
+		/* BcncUntpcMng-Mapper - megAgenVendUntpc */
+		DECLARE @VEND_UNTPC_SEQ     numeric(13)
+		SET @VEND_UNTPC_SEQ = NEXT VALUE FOR SQ_VEND_SALE
+		MERGE INTO T_AGEN_VEND_UNTPC A
+		USING(
+			SELECT #{agenSeq} AS AGEN_SEQ,
+				   #{vendSeq} AS VEND_SEQ,
+				   #{aftPrdDtlSeq} AS PRD_DTL_SEQ,
+				   REPLACE(#{chgApplDt},'-','') AS APPL_DT
+		) B
+		ON (
+				A.AGEN_SEQ = B.AGEN_SEQ
+			AND A.VEND_SEQ = B.VEND_SEQ
+			AND A.PRD_DTL_SEQ = B.PRD_DTL_SEQ
+			AND A.APPL_DT = B.APPL_DT
+		)
+		WHEN	MATCHED THEN
+			UPDATE	SET
+				SALE_UNTPC = #{chgSaleUntpc},
+				USE_YN ='Y',
+				DEL_YN ='N',
+				APPL_YN = #{applYn},
+				UPT_DTM = CURRENT_TIMESTAMP,
+				UPT_SEQ = #{emplSeq}
+		WHEN	NOT MATCHED THEN
+			INSERT
+				(VEND_UNTPC_SEQ, VEND_SEQ, AGEN_SEQ, PUCH_SEQ, PRD_DTL_SEQ, SALE_UNTPC,  APPL_YN, APPL_DT, USE_YN, REG_DTM, REG_SEQ, DEL_YN)
+			VALUES(
+				@VEND_UNTPC_SEQ,
+				#{vendSeq},
+				#{agenSeq},
+				#{puchSeq},
+				#{aftPrdDtlSeq},
+				#{chgSaleUntpc},
+				#{applYn},
+				REPLACE(#{chgApplDt},'-',''),
+				'Y',
+				CURRENT_TIMESTAMP,
+				#{emplSeq},
+				'N'
+			);
+	</update>
+
+	<update id="megVendUntpcChg" parameterType="com.namyang.nyorder.sale.vo.BcncUntpcVO">
+		/* BcncUntpcMng-Mapper - megVendUntpcChgㅍ */
+		DECLARE @VEND_UNTPC_CHG_SEQ     numeric(13)
+		SET @VEND_UNTPC_CHG_SEQ = NEXT VALUE FOR SQ_VEND_UNTPC_CHG
+
+		MERGE INTO T_VEND_UNTPC_CHG A
+		USING(
+			SELECT #{agenSeq} AS AGEN_SEQ,
+				   #{vendSeq} AS VEND_SEQ,
+				   #{aftPrdDtlSeq} AS AFT_PRD_DTL_SEQ,
+				   REPLACE(#{chgApplDt},'-','')  AS APPL_DT
+		) B
+		ON (
+				A.AGEN_SEQ = B.AGEN_SEQ
+			AND A.VEND_SEQ = B.VEND_SEQ
+			AND A.AFT_PRD_DTL_SEQ = B.AFT_PRD_DTL_SEQ
+			AND A.APPL_DT = B.APPL_DT
+		)
+		WHEN	MATCHED THEN
+			UPDATE	SET
+				BEF_PRD_DTL_SEQ = #{befPrdDtlSeq},
+				APPL_YN = #{applYn},
+				REG_DTM = CURRENT_TIMESTAMP,
+				REG_SEQ = #{emplSeq}
+		WHEN	NOT MATCHED THEN
+			INSERT
+				(VEND_UNTPC_CHG_SEQ, AGEN_SEQ, VEND_SEQ, BEF_PRD_DTL_SEQ,
+				 AFT_PRD_DTL_SEQ, CHG_TYPE,	 APPL_YN, USE_YN, REG_DTM, REG_SEQ, APPL_DT)
+			VALUES(
+				@VEND_UNTPC_CHG_SEQ,
+				#{agenSeq},
+				#{vendSeq},
+				#{befPrdDtlSeq},
+				#{aftPrdDtlSeq},
+				#{chgType},
+				#{applYn},
+				'Y',
+				CURRENT_TIMESTAMP,
+				#{emplSeq},
+				REPLACE(#{chgApplDt},'-','')
+			);
+	</update>
+</mapper>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.comm.dao.AccountMapper">
+
+    <select id="selectAccount" parameterType="com.namyang.nyorder.comm.vo.AccountVO" resultType="com.namyang.nyorder.comm.vo.AccountVO">
+        EXEC P_OPEN_KEY
+		
+        
+        SELECT tae.EMPL_SEQ , tae.AGEN_SEQ , tae.EMPL_CD , tae.EMPL_SEC_CD , tam.AGEN_CD, tam.SALE_CD
+        	, CONVERT(varchar, DecryptByKey(tae.EMPL_NM)) as EMPL_NM, tam.BIZ_NO , tae.MOB_NO , taep.EMPL_PWD AS password, tam.BIZ_NO + tae.EMPL_CD AS ID, '1' AS ENABLED
+        	, 'ADMIN' AS rolecode
+        	--, 'Y' AS tmpPwdYn 
+        	, TMP_PWD_YN AS tmpPwdYn
+		FROM T_AGEN_EMPL tae 
+			, T_AGEN_MST tam
+			, T_AGEN_EMPL_PWD taep 
+		WHERE 1=1
+			AND tae.AGEN_SEQ = tam.AGEN_SEQ 
+			AND tae.AGEN_SEQ = taep.AGEN_SEQ 
+			AND tae.EMPL_SEQ = taep.EMPL_SEQ 
+			AND taep.LST_PWD_YN = 'Y'
+			AND tam.BIZ_NO = #{bizNo}
+			AND tae.EMPL_CD = #{emplCd}
+	</select>
+
+</mapper>

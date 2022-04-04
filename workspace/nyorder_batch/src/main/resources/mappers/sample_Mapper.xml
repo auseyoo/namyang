@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.sample.mapper.SampleMapper">
+
+	<select id="selectSampleList" parameterType="hashmap"  resultType="java.util.HashMap">
+		SELECT * FROM NY_ORDER.dbo.T_SERT_TEST	ORDER BY NAME OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY
+	</select>
+	
+	<insert id="insSample" parameterType="Map">
+        /* batch.insert */
+        INSERT INTO NY_ORDER.dbo.T_SERT_TEST (NAME, TEL_NO) VALUES (#{NAME}, #{TEL_NO})
+    </insert>
+	
+
+    <insert id="insertSqlSession" parameterType="Map">
+        /* batch.insert */
+        INSERT INTO TEST (ID, NAME, SEX, REG_DATE) VALUES (NEXT VALUE FOR TEST_SEQ, #{name}, #{sex}, getdate())
+    </insert>
+    
+
+</mapper>

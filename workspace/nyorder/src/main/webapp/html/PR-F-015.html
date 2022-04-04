@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템 - 애음자 통계</title>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<style>
+	body,html{margin:0; padding:0; font-size:12pt; overflow-y:auto;}
+	* {color-adjust: exact!important; -webkit-print-color-adjust: exact!important; print-color-adjust: exact!important; box-sizing:border-box; -moz-box-sizing: border-box;}
+     .page {width:29.7cm; min-height:1cm; padding:1cm 1cm; margin:1cm auto; background:#fff; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);}
+	/*.subpage {padding:1cm; height:256mm;}*/
+	@page {
+		/*size: A4 landscape;*/    /*Portrait*/
+		size: A4 landscape; /* 가로 */ 
+		margin:10px 0 10px;	
+	}
+	@media print {
+		html, body {margin:0; padding:0; overflow-y:inherit;}
+		.page {margin:10px 0 10px; border:initial; border-radius:initial; width:initial; min-height:initial; box-shadow:initial; background:initial; size: A4 landscape;}
+		.tbl tbody th {background:#f5f5f5 !important;}
+		.aui-grid .aui-grid-table td{font-size:9pt;}
+	}
+
+	/*table, img, svg {break-inside:avoid;}*/
+	.printWrap{text-align:center;}
+	.printWrap h2{font-size:27px;}
+
+	.tblWrap{height:100%;}
+	table[class*="tbl"] {table-layout:fixed; width:100%; height:100%; clear:both; border-collapse:collapse;}
+	table[class*="tbl"] tr > * {vertical-align:middle;}
+	.tbl {border:1px solid #dedede;}
+	.tbl tbody th, .tbl tbody td{white-space:nowrap;}
+	.tbl thead th {font-size:10pt; font-weight:bold; height:20px; line-height:20px; background:#f5f5f5; border-right:1px solid #dedede; border-bottom:1px solid #dedede; padding:0 5px; color:#000;}
+	.tbl tbody td {font-size:9.5pt; text-align:left; border-right:1px solid #dedede; border-bottom:1px solid #dedede; padding:4px 7px 4px 7px; height:100%;}
+	.tbl tbody td p{margin:0;}
+	.tbl tbody td.ac{text-align:center;}
+	.tbl tbody td.ar{text-align:right;}
+	caption,legend{visibility:hidden;}
+
+	.dateInfo{font-size:12pt; margin:5px 0 5px; text-align:left;}
+
+	.confirm{display:flex; justify-content:space-between; font-size:11pt;}
+	.ac{text-align:center;}
+	.ar{text-align:right;}
+
+	.w50per{width:50% !important}
+	.h600{height:600px !important}
+	.ml10{margin-left:10px}
+</style>
+<script type="text/javascript">
+	var myGridID;
+
+	var gridData = [
+			{"id":"#Cust0","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust0","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust0","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust0","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust0","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust0","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust0","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+			{"id":"#Cust1","code":45666,"name":"김*비","total":50,"address":"학동로 100-10, 1층","state":"거래중"},
+	];
+
+	$(document).ready(function(){
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid();
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.        
+        
+		AUIGrid.setGridData(myGridID, gridData);
+	    //AUIGrid.setFooter(myGridID, footerLayout);
+    });
+
+	// AUIGrid 를 생성합니다.
+	function createAUIGrid() {
+		// 그리드 속성 설정
+		var gridPros = {
+				headerHeight : 29,
+				rowHeight : 29,
+				// 편집 가능 여부 (기본값 : false)
+				autoGridHeight : true,
+
+				rowIdField : "id",
+				wrapSelectionMove : true,
+				editingOnKeyDown : true, // 키보드 입력으로 편집 모드 진입 (기본값:true임;)
+				
+				editable : true,
+				// 엔터키가 다음 행이 아닌 다음 칼럼으로 이동할지 여부 (기본값 : false)
+				enterKeyColumnBase : true,
+				// 셀 선택모드 (기본값: singleCell)
+				selectionMode : "singleRow",
+				//showFooter : true,
+
+				// 컨텍스트 메뉴 사용 여부 (기본값 : false)
+				useContextMenu : true,
+				// 필터 사용 여부 (기본값 : false)
+				enableFilter : true,
+				// 그룹핑 패널 사용
+				useGroupingPanel : false,
+				
+				// 그룹핑 또는 트리로 만들었을 때 펼쳐지게 할지 여부 (기본값 : false)
+				displayTreeOpen : true,
+				
+				noDataMessage : "출력할 데이터가 없습니다.",
+				
+				groupingMessage : "여기에 칼럼을 드래그하면 그룹핑이 됩니다."
+		};
+		
+        // 실제로 #grid_wrap 에 그리드 생성
+        myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+
+	}
+
+	var columnLayout = [{
+            dataField : "code", 
+            headerText : "애음자코드",
+			width : "15%"			
+		},{
+            dataField : "name", 
+            headerText : "성명",
+			width : "15%"
+		},{
+            dataField : "address", 
+            headerText : "주소",
+			style: "auiLeft",
+		},{
+            dataField : "state", 
+            headerText : "상태",
+		},{
+            dataField : "total", 
+            headerText : "제품 합계",
+			style: "auiRight",
+			width : "15%"
+		}
+	];
+    
+</script>
+</head>
+<body>
+	<div class="printWrap">
+		<div class="page">
+			<h2>2021년 12월 애음자 통계	</h2>
+
+			<p class="dateInfo">대리점명 / 지역명 / 기준값(합계)</p>
+
+			<!-- grid -->
+			<div class="girdBox">
+				<div id="grid_wrap"></div>
+			</div>
+			<!-- grid -->
+			
+		</div>
+	</div>
+</body>
+</html>

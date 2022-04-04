@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템 - 지역 관리 : 단가변경 이력 팝업</title>
+<link rel="stylesheet" type="text/css" href="../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker_range_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<script type="text/javascript">
+	var myGridID;	
+	var gridData = [
+        {"id":"#Cust01","prd":"고칼글루900NAG(방)","price01":5000,"price02":5000,"price03":13,"venMar01":5500,"venMar02":15.8,"sellMar01":4500,"sellMar02":65.4,"culMar01":20,"culMar02":2500,"culMar03":15.6,"culMar04":6500,"memo":"","applyDate":"2021-12-31","apply":"대기","worker":"이*양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust02","prd":"고칼글루900NAG(방)","price01":5000,"price02":5000,"price03":13,"venMar01":5500,"venMar02":15.8,"sellMar01":4500,"sellMar02":65.4,"culMar01":20,"culMar02":2500,"culMar03":15.6,"culMar04":6500,"memo":"","applyDate":"2021-12-31","apply":"대기","worker":"이*양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust03","prd":"고칼글루900NAG(방)","price01":5000,"price02":5000,"price03":13,"venMar01":5500,"venMar02":15.8,"sellMar01":4500,"sellMar02":65.4,"culMar01":20,"culMar02":2500,"culMar03":15.6,"culMar04":6500,"memo":"","applyDate":"2021-12-31","apply":"대기","worker":"이*양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust04","prd":"고칼글루900NAG(방)","price01":5000,"price02":5000,"price03":13,"venMar01":5500,"venMar02":15.8,"sellMar01":4500,"sellMar02":65.4,"culMar01":20,"culMar02":2500,"culMar03":15.6,"culMar04":6500,"memo":"","applyDate":"2021-12-31","apply":"대기","worker":"이*양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust05","prd":"고칼글루900NAG(방)","price01":5000,"price02":5000,"price03":13,"venMar01":5500,"venMar02":15.8,"sellMar01":4500,"sellMar02":65.4,"culMar01":20,"culMar02":2500,"culMar03":15.6,"culMar04":6500,"memo":"","applyDate":"2021-12-31","apply":"대기","worker":"이*양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust06","prd":"고칼글루900NAG(방)","price01":5000,"price02":5000,"price03":13,"venMar01":5500,"venMar02":15.8,"sellMar01":4500,"sellMar02":65.4,"culMar01":20,"culMar02":2500,"culMar03":15.6,"culMar04":6500,"memo":"","applyDate":"2021-12-31","apply":"대기","worker":"이*양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust07","prd":"고칼글루900NAG(방)","price01":5000,"price02":5000,"price03":13,"venMar01":5500,"venMar02":15.8,"sellMar01":4500,"sellMar02":65.4,"culMar01":20,"culMar02":2500,"culMar03":15.6,"culMar04":6500,"memo":"","applyDate":"2021-12-31","apply":"대기","worker":"이*양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust08","prd":"고칼글루900NAG(방)","price01":5000,"price02":5000,"price03":13,"venMar01":5500,"venMar02":15.8,"sellMar01":4500,"sellMar02":65.4,"culMar01":20,"culMar02":2500,"culMar03":15.6,"culMar04":6500,"memo":"","applyDate":"2021-12-31","apply":"대기","worker":"이*양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust09","prd":"고칼글루900NAG(방)","price01":5000,"price02":5000,"price03":13,"venMar01":5500,"venMar02":15.8,"sellMar01":4500,"sellMar02":65.4,"culMar01":20,"culMar02":2500,"culMar03":15.6,"culMar04":6500,"memo":"","applyDate":"2021-12-31","apply":"대기","worker":"이*양","workTime":"2021-12-02 11:00:00"},
+		{"id":"#Cust10","prd":"고칼글루900NAG(방)","price01":5000,"price02":5000,"price03":13,"venMar01":5500,"venMar02":15.8,"sellMar01":4500,"sellMar02":65.4,"culMar01":20,"culMar02":2500,"culMar03":15.6,"culMar04":6500,"memo":"","applyDate":"2021-12-31","apply":"대기","worker":"이*양","workTime":"2021-12-02 11:00:00"}
+	];
+
+	$(document).ready(function(){
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid();
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.        
+        
+		AUIGrid.setGridData(myGridID, gridData);
+	    AUIGrid.setFooter(myGridID, footerLayout);
+    });
+
+	// AUIGrid 를 생성합니다.
+	function createAUIGrid() {
+		// 그리드 속성 설정
+		var gridPros = {
+				headerHeight : 29,
+				rowHeight : 29,
+				// 편집 가능 여부 (기본값 : false)
+
+				rowIdField : "id",
+				showStateColumn : false,
+				wrapSelectionMove : true,
+				editingOnKeyDown : true, // 키보드 입력으로 편집 모드 진입 (기본값:true임;)
+				showRowCheckColumn : false, // 체크박스 사용
+				
+				editable : true,
+				// 엔터키가 다음 행이 아닌 다음 칼럼으로 이동할지 여부 (기본값 : false)
+				enterKeyColumnBase : true,
+				// 셀 선택모드 (기본값: singleCell)
+				selectionMode : "singleRow",
+				showFooter : true,
+				// 컨텍스트 메뉴 사용 여부 (기본값 : false)
+				useContextMenu : true,
+				// 필터 사용 여부 (기본값 : false)
+				enableFilter : true,
+				// 그룹핑 패널 사용
+				useGroupingPanel : false,
+				
+				// 그룹핑 또는 트리로 만들었을 때 펼쳐지게 할지 여부 (기본값 : false)
+				displayTreeOpen : true,
+				
+				noDataMessage : "출력할 데이터가 없습니다.",
+				
+				groupingMessage : "여기에 칼럼을 드래그하면 그룹핑이 됩니다."
+		};
+
+		
+        // 실제로 #grid_wrap 에 그리드 생성
+        myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+
+	}
+
+	var columnLayout = [{
+			dataField : "prd",
+			headerText : "제품",
+			style : "auiLeft",
+			width : "14%",
+		},{
+		dataField : "price",
+		headerText : "단가",
+			children : [{
+				dataField : "price01",
+				headerText : "매입",     
+				dataType : "numeric",   
+				style : "auiRight",
+				width : "6%",
+			},{
+				dataField : "price02",
+				headerText : "판매원",
+				dataType : "numeric", 
+            	style : "auiRight",
+				width : "6%",
+			},{
+				dataField : "price03",
+				headerText : "애음자",
+				headerStyle : "auiRightBorR",
+				dataType : "numeric",
+            	style : "auiRight",
+				width : "6%",
+			}]
+		},{
+			dataField : "venMar",
+			headerText : "대리점 마진",
+			children : [{
+				dataField : "venMar01",
+				headerText : "마진액",
+				dataType : "numeric",
+				style : "auiRight",                 
+				width : "6%",
+			},{
+				dataField : "venMar02",
+				headerText : "마진율",
+				headerStyle : "auiRightBorR",
+				style : "auiRight",
+				width : "5%",			
+			}]
+		},{
+			dataField : "sellMar",
+			headerText : "판매원 마진",
+			children : [{
+				dataField : "sellMar01",
+				headerText : "마진액",
+				dataType : "numeric",
+				style : "auiRight",                 
+				width : "6%",
+			},{
+				dataField : "sellMar02",
+				headerText : "마진율",
+				headerStyle : "auiRightBorR",
+				style : "auiRight",
+				width : "5%",			
+			}]
+		},{
+			dataField : "culMar",
+			headerText : "마진계산",
+			children : [{
+				dataField : "culMar01",
+				headerText : "판매수량",
+				dataType : "numeric",
+				style : "auiRight",                 
+				width : "6%",
+			},{
+				dataField : "culMar02",
+				headerText : "마진금액",
+				dataType : "numeric",
+				style : "auiRight",
+				width : "6%",
+			},{
+				dataField : "culMar03",
+				headerText : "마진율",
+				style : "auiRight",
+				width : "5%",
+			},{
+				dataField : "culMar04",
+				headerText : "조정금액",
+				dataType : "numeric",
+				style : "auiRight",
+				width : "6%",
+                editable : true,
+                    renderer : {
+                        type : "TemplateRenderer"
+                    },
+                    // dataField 로 정의된 필드 값이 HTML 이라면 labelFunction 으로 처리할 필요 없음.
+                    labelFunction : function (rowIndex, columnIndex, value, headerText, item ) {
+                        var template = '<div class="my_div">';
+                        template += '<span class="my_div_text_box right">' + value + '</span>';
+                        template += '</div>';
+                        return template;
+                    }
+			}]
+		},{
+			dataField : "memo",
+			headerText : "메모",
+			editable : true,
+                    renderer : {
+                        type : "TemplateRenderer"
+                    },
+                    // dataField 로 정의된 필드 값이 HTML 이라면 labelFunction 으로 처리할 필요 없음.
+                    labelFunction : function (rowIndex, columnIndex, value, headerText, item ) {
+                        var template = '<div class="my_div">';
+                        template += '<span class="my_div_text_box">' + value + '</span>';
+                        template += '</div>';
+                        return template;
+                    }
+		}
+	];
+
+	// 푸터 설정
+    var footerLayout = [{
+        labelText : "∑",
+        positionField : "#base"
+        }, {
+            dataField : "sellNm",
+            positionField : "sellNm",
+            operation : "SUM",
+            colSpan : 8, // 자신을 포함하여 ..
+            labelFunction : function(value, columnValues, footerValues) {
+               return "합계 : " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "thisMonth01",
+            positionField : "thisMonth01",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "thisMonth05",
+            positionField : "thisMonth05",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+		}, {
+            dataField : "billing",
+            positionField : "billing",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }];
+    
+</script>
+</head>
+<body>
+
+<!-- 실제 개발시 style 모두 지워주세요 (style 퍼블용 preview 입니다.) - 가로사이즈 1500px -->
+
+<div class="modal_bg" style="display:block; position:fixed;top:0;left:0;right:0;bottom:0;z-index:10; background:rgba(0, 0, 0, .43);"></div> <!-- modal 배경 -->
+
+<div tabindex="-1" role="dialog" class="ui-dialog ui-corner-all ui-widget ui-widget-content ui-front" aria-describedby="readPop" aria-labelledby="ui-id-1" style="width:1500px; height:480px; top:170px; left:12%; visibility: visible;">
+	<div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix">
+		<span id="ui-id-1" class="ui-dialog-title">&nbsp;</span>
+		<button type="button" class="ui-button ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-close" title="Close">
+		<span class="ui-button-icon ui-icon ui-icon-closethick"></span>
+		<span class="ui-button-icon-space"> </span>Close</button>
+	</div>
+		
+	<div id="readPop" class="ajaxDialog ui-dialog-content ui-widget-content"> 
+
+		<!-- 판매원 결산 상세 -->
+		<div class="popWrap large modal_wrap h480" data-popup="modalAgencyViews04">
+			<header>
+				<h3>판매원 결산 상세</h3>
+			</header>  
+
+			<div class="popCon">
+				<div class="popTitArea">
+					<h3>판매원 결산 상세</h3>
+
+					<div class="popBtnArea">
+						<button type="button" name="" class="inquBtn">저장</button>
+						<button type="button" name="" class="comBtn modalCloseBtn" id="modalCloseBtn">닫기</button>                   
+					</div>
+				</div>
+
+				<div class="titleArea">
+					<p class="numState">
+						<em>총 <span class="pColor01 fb">123</span></em> 건 이 조회되었습니다.
+					</p>
+				</div>
+
+				<!-- grid -->
+				<div class="girdBox h380">
+					<div id="grid_wrap"></div>
+				</div>
+				<!-- grid -->
+
+			</div>
+		</div>
+		<!--  판매원 결산 상세 -->
+	</div>
+</div>
+</body>
+</html>

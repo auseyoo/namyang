@@ -1,0 +1,992 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템</title>
+<link rel="stylesheet" type="text/css" href="../css/lib/yearpicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker_range_custom.js"></script>
+<script type="text/javascript" src="../js/lib/yearpicker.js"></script>
+<script type="text/javascript" src="../js/yearpicker_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<style>
+    html, body{width:100%; height:100%; min-width:1680px; overflow-y:auto;}
+    .contentWrap .rContentBox{overflow-y:inherit;}
+    .guide .contentWrap{width:1600px; margin:0 auto;}
+    .comonWrap{margin-bottom:30px;}
+    .comonWrap > h3{background:#222; color:#fff; padding:5px 20px; margin-bottom:10px; border-radius:6px 6px 0 0;}
+    .comonWrap .sample{padding:10px 0}
+    .comonWrap .exType{margin-top:20px;}
+    .comonWrap .exType h5{margin-bottom:5px;}
+    .comonWrap .exTxt{padding:20px; background:#f2f2f2; font-size:14px}
+    .comonWrap .exTxt ul li{line-height:26px;}
+    .exTypeWrap{position:relative;}
+    .exTypeWrap a.linkGo{position:absolute; right:-35px; top:0; width:18px; height:18px; background:#bebebe; border-radius:100%; background:#eee url("../images/go.png") center center no-repeat; border:1px solid #d5d5d5}
+    .sample > button{margin-right:5px;}
+</style>
+</head>
+<body>
+	<div class="allWrap guide">
+		<header>
+            <h1><a href="#" class="logo" title="남양유업"></a></h1>
+
+            <div class="logInfo">
+                <ul>
+                    <li><span class="user">김 남양</span> 님 을 환영합니다.</li>
+                    <li>최근접속일시 : <span class="date">2021.12.10 09:30:00</span></li>
+                    <li><a href="#" class="logOut"><span class="blind">로그아웃</span></a></li>
+                </ul>
+            </div>
+		</header>  
+
+		<div class="contentWrap">
+			
+            <!-- content -->
+            <div class="rContentBox">
+                <div class="content">
+                    <div class="titTopArea">
+                        <h2 class="tit01">직원 관리 <a href="#" class="favor" title="즐겨찾기"></a></h2>
+
+                        <div class="location">
+                            <ul>
+                                <li><i class="home"></i></li>
+                                <li>마이페이지</li>
+                                <li>직원관리</li>
+                                <li>직원관리</li>
+                            </ul>
+                        </div>
+                    </div>  
+
+                    <!-- Button -->
+                    <div class="comonWrap">
+                        <h3>Button Style</h3>
+                   
+                        <div class="sample">
+                            <!-- <h4>조회영역에 들어가는 경우</h4> -->
+
+                            <button type="button" name="" class="comBtn" id="inp_name01">조회</button>
+
+                            <button type="button" name="" class="inquBtn">저장</button>
+
+							<button type="button" name="" class="cancelBtn">삭제</button>
+
+                            <button type="button" name="" class="comRoBtn">OCR관리</button>
+
+                            <button type="button" name="" class="comBtn small">일괄반영</button>
+
+                            <button type="button" name="" class="comRoBtn small">동의서등록</button>
+                        </div>
+
+                        <div class="exTxt">
+                            <ul>
+                                <li>
+                                    * 기본 버튼 : class="comBtn"
+                                </li>
+                                <li>
+                                    * 기능(저장) 버튼 : class="inquBtn"
+                                </li>
+								<li>
+                                    * 삭제/취소 버튼 : class="cancelBtn"
+                                </li>
+                                <li>
+                                    * 라운드 버튼 : class="comRoBtn"
+                                </li>
+                                <li>
+                                    * 컨텐츠에 들어가는 세로 28px 버튼 : class="comBtn small"
+                                </li>
+                            </ul> 
+                        </div>
+
+                        <div class="exType">
+                            <!-- 조회 Type01 -->
+                            <h5>[ form + button 정렬 ]  - 요소가 적은 경우 dt</h5>
+                            <div class="exTypeWrap">
+                                <div class="inquiryBox">
+                                    <dl>
+                                        <dt>권한</dt>
+                                        <dd>
+                                            <select name="" class="sel">
+                                                <option>전체</option>
+                                                <option>점주</option>
+                                                <option>판매원</option>
+                                                <option>판촉사원</option>
+                                                <option>총무</option>
+                                                <option>주간판매점</option>
+                                            </select>
+                                        </dd>
+                                        <dt>상태</dt>
+                                        <dd>
+                                            <select name="" class="sel w160">
+                                                <option>전체</option>
+                                                <option>사용</option>
+                                                <option>중지</option>
+                                            </select>
+                                        </dd>
+                                        <dt>성명</dt>
+                                        <dd>
+                                            <input type="text" id="inp_name01" class="inp" value="" title="성명 입력">
+                                        </dd>
+                                        <dd>
+                                            <button type="button" name="" class="comBtn" id="inp_name01">조회</button>
+                                        </dd>
+                                    </dl>
+
+                                    <div class="btnGroup right">
+                                        <button type="button" name="" class="comBtn">신규</button>
+                                        <button type="button" name="" class="inquBtn">저장</button>
+                                    </div>
+                                </div>
+
+                                <a href="UI-PMYP-0301.html" class="linkGo" target="_blank"></a>
+                            </div>
+                            <!-- 조회 Type01 -->
+
+                            <!-- 조회 Type02 -->
+                            <div class="exTypeWrap">
+                                <div class="inquiryBox">
+                                    <dl>
+                                        <dt>주문일</dt>
+                                        <dd>
+                                            <div class="formWrap">            
+                                                <div class="dateWrap">
+                                                    <input type="text" name="date" value="10/24/1984" class="inp" id="datepicker" readonly>
+                                                    <button type="button" class="datepickerBtn" title="날짜입력" data-target-id="datepicker"></button>
+                                                </div>                        
+                                                                                
+                                                <div class="checkGroup">
+                                                    <input type="checkbox" id="plus1" class="type01" checked=""><label for="plus1"><span>+1일 제품</span></label>
+                                                    <input type="checkbox" id="plus2" class="type01"><label for="plus2"><span>+2일 제품</span></label>
+                                                    <input type="checkbox" id="plus3" class="type01"><label for="plus3"><span>+3일 제품</span></label>
+                                                </div>
+            
+                                                <button type="button" name="" class="comBtn" id="inp_name01">조회</button>
+                                            </div>
+                                        </dd>
+                                    </dl>
+            
+                                    <div class="btnGroup right">
+                                        <button type="button" name="" class="comBtn">이력보기</button>
+                                        <button type="button" name="" class="inquBtn">전송</button>
+                                        <button type="button" name="" class="inquBtn">저장</button>
+                                    </div>
+                                </div>
+
+                                <a href="UI-PORD-0101.html" class="linkGo" target="_blank"></a>
+                            </div>
+                            <!-- 조회 Type02 -->
+
+                            <!-- 조회 Type03 -->
+                            <div class="exTypeWrap">
+                                <div class="inquiryBox type03">
+                                    <dl>
+                                        <dt>기준일자</dt>
+                                        <dd>
+                                            <div class="formWrap">            
+                                                <div class="dateWrap">
+                                                    <input type="text" name="date" value="10/24/1984" class="inp" id="datepicker02" readonly> 
+                                                    <button type="button" class="datepickerBtn" title="날짜입력" data-target-id="datepicker02"></button>
+                                                </div>                        
+                                                                                
+                                                <div class="checkGroup">
+                                                    <input type="radio" name="date" id="date1" class="type01" checked=""><label for="date1"><span>배송일</span></label>
+                                                    <input type="radio" name="date" id="date2" class="type01"><label for="date2"><span>주문일</span></label>
+                                                    <input type="radio" name="date" id="date2" class="type01 disabled" disabled><label for="date2"><span>주문일</span></label>
+                                                </div>
+            
+                                                <button type="button" name="" class="comBtn" id="inp_name01">조회</button>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+
+                                <a href="UI-PORD-0201.html" class="linkGo" target="_blank"></a>
+                            </div>
+                            <!-- 조회 Type03 -->
+
+							<!-- 조회 Type03 -->
+                            <div class="exTypeWrap">
+                                <div class="inquiryBox">
+									<dl>
+										<dt>등록일</dt>
+										<dd>
+											<div class="formWrap">
+												<div class="dateWrap">
+													<input type="text" name="date" value="10/24/1984" class="inp" id="datepicker03" readonly>                                        
+													<button type="button" class="datepickerBtn" title="날짜입력" data-target-id="datepicker03"></button>                                        
+												</div> 
+
+												<span class="divi02">-</span>
+												
+												<div class="dateWrap">
+													<input type="text" name="date" value="10/24/1984"class="inp" id="datepicker04" readonly>
+													<button type="button" class="datepickerBtn02" title="날짜입력" data-target-id="datepicker04"></button>                                        
+												</div> 
+																				
+												<div class="checkGroup">
+													<input type="radio" name="date" id="day" class="type01" id="day" checked="checked"><label for="day"><span>일 기준</span></label>
+													<input type="radio" name="date" id="month" class="type01" id="month"><label for="month"><span>월 기준</span></label>
+												</div>
+											</div>
+										</dd>
+										<dt>제품</dt>
+										<dd>
+											<div class="formWrap">
+												<input type="text" id="inp_product01" class="inp w120 mr10" value="" name="" placeholder="제품코드">
+												<input type="text" id="inp_product02" class="inp w160" value="" name="" placeholder="제품명">
+
+												<button type="button" name="" class="comBtn" id="inp_name01">조회</button>
+											</div>
+										</dd>
+									</dl>
+								</div>
+
+                                <a href="UI-PORD-0701.html" class="linkGo" target="_blank"></a>
+                            </div>
+                            <!-- 조회 Type03 -->
+
+                            <!-- 조회 Type04 -->
+                            <div class="exTypeWrap">
+                                <div class="inquiryBox">
+                                    <dl>
+                                        <dt>년도</dt>
+                                        <dd>
+                                            <div class="formWrap">  
+                                                <div class="dateWrap">
+                                                    <input type="text" name="date" value="2021" class="inp yearpicker" id="yearpicker" readonly>
+                                                    <button type="button" class="datepickerBtn" title="년도입력" data-target-id="yearpicker"></button>
+                                                </div>
+
+                                                <button type="button" name="" class="comBtn" id="inp_name01">조회</button>
+                                            </div>
+                                        </dd>
+                                    </dl>
+                                </div>
+
+                                <a href="UI-PMYP-0501.html" class="linkGo" target="_blank"></a>
+                            </div>
+                            <!-- Type04 -->
+
+                            <!-- 조회 Type05 -->
+                            <h5 class="mt20">[ form + button 정렬 ] - 1680px 에서만 두줄로 나오는 경우 (반응형)</h5>
+
+                            <!-- 조회 Type05 -->
+                            <div class="exTypeWrap">
+                                <div class="inquiryBox type03 formBtnRepon">
+                                    <div class="dlBoxWrap">
+                                        <div class="dlBox">
+                                            <dl>
+                                                <dt>적용일자</dt>
+                                                <dd>
+                                                    <div class="formWrap">
+                                                        <div class="dateWrap">
+                                                            <input type="text" name="date" value="10/24/1984" class="inp" id="datepicker" readonly="">                                        
+                                                            <button type="button" class="datepickerBtn" title="날짜입력" data-target-id="datepicker"></button>                                        
+                                                        </div> 
+            
+                                                        <span class="divi02">-</span>
+                                                        
+                                                        <div class="dateWrap">
+                                                            <input type="text" name="date" value="10/24/1984" class="inp" id="datepicker02" readonly="">
+                                                            <button type="button" class="datepickerBtn02" title="날짜입력" data-target-id="datepicker02"></button>                                        
+                                                        </div> 
+                                                    </div>
+                                                </dd>
+                                                <dt>담당직원</dt>
+                                                <dd>
+                                                    <select name="" class="sel">
+                                                        <option>이남양</option>
+                                                        <option>이남양</option>
+                                                    </select>
+                                                </dd>
+                                                <dt>적용여부</dt>
+                                                <dd>
+                                                    <select name="" class="sel W10">
+                                                        <option>전체메뉴</option>
+                                                        <option>Y</option>
+                                                        <option>N</option>
+                                                    </select>
+                                                </dd>
+                                            </dl>
+                                            <dl>
+                                                <dt>거래처명</dt>
+                                                <dd>
+                                                    <input type="text" id="inp_name01" class="inp w160" value="" title="구분 입력">
+                                                </dd>
+                                            </dl>
+                                        </div>
+            
+                                        <div class="btnRepon">
+                                            <button type="button" name="" class="comBtn" id="inp_name01">조회</button>
+                                        </div>
+                                    </div>
+            
+                                    <div class="btnGroup verAlign">
+                                        <button type="button" name="" class="inquBtn">저장</button>
+                                    </div>
+                                </div>
+
+                                <a href="UI-PSAL-0701.html" class="linkGo" target="_blank"></a>
+                            </div>
+                            <!-- 조회 Type05 -->
+
+                            <!-- 조회 Type06 -->
+                            <h5 class="mt20">[ form + button 정렬 ] - 두줄로 나오는 경우 (고정형)</h5>
+                            
+                            <div class="exTypeWrap">
+                                <div class="inquiryBox type02 row">
+                                    <div class="dlRowBoxWrap">
+                                        <div class="dlBox">
+                                            <dl>
+                                                <dt>청구년월</dt>
+                                                <dd>
+                                                    <div class="dateWrap">
+                                                        <input type="text" name="date" value="" class="inp monthPicker" id="monthPicker" readonly>                                        
+                                                        <button type="button" class="datepickerBtn" title="날짜입력" data-target-id="monthPicker"></button>                                        
+                                                    </div> 
+                                                </dd>
+                                                <dt>지역</dt>
+                                                <dd>
+                                                    <div class="searchWrap w140">
+                                                        <input type="text" id="inp_post_num" class="inp">
+                                                        <button type="button" class="postBtn" title="지역 찾기"></button>
+                                                    </div>
+                                                </dd>
+                                                <dt>투입상태</dt>
+                                                <dd>
+                                                    <select name="" class="sel w140">
+                                                        <option>전체</option>
+                                                        <option>일시중지</option>
+                                                        <option>중지제외</option>
+                                                    </select>
+                                                </dd>
+                                                <dt>수금방법</dt>
+                                                <dd>
+                                                    <select name="" class="sel w140">
+                                                        <option>지로</option>
+                                                        <option>가상계좌</option>
+                                                        <option>CMS(자동이체)</option>
+                                                        <option>CMS(카드)</option>
+                                                        <option>방문수금</option>
+                                                        <option>직접수금</option>
+                                                        <option>통장수금</option>
+                                                        <option>카드수금</option>
+                                                    </select>
+                                                </dd>
+                                            </dl>
+                                            <dl>
+                                                <dt>청구금액기준</dt>
+                                                <dd>
+                                                    <select name="" class="sel w140">
+                                                        <option>청구금액</option>
+                                                        <option>당월애음</option>
+                                                        <option>미수잔액</option>
+                                                        <option>당월수금</option>
+                                                    </select>
+                                                </dd>
+                                                <dt>조건</dt>
+                                                <dd>
+                                                    <div class="formWrap">
+                                                        <select name="" class="sel w140 mr10">
+                                                            <option>전체</option>
+                                                            <option>코드</option>
+                                                            <option>이름</option>
+                                                            <option>주소</option>
+                                                            <option>핸드폰번호</option>
+                                                        </select>
+    
+                                                        <input type="text" id="" class="inp w140 mr20" value="" title="제품 입력">
+    
+                                                        <input type="checkbox" id="pr11" class="type01" checked=""><label for="pr11" class="po07"><span>미수자만</span></label>
+                                                    </div>
+                                                </dd>
+                                            </dl>
+                                        </div>
+            
+                                        <div class="btnVer">
+                                            <button type="button" name="" class="comBtn" id="inp_name01">조회</button>
+                                        </div>
+                                    </div>
+            
+                                    <div class="btnGroup right">
+                                        <button type="button" name="" class="comBtn">인쇄</button>                            
+                                    </div>
+                                </div>
+
+                                <a href="UI-PCLI-1101T1.html" class="linkGo" target="_blank"></a>
+                            </div>
+                            <!-- 조회 Type06 -->
+                        </div>
+
+                        <div class="exTxt">
+                            <ul>
+                                <li>
+                                    * 기본 조회 박스 : class="inquiryBox"
+                                </li>
+                                <li>
+                                    * 상단 탭을 포함하는 경우 : class="inquiryBox type02"
+                                </li>
+                                <li>
+                                    * 하단여백 15px 인 경우 : class="inquiryBox type03"
+                                </li>
+                            </ul>                            
+                        </div>
+                    </div>
+                    <!-- Button -->
+
+                    <!-- Text -->
+                    <div class="comonWrap">
+                        <h3>Text Style</h3>
+                   
+                        <div class="sample">
+                            <div class="txtInfo">
+                                ※ “주문량” 대비 “확정 수량”이나 “배송 수량”이 달라진 제품은 음영으로 표시됩니다.
+                            </div>
+
+                            <div class="txtInfo pColor02">
+                                ※ 발송 상태/현황, 사용금액 등 통계는 “<a href="https://www.bizppurio.com/send/result/list" target="_blank">서비스 제공 업체의 페이지</a>” (← 클릭하여 바로가기)에서 확인할 수 있습니다.
+                            </div>
+
+                        </div>
+
+                        <div class="exType">
+                            <!-- text Type01 -->
+                            <!-- <h5>[ 예시 ]</h5>
+                            <div class="exTypeWrap">
+                                <a href="UI-PMYP-0301.html" class="linkGo" target="_blank"></a>
+                            </div> -->
+                            <!-- text Type01 -->
+                        </div>
+
+                        <div class="exTxt">
+                            <ul>
+                                <li>
+                                    * text 포인트 class = "pColor02" 
+                                </li>
+                            </ul>                  
+                        </div>
+
+                        <a href="UI-PORD-0601.html" class="linkGo" target="_blank"></a>
+                    </div>
+                    <!-- Text -->
+                    
+
+                    <!-- title + align -->
+                    <div class="comonWrap">
+                        <h3>Title + align Style</h3>
+                   
+                        <div class="sample">
+                            <div class="titleArea">
+                                <h3 class="tit01">직원정보</h3>
+                                <p class="numState">
+                                    <em>총 <span class="pColor01 fb">24</span></em> 건 이 조회되었습니다.
+                                </p>
+                            </div>
+                            
+
+                            <div class="titleArea right">
+                                <h3 class="tit01">대리점 상세 정보</h3>
+        
+                                <p class="txt01 pColor02">* 정보 수정 사항은 담당사원에게 요청해주세요.</p>
+                            </div>
+                        </div>
+
+                        <div class="exType">
+                            <!-- text Type01 -->
+                            <!-- <h5>[ 예시 ]</h5>
+                            <div class="exTypeWrap">
+                                <a href="UI-PMYP-0301.html" class="linkGo" target="_blank"></a>
+                            </div> -->
+                            <!-- text Type01 -->
+                        </div>
+
+                        <div class="titleArea right">
+                            <h3 class="tit01">소제목</h3>
+    
+                            <p class="txt01"><i class="icoRequir"></i>필수 입력 항목입니다.</p>
+                        </div>
+                    </div>
+                    <!-- title -->
+
+                    
+                    <!-- Table -->
+                    <div class="comonWrap">
+                        <h3>Table Style</h3>
+                   
+                        <div class="sample">
+                            <div class="tblWrap type02">
+                                <table class="tbl">
+                                    <caption>대리점 상세정보</caption>
+                                    <colgroup>
+                                        <col style="width:170px;">
+                                        <col>
+                                        <col style="width:170px;">
+                                        <col>
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">
+                                                대리점 코드
+                                            </th>
+                                            <td>
+                                                00001212
+                                            </td>
+                                            <th scope="row">
+                                                상호
+                                            </th>
+                                            <td>
+                                                비티소프트
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                사업자번호
+                                            </th>
+                                            <td>
+                                                210315486665
+                                            </td>
+                                            <th scope="row">
+                                                대표자명
+                                            </th>
+                                            <td>
+                                                이남양
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                업태
+                                            </th>
+                                            <td>
+                                                도소매
+                                            </td>
+                                            <th scope="row">
+                                                업종
+                                            </th>
+                                            <td>
+                                                음료및유제품
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                사업장 전화번호
+                                            </th>
+                                            <td>
+                                                02-1588-4888
+                                            </td>
+                                            <th scope="row">
+                                                휴대폰 번호
+                                            </th>
+                                            <td>
+                                                010-0000-0000
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                팩스
+                                            </th>
+                                            <td>
+                                                02-1588-4887
+                                            </td>
+                                            <th scope="row">
+                                                이메일 주소
+                                            </th>
+                                            <td>
+                                                btsoft@btsoft.kr 
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                우편번호
+                                            </th>
+                                            <td colspan="3">
+                                                08165
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                주소
+                                            </th>
+                                            <td>
+                                                서울시 구로구
+                                            </td>
+                                            <th scope="row">
+                                                상세주소
+                                            </th>
+                                            <td>
+                                                에이스테크노타워 8층
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="tblWrap">
+                                <table class="tbl">
+                                    <caption>직원정보 상세</caption>
+                                    <colgroup>
+                                        <col style="width:170px;">
+                                        <col>
+                                        <col style="width:170px;">
+                                        <col>
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">
+                                                <label for="inp_name02" class="required" title="필수입력">성명</label>
+                                            </th>
+                                            <td>
+                                                <input type="text" id="inp_name02" class="inp" value="" name="">
+                                            </td>
+                                            <th scope="row">
+                                                <label for="inp_employee_code">직원코드</label>
+                                            </th>
+                                            <td>
+                                                -
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                <label for="inp_phone" class="required" title="필수입력">휴대폰 번호</label>
+                                            </th>
+                                            <td>
+                                                <input type="text" id="inp_phone" class="inp" value="" name="">
+                                            </td>
+                                            <th scope="row">
+                                                <label for="sel_authority">권한</label>
+                                            </th>
+                                            <td>
+                                                <select name="" class="sel w160" id="sel_authority">
+                                                    <option>전체</option>
+                                                    <option>점주</option>
+                                                    <option>판매원</option>
+                                                    <option>판촉사원</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                <label for="inp_em_contact01">비상연락처1</label>
+                                            </th>
+                                            <td>
+                                                <input type="text" id="inp_em_contact01" class="inp">
+                                            </td>
+                                            <th scope="row">
+                                                <label for="sel_state">상태</label>
+                                            </th>
+                                            <td>
+                                                <select name="" class="sel w160" id="sel_state">
+                                                    <option>전체</option>
+                                                    <option>사용</option>
+                                                    <option>중지</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                <label for="inp_em_contact02">비상연락처2</label>
+                                            </th>
+                                            <td>
+                                                <input type="text" id="inp_em_contact02" class="inp">
+                                            </td>
+                                            <th scope="row">
+                                                <label for="inp_email01">이메일 주소</label>
+                                            </th>
+                                            <td>
+                                                <div class="formWrap email">
+                                                    <input type="text" id="inp_email01" class="inp w160"> <span class="divi"> @ </span>
+                                                    <input type="text" id="inp_email02" class="inp mr10">
+        
+                                                    <select name="" class="sel w160" id="sel_email">
+                                                        <option>직접입력</option>
+                                                        <option>naver.com</option>
+                                                        <option>google.com</option>
+                                                    </select>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                <label for="inp_post_num">우편번호</label>
+                                            </th>
+                                            <td colspan="3">
+                                                <div class="postWrap w200">
+                                                    <input type="text" id="inp_post_num" class="inp">
+                                                    <button type="button" class="postBtn" title="우편번호 찾기"></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                <label for="inp_address">주소</label>
+                                            </th>
+                                            <td>
+                                                <input type="text" id="inp_address" class="inp">
+                                            </td>
+                                            <th scope="row">
+                                                <label for="inp_address_add">상세주소</label>
+                                            </th>
+                                            <td>
+                                                <input type="text" id="inp_address_add" class="inp">
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            
+                        </div>
+
+                        <div class="exTxt">
+                            <ul>
+                                <li>
+                                    * 기본 테이블 : class="tbl"
+                                </li>
+                                <li>
+                                    * col th 사이즈 : width = 170px
+                                </li>
+                                <li>
+                                    * 필수입력 인 경우 : class="required" label 값에 넣어줌
+                                </li>
+                            </ul> 
+                        </div>
+
+                        <div class="exType">
+                            <!-- table Type01 -->
+                            <h5>[ 예시 ]</h5>
+                            <div class="exTypeWrap">
+                                <div class="tblWrap">
+                                    <table class="tbl">
+                                        <caption>CMS / 가상계좌 정보</caption>
+                                        <colgroup>
+                                            <col style="width:170px;">
+                                            <col>
+                                            <col style="width:170px;">
+                                            <col>
+                                        </colgroup>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">
+                                                    <label for="inp_id" class="required" title="필수입력">아이디</label>
+                                                </th>
+                                                <td>
+                                                    <input type="text" id="inp_id" class="inp" value="" name="">
+                                                </td>
+                                                <th scope="row">
+                                                    <label for="inp_password" class="required" title="필수입력">비밀번호</label>
+                                                </th>
+                                                <td>
+                                                    <input type="password" id="inp_password" class="inp" value="" name="">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">
+                                                    <label for="sel_agreement_date" class="required" title="필수입력">이체약정일</label>
+                                                </th>
+                                                <td>
+                                                    <span class="dNum">①</span>
+                                                    <select name="" class="sel w80 mr20" id="sel_agreement_date">
+                                                        <option>전체</option>
+                                                        <option>01일</option>
+                                                    </select>
+            
+                                                    <span class="dNum">②</span>
+                                                    <select name="" class="sel w80 mr20">
+                                                        <option>전체</option>
+                                                        <option>01일</option>
+                                                    </select>
+            
+                                                    <span class="dNum">③</span>
+                                                    <select name="" class="sel w80 mr20">
+                                                        <option>전체</option>
+                                                        <option>01일</option>
+                                                    </select>
+            
+                                                    <span class="dNum">④</span>
+                                                    <select name="" class="sel w80">
+                                                        <option>전체</option>
+                                                        <option>01일</option>
+                                                    </select>
+                                                </td>
+                                                <th scope="row">
+                                                    <label for="inp_password_com" class="required" title="필수입력">비밀번호 재확인</label>
+                                                </th>
+                                                <td>
+                                                    <input type="password" id="inp_password_com" class="inp" value="" name="">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">
+                                                    <label for="sel_bankNum04" title="필수입력">은행/계좌번호</label>
+                                                </th>
+                                                <td>
+                                                    <div class="formWrap">
+                                                        <select name="" class="sel w160 mr7" id="sel_bankNum04">
+                                                            <option>전체</option>
+                                                            <option>국민은행</option>
+                                                            <option>우리은행</option>
+                                                        </select>
+                                                        <input type="text" id="inp_num03" class="inp" value="" name="">
+                                                    </div>
+                                                </td>
+                                                <th scope="row">
+                                                    <label for="inp_account_name04" class="required">예금주</label>
+                                                </th>
+                                                <td>
+                                                    <input type="text" id="inp_account_name04" class="inp" value="" name="">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <a href="UI-PMYP-0101.html" class="linkGo" target="_blank"></a>
+                            </div>
+                            <!-- table Type01 -->
+
+                            <!-- table Type02 -->
+                            <h5>[ 예시 ]</h5>
+                            <div class="exTypeWrap">
+                                <div class="tblWrap">
+                                    <table class="tbl">
+                                        <caption>거래처 정보</caption>
+                                        <colgroup>
+                                            <col style="width:8%">
+                                            <col>
+                                            <col style="width:8%">
+                                            <col>
+                                            <col style="width:8%">
+                                            <col>
+                                            <col style="width:7%">
+                                            <col style="width:20%">
+                                        </colgroup>
+                                        <tbody>
+                                            <tr>
+                                                <th scope="row">
+                                                    <label for="inp_totalSales">총매출</label>
+                                                </th>
+                                                <td>
+                                                    <input type="text" id="inp_totalSales" class="inp ar" value="" name="" disabled="">
+                                                </td>
+                                                <th scope="row">
+                                                    <label for="inp_cashColl">현금수금</label>
+                                                </th>
+                                                <td>
+                                                    <input type="text" id="inp_cashColl" class="inp ar" value="" name="">
+                                                </td>
+                                                <th scope="row">
+                                                    <label for="inp_prevPrice">전일미수액</label>
+                                                </th>
+                                                <td>
+                                                    <input type="text" id="inp_prevPrice" class="inp ar" value="" name="" disabled="">
+                                                </td>
+                                                <th scope="row" rowspan="3">
+                                                    메모
+                                                </th>
+                                                <td rowspan="3">
+                                                    <ul class="memo">
+                                                        <li>
+                                                            <div class="formWrap">
+                                                                <div class="checkGroup">
+                                                                    <input type="radio" name="memo" id="memo01" class="type01" checked=""><label for="memo01"><span>전체</span></label>
+                                                                    <input type="radio" name="memo" id="memo02" class="type01"><label for="memo02"><span>개별</span></label>
+                                                                </div>
+            
+                                                                <button type="button" name="" class="inquBtn">메모 저장</button>
+                                                            </div>
+                                                        </li>
+                                                        <li>
+                                                            <textarea id="" name="" rows="15" class="h70 mt5"></textarea>
+                                                        </li>
+                                                    </ul>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">
+                                                    <label for="inp_proDC01">제품 DC</label>
+                                                </th>
+                                                <td>
+                                                    <div class="formWrap">
+                                                        <input type="text" id="inp_proDC01" class="inp" value="" name="" disabled="">
+                                                        <span class="unit">%</span>
+                                                        <input type="text" id="inp_proDC02" class="inp" value="" name="" disabled="">
+                                                    </div>
+                                                </td>
+                                                <th scope="row">
+                                                    <label for="inp_cashNone">현금외수금</label>
+                                                </th>
+                                                <td>
+                                                    <input type="text" id="inp_cashNone" class="inp ar" value="" name="">
+                                                </td>
+                                                <th scope="row">
+                                                    <label for="inp_dayCashNone">금일미수액</label>
+                                                </th>
+                                                <td>
+                                                    <input type="text" id="inp_dayCashNone" class="inp ar" value="" name="" disabled="">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th scope="row">
+                                                    <label for="inp_netSales">순매출금액</label>
+                                                </th>
+                                                <td>
+                                                    <input type="text" id="inp_netSales" class="inp ar" value="" name="" disabled="">									
+                                                </td>
+                                                <th scope="row">
+                                                    <label for="inp_cashAdjust">수금액조정</label>
+                                                </th>
+                                                <td>
+                                                    <div class="formWrap">
+                                                        <input type="text" id="inp_cashAdjust01" class="inp" value="" name="">
+                                                        <span class="unit">%</span>
+                                                        <input type="text" id="inp_cashAdjust02" class="inp" value="" name="">
+                                                    </div>
+                                                </td>
+                                                <th scope="row">
+                                                    <label for="inp_restCash">미수잔액</label>
+                                                </th>
+                                                <td>
+                                                    <input type="text" id="inp_restCash" class="inp ar" value="" name="" disabled="">
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <a href="UI-PSAL-0301.html" class="linkGo" target="_blank"></a>
+                            </div>
+                            <!-- table Type02 -->
+
+                        </div>
+
+                        <!-- <div class="exTxt">
+                            <ul>
+                                <li>
+                                    
+                                </li>
+                                <li>
+                                    
+                                </li>
+                                <li>
+                                    
+                                </li>
+                            </ul>
+                        </div> -->
+                    </div>
+                    <!-- Table -->
+
+                    
+                </div>
+
+            </div>
+            <!-- content -->
+		</div>
+	</div>
+</body>
+</html>

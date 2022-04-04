@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템 - 거래명세표</title>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+</head>
+<style>
+    body,html{margin:0; padding:0; height:100%; font-size:12pt;overflow-y:auto;}
+    * {color-adjust: exact!important; -webkit-print-color-adjust: exact!important; print-color-adjust: exact!important; box-sizing:border-box; -moz-box-sizing: border-box;}
+     .page {width:21cm; min-height:29.7cm; padding:1cm 1.5cm; margin:1cm auto; background:#fff; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);}
+	/*.subpage {padding:1cm; height:256mm;}*/
+	@page {
+		/*size: A4 landscape;*/    /*Portrait*/
+		size: A4 Portrait;
+		margin: 0;
+		/*size: landscape;*/
+	}
+	@media print {
+		html, body {width:210mm; height:297mm;}
+		.page {margin:0; border:initial; border-radius:initial; width:initial; min-height:initial; box-shadow:initial; background:initial; page-break-after: always}
+	}
+
+    .details_wrap { padding: 15px;margin:0 auto;}
+    .details_wrap .tbl th {height:auto; padding:5px 2px; font-size:9pt; line-height:10pt;border:1px solid blue;border-width: 1px 1px 1px 0;word-break: break-all; white-space: initial; text-align: center; color: blue;background: #fff;}
+    .details_wrap .tbl td {padding:2px 2px 2px 10px;border:1px solid blue;border-width: 1px 1px 1px 0;font-size:9.5pt;}
+    .details_wrap .tbl tr {border: 1px solid blue; border-width: 0 1px;}
+    .details_wrap .tbl tr.row th {word-spacing:31px;letter-spacing:4px; font-size: 10pt;}
+    .details_wrap .tbl tr.row th.ls {word-spacing:0; letter-spacing:0;}
+    .details_wrap .tbl tr.row th span {letter-spacing: 5px;}
+    .details_wrap .arTxt {text-align: right;}
+    .details_wrap td.arTxt {padding-right:4px;}
+    .details_wrap .alTxt {text-align: left;}
+    .details_wrap td.alTxt {padding-left:4px;}
+    .details_wrap .acTxt {text-align: center;}
+    .details_wrap .tbl .largeTxt {font-size: 12pt;}
+    .data_form {line-height:normal;}
+    .data_form .data01 {display:inline-block; width: 33.333%;}
+    .data_form .data02 {display:inline-block; }
+    .details_wrap .titleArea {display: flex; justify-content: space-between;}
+    .details_wrap .titleArea h3 {width:30%;display:inline-block;font-size: 15pt; margin-bottom:1px; text-align: center; color:blue; letter-spacing: 10px; font-weight: normal; border:1px solid blue;}
+    .details_wrap .titleArea_box {border:1px solid blue; align-self: end; font-size: 10pt;}
+    .details_wrap .titleArea_box span{border-right: 1px solid blue;color:blue;padding: 5px 10px; letter-spacing: 1px; text-align: center;}
+    .details_wrap .titleArea_item {font-size:9pt;}
+    .details_wrap .titleArea_box p {display: inline-flex; font-size: 8.5pt;padding:0 10px;}
+    .details_wrap .tbl tbody .vTop {padding-top: 10px; vertical-align: top;}
+</style>
+<body>
+    <div class="printWrap">
+		<div class="page">
+<div class="details_wrap">
+        <div class="titleArea">
+            <div class="titleArea_box">
+                <span>일자</span>
+                <p>2021년 12월 17일 0020-14</p>
+            </div>
+            <h3>거래명세표</h3>
+            <div class="titleArea_item"><span class="mr5">[ 수신 T: 031-359-9471</span><span>F: 031-359-9722 ]</span></div>
+        </div>
+        <table class="tbl">
+            <caption>거래명세표</caption>
+            <colgroup>
+                <col style="width:20px;">
+                <col style="width:10px;">
+                <col style="width:18px;">
+                <col>
+                <col style="width:10px;">
+                <col style="width:10px;">
+                <col>
+                <col style="width:20px;">
+                <col>
+                <col>
+                <col style="width:20px;">
+                <col style="width:20px;">
+                <col style="width:30px;">
+                <col>
+                <col>
+                <col style="width:20px;">
+                <col>
+                <col style="width:5px;">
+                <col style="width:20px;">
+                <col style="width:30px;">
+                <col>
+                <col>
+                <col>
+            </colgroup>
+            <tbody>
+                <tr>
+                    <th scope="row" rowspan="5">
+                        공급자
+                    </th>
+                    <th scope="row" colspan="2">
+                        등록<br/>번호
+                    </th>
+                    <td colspan="8" class="largeTxt acTxt">217-81-48601</td>
+                    <th scope="row" rowspan="5">
+                        공급받는자
+                    </th>
+                     <th scope="row">
+                        등록번호
+                    </th>
+                    <td colspan="10"class="largeTxt acTxt">178-86-02076</td>
+                </tr>
+                 <tr>
+                    
+                </tr>
+                <tr>
+                    <th scope="row" colspan="2">
+                        상호
+                    </th>
+                    <td colspan="4">루트지엘에스</td>
+                    <th scope="row">
+                        성명
+                    </th>
+                    <td colspan="3">고희경</td>
+                    <th scope="row">
+                        상호
+                    </th>
+                    <td colspan="5" class="largeTxt">다농식자재향남점</td>
+                    <th scope="row">
+                        성명
+                    </th>
+                    <td colspan="4">박경원</td>
+                </tr>
+                <tr>
+                    <th scope="row" colspan="2" class="h70">
+                        주소
+                    </th>
+                    <td colspan="8" class="vTop">경기도 용인시 처인구 남동 448-1</td>
+                    <th scope="row">
+                        주소
+                    </th>
+                    <td colspan="10" class="vTop">경기도 화성시 처인구 남동 448-1</td>
+                </tr>
+                <tr>
+                    <th scope="row" colspan="2">
+                        업태
+                    </th>
+                    <td colspan="4">도매</td>
+                    <th scope="row">
+                        종목
+                    </th>
+                    <td colspan="3">낙농업판매업</td>
+                    <th scope="row">
+                        업태
+                    </th>
+                    <td colspan="2">도소매업</td>
+                    <th scope="row">
+                        종목
+                    </th>
+                    <td colspan="7">슈퍼마켓</td>
+                </tr>
+                <tr class="row">
+                    <th colspan="10" class="ls">
+                        <span>바코드No</span>
+                        <span>품목</span> /
+                        <span>규격</span>
+                    </th>
+                    <th colspan="2">단위</th>
+                     <th colspan="2">수량</th>
+                     <th colspan="2">단가</th>
+                     <th colspan="4">금액</th>
+                     <th colspan="3">세액</th>
+                </tr>
+                <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .GT</span>
+                            <span class="data03">900ml(16)(900ml)</span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .쥬시쿨 자두</span>
+                            <span class="data03">930(16)B</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>16</span>
+                        </div>
+                        <div class="data_form">
+                            <span>8</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>1,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>574</span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span>30,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>4,543</span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>           
+                 <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .GT</span>
+                            <span class="data03">900ml(16)(900ml)</span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .쥬시쿨 자두</span>
+                            <span class="data03">930(16)B</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>16</span>
+                        </div>
+                        <div class="data_form">
+                            <span>8</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>1,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>574</span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span>30,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>4,543</span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                 <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .GT</span>
+                            <span class="data03">900ml(16)(900ml)</span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .쥬시쿨 자두</span>
+                            <span class="data03">930(16)B</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>16</span>
+                        </div>
+                        <div class="data_form">
+                            <span>8</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>1,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>574</span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span>30,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>4,543</span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .GT</span>
+                            <span class="data03">900ml(16)(900ml)</span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .쥬시쿨 자두</span>
+                            <span class="data03">930(16)B</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>16</span>
+                        </div>
+                        <div class="data_form">
+                            <span>8</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>1,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>574</span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span>30,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>4,543</span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                 <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .GT</span>
+                            <span class="data03">900ml(16)(900ml)</span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .쥬시쿨 자두</span>
+                            <span class="data03">930(16)B</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>16</span>
+                        </div>
+                        <div class="data_form">
+                            <span>8</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>1,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>574</span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span>30,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>4,543</span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .GT</span>
+                            <span class="data03">900ml(16)(900ml)</span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .쥬시쿨 자두</span>
+                            <span class="data03">930(16)B</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>16</span>
+                        </div>
+                        <div class="data_form">
+                            <span>8</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>1,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>574</span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span>30,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>4,543</span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                 <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .GT</span>
+                            <span class="data03">900ml(16)(900ml)</span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .쥬시쿨 자두</span>
+                            <span class="data03">930(16)B</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>16</span>
+                        </div>
+                        <div class="data_form">
+                            <span>8</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>1,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>574</span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span>30,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>4,543</span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .GT</span>
+                            <span class="data03">900ml(16)(900ml)</span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .쥬시쿨 자두</span>
+                            <span class="data03">930(16)B</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>16</span>
+                        </div>
+                        <div class="data_form">
+                            <span>8</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>1,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>574</span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span>30,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>4,543</span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                 <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .GT</span>
+                            <span class="data03">900ml(16)(900ml)</span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .쥬시쿨 자두</span>
+                            <span class="data03">930(16)B</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>16</span>
+                        </div>
+                        <div class="data_form">
+                            <span>8</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>1,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>574</span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span>30,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>4,543</span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .GT</span>
+                            <span class="data03">900ml(16)(900ml)</span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .쥬시쿨 자두</span>
+                            <span class="data03">930(16)B</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>16</span>
+                        </div>
+                        <div class="data_form">
+                            <span>8</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>1,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>574</span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span>30,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>4,543</span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .GT</span>
+                            <span class="data03">900ml(16)(900ml)</span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .쥬시쿨 자두</span>
+                            <span class="data03">930(16)B</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>16</span>
+                        </div>
+                        <div class="data_form">
+                            <span>8</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>1,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>574</span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span>30,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>4,543</span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .GT</span>
+                            <span class="data03">900ml(16)(900ml)</span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .쥬시쿨 자두</span>
+                            <span class="data03">930(16)B</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>16</span>
+                        </div>
+                        <div class="data_form">
+                            <span>8</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>1,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>574</span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span>30,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>4,543</span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .GT</span>
+                            <span class="data03">900ml(16)(900ml)</span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .쥬시쿨 자두</span>
+                            <span class="data03">930(16)B</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>16</span>
+                        </div>
+                        <div class="data_form">
+                            <span>8</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>1,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>574</span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span>30,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>4,543</span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .GT</span>
+                            <span class="data03">900ml(16)(900ml)</span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01">8801069173603</span>
+                            <span class="data02">남 .쥬시쿨 자두</span>
+                            <span class="data03">930(16)B</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                        <div class="data_form">
+                            <span>EA</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>16</span>
+                        </div>
+                        <div class="data_form">
+                            <span>8</span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span>1,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>574</span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span>30,927</span>
+                        </div>
+                        <div class="data_form">
+                            <span>4,543</span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                 <tr>
+                    <td colspan="10">
+                        <div class="data_form">
+                            <span class="data01"></span>
+                            <span class="data02"></span>
+                            <span class="data03"></span>
+                        </div>
+                        <div class="data_form">
+                            <span class="data01"></span>
+                            <span class="data02"></span>
+                            <span class="data03"></span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="alTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                    <td colspan="2" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                    <td colspan="4" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                    <td colspan="3" class="arTxt">
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                        <div class="data_form">
+                            <span></span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">비고</th>
+                    <td colspan="21">
+                        <div class="data_form">
+                            우리은행 1005-104-052110<br/>
+                            전미수: &#8361; 58,894,422
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <th colspan="2">공급가액</th>
+                    <td colspan="5" class="arTxt">
+                        
+                    </td>
+                    <th>세액</th>
+                    <td colspan="3" class="arTxt">
+                       
+                    </td>
+                    <th>합계</th>
+                    <td colspan="3" class="arTxt">
+                       &#8361; 802,305
+                    </td>
+                    <th>미수금</th>
+                    <td colspan="4" class="arTxt">
+                       &#8361; 802,305,000
+                    </td>
+                    <th>인수자</th>
+                    <td colspan="2">
+                       홍길동
+                    </td>
+                </tr>      
+        </table>
+
+    </div>
+        </div>
+    </div>
+    
+</body>
+</html>

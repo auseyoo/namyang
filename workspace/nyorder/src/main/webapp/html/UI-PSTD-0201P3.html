@@ -1,0 +1,1436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템</title>
+<link rel="stylesheet" type="text/css" href="../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/lib/boot.css">
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<script type="text/javascript">
+    $(function(){	
+        $('.modal_wrap').on('.open', function(e){
+            //-- 그리드 생성되지 않았다면...생성하기
+            if(!AUIGrid.isCreated('#grid_wrap2')) {
+                var $body = $('.modal_wrap .popCon');
+                createAUIGrid('#grid_wrap2', $body.width(), 300);
+            }
+            
+            // 데이터 요청
+            requestData("./data/schedule_tree.json");
+        });
+    });
+
+    var myGridID;
+    var myGridID2;
+    var myGridID3;
+    var myGridID4;
+    var gridData = [
+		{"id":"#Cust0","puchSeq":0070,"prdSapCd":"FG51000","stdPrdNm":"GT프리미엄200","lcls":"A","prdNm":"프리미엄 200","orderStatus":"주문가능"},
+		{"id":"#Cust1","puchSeq":0070,"prdSapCd":"FG51000","stdPrdNm":"GT프리미엄200","lcls":"A","prdNm":"프리미엄 200","orderStatus":"주문가능"}
+	];
+    var gridData2 = [
+        {"id":"#Cust01","prdSapCd":0072,"stdPrdNm":"GT프리미엄200","prdNm":"프리미엄 200","lcls":"A","mcls":"가","scls":"a"},
+		{"id":"#Cust11","prdSapCd":0072,"stdPrdNm":"GT프리미엄200","prdNm":"프리미엄 200","lcls":"A","mcls":"가","scls":"a"}
+    ];
+    var gridData3 = [
+        {"id":"#Cust02","order":0072,"prdSapCd":0022,"prdNm":"GT프리미엄200"},
+		{"id":"#Cust12","order":0072,"prdSapCd":0022,"prdNm":"GT프리미엄200"}
+    ];
+    var gridData4 = [
+        {"id":"#Cust01","prdSapCd":0072,"stdPrdNm":"GT프리미엄200","prdNm":"프리미엄 200","lcls":"A","mcls":"가","scls":"a"},
+		{"id":"#Cust11","prdSapCd":0072,"stdPrdNm":"GT프리미엄200","prdNm":"프리미엄 200","lcls":"A","mcls":"가","scls":"a"}
+    ];
+   
+   $(document).ready(function(){
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid();
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.        
+        
+        AUIGrid.setGridData(myGridID, gridData);
+        AUIGrid.setGridData(myGridID2, gridData2);
+        AUIGrid.setGridData(myGridID3, gridData3);
+        AUIGrid.setGridData(myGridID4, gridData4);
+	    //AUIGrid.setFooter(myGridID, footerLayout);
+    });
+    
+   
+    // AUIGrid 를 생성합니다.
+    function createAUIGrid() {
+        // 그리드 속성 설정
+        var gridPros = {
+                headerHeight : 58,
+                rowHeight : 29,
+                // 편집 가능 여부 (기본값 : false)
+                editable : false,
+                
+                // 엔터키가 다음 행이 아닌 다음 칼럼으로 이동할지 여부 (기본값 : false)
+                enterKeyColumnBase : true,
+                
+                // 셀 선택모드 (기본값: singleCell)
+                selectionMode : "multipleCells",
+                //showFooter : true,
+                
+                // 컨텍스트 메뉴 사용 여부 (기본값 : false)
+                useContextMenu : true,
+                
+                // 필터 사용 여부 (기본값 : false)
+                enableFilter : true,
+            
+                // 그룹핑 패널 사용
+                useGroupingPanel : false,
+
+                // 체크박스 사용 
+	            showRowCheckColumn : true,
+                
+                
+                // 그룹핑 또는 트리로 만들었을 때 펼쳐지게 할지 여부 (기본값 : false)
+                displayTreeOpen : true,
+                
+                noDataMessage : "출력할 데이터가 없습니다.",
+                
+                groupingMessage : "여기에 칼럼을 드래그하면 그룹핑이 됩니다."
+                
+        };
+    
+        var gridPros2 = {
+            showRowCheckColumn : false,
+        }
+
+        var gridPros3 = {
+            showRowCheckColumn : false,
+        }
+
+        var gridPros4 = {
+            showRowCheckColumn : false,
+        }
+
+        // 실제로 #grid_wrap 에 그리드 생성
+        myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+        myGridID2 = AUIGrid.create("#grid_wrap2", columnLayout2, gridPros2);
+        myGridID3 = AUIGrid.create("#grid_wrap3", columnLayout3, gridPros3);
+        myGridID4 = AUIGrid.create("#grid_wrap4", columnLayout4, gridPros4);
+    }
+
+    var columnLayout = [{
+            dataField : "puchSeq",
+			headerText : "매입처",
+			width : "12%",
+		},{
+			dataField : "prdSapCd",
+			headerText : "제품코드",
+            width : "12%" ,
+            style : "auiLink"           	
+        },{
+			dataField : "stdPrdNm",
+			headerText : "본사<br/>제품명",
+			width : "25%",
+            style : "auiLeft"		
+        },{
+			dataField : "lcls",
+			headerText : "제품<br/>대분류",
+			width : "12%"
+		},{
+			dataField : "prdNm",
+			headerText : "제품명",
+            style : "auiLeft"
+        },{
+			dataField : "orderStatus",
+			headerText : "주문여부",
+            width : "13%"
+		}
+	];
+
+    var columnLayout2 = [{
+			dataField : "prdSapCd",
+			headerText : "제품코드",
+            width : "12%" ,
+            style : "auiLink"           	
+        },{
+			dataField : "stdPrdNm",
+			headerText : "본사<br/>제품명",
+			width : "20%",
+            style : "auiLeft"		
+		},{
+			dataField : "prdNm",
+			headerText : "제품명",
+            style : "auiLeft"
+        },{
+			dataField : "lcls",
+			headerText : "제품<br/>대분류",
+			width : "12%"
+        },{
+			dataField : "mcls",
+			headerText : "제품<br/>중분류",
+            width : "13%"
+		},{
+			dataField : "scls",
+			headerText : "제품<br/>소분류",
+            width : "13%"
+		}
+	];
+
+    var columnLayout3 = [{
+			dataField : "order",
+			headerText : "순서",
+            width : "20%" ,
+            editable : true, 
+                renderer : {
+                    type : "TemplateRenderer"
+                },
+                labelFunction : function (rowIndex, columnIndex, value, headerText, item, dataField, cItem ) { // HTML 템플릿 작성
+                    if(!value)	return "";
+                    var width = (cItem.width - 12);
+                    var template = '<input type="text" class="auiInput01 w50"';
+                    template += ' style="width:' + width + 'px;"'; 
+                    template += ' value="' + value +'" onblur="javascript:myInputHandler(' + rowIndex + ', this.value, event);"'
+                    template += ' onkeydown="if(event.keyCode == 9) event.preventDefault();"' 
+                    template += '>';
+                    return template; 
+                }           	
+        },{
+			dataField : "prdSapCd",
+			headerText : "제품코드",
+			width : "20%",		
+		},{
+			dataField : "prdNm",
+			headerText : "제품명",
+            style : "auiLeft"
+		}
+	];
+
+    var columnLayout4 = [{
+			dataField : "prdSapCd",
+			headerText : "제품코드",
+            width : "12%" ,
+            style : "auiLink"           	
+        },{
+			dataField : "stdPrdNm",
+			headerText : "본사<br/>제품명",
+			width : "20%",
+            style : "auiLeft"		
+		},{
+			dataField : "prdNm",
+			headerText : "제품명",
+            style : "auiLeft"
+        },{
+			dataField : "lcls",
+			headerText : "제품<br/>대분류",
+			width : "12%"
+        },{
+			dataField : "mcls",
+			headerText : "제품<br/>중분류",
+            width : "13%"
+		},{
+			dataField : "scls",
+			headerText : "제품<br/>소분류",
+            width : "13%"
+		}
+	];
+
+    // 전체 체크 설정/ 해제
+    function checkAll(checked) {
+        var rowCount = AUIGrid.getRowCount(myGridID);
+        if(checked) {
+            // 전체 데이터를 대상으로 isActive 필드를 "Active" 값으로 변경
+            AUIGrid.updateRowBlockToValue(myGridID, 0, rowCount-1, "isActive", "Active");
+        } else {
+            // 전체 데이터를 대상으로 isActive 필드를 "Inactive" 값으로 변경
+            AUIGrid.updateRowBlockToValue(myGridID, 0, rowCount-1, "isActive", "Inactive");
+        }
+    };
+</script>
+</head>
+<body>
+	<div class="allWrap">
+		<header>
+            <h1><a href="#" class="logo" title="남양유업"></a></h1>
+
+            <div class="logInfo">
+                <ul>
+                    <li><span class="user">김 남양</span> 님 을 환영합니다.</li>
+                    <li>최근접속일시 : <span class="date">2021.12.10 09:30:00</span></li>
+                    <li><a href="#" class="logOut"><span class="blind">로그아웃</span></a></li>
+                </ul>
+            </div>
+		</header>  
+
+		<div class="contentWrap">
+            <!-- lnb -->
+			<div class="lnb">
+                <!-- 검색영역 -->
+                <div class="leftSearBox">
+                    <input type="text" name="" value="" class="inp type02">
+                    <button type="button" class="searBtn" name="" title="검색하기"></button>
+                </div>
+                <!-- 검색영역 -->
+
+				<!-- 메뉴영역 -->
+                <div class="etcMenu">
+                    <a href="#" class="allMenu" title="전체메뉴"><span>전체메뉴</span></a>
+                    <a href="#" class="favSearch" title="즐겨찾기"><span>즐겨찾기</span></a>
+                </div>
+
+                <ul>
+                    <li class="depth1">
+                        <a href="#" title="기준정보 관리"><span>기준정보 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="대리점 관리"><span>대리점 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="애음자 관리"><span>애음자 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="판매 관리"><span>판매 관리</span></a>
+                        <ul class="depth2"> <!--style="display:block" -->
+                            <li>
+                                <h3>거래처 관리</h3>
+                            </li>
+                            <li><a href="#">거래처 관리</a></li>
+                            <li><a href="#">거래처별 단가 관리</a></li>
+                            <li>
+                                <h3>판매 관리</h3>
+                            </li>
+                            <li><a href="#">판매등록</a></li>
+                            <li><a href="#">거래명세표 발행</a></li>
+                            <li><a href="#">대리점 일보</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="매출 관리"><span>매출 분석</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="세무/회계 관리"><span>세무/회계 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="장비 관리"><span>장비 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="판촉 관리"><span>판촉 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="커뮤니케이션 관리"><span>커뮤니케이션 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="마이페이지"><span>마이페이지</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="로그인"><span>로그인</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <!-- 메뉴영역 -->
+
+                <a href="#" class="sideBtn"></a>
+			</div>
+            <!-- lnb -->
+			
+            <!-- content -->
+            <div class="rContentBox">
+                <div class="content">
+                    <div class="titTopArea">
+                        <h2 class="tit01">표준제품 관리 <a href="#" class="favor" title="즐겨찾기"></a></h2>
+
+                        <div class="location">
+                            <ul>
+                                <li><i class="home"></i></li>
+                                <li>기준정보 관리</li>
+                                <li>기준정보 관리</li>
+                                <li>표준제품 관리</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- 조회 -->
+                    <div class="inquiryBox dtShort">
+                        <dl>
+                            <dt>매입처</dt>
+                            <dd>
+                                <div class="formWrap">
+                                    <select name="" class="sel w120" id="sel_purchase">
+                                        <option>전체</option>
+                                        <option>매입처1</option>
+                                        <option>매입처2</option>
+                                        <option>매입처3</option>
+                                    </select>
+
+                                    <div class="checkGroup">
+                                        <input type="checkbox" id="order1" class="type01" checked=""><label for="order1"><span>주문 가능</span></label>
+                                        <input type="checkbox" id="order2" class="type01"><label for="order2"><span>주문 불가</span></label>
+                                    </div>
+                                </div>
+                            </dd>
+                            <dt>제품</dt>
+                            <dd>
+                                <div class="formWrap">
+                                    <input type="text" id="inp_product01" class="inp w120 mr10" value="" name="" placeholder="제품코드">
+                                    <input type="text" id="inp_product02" class="inp w160 mr7" value="프리미엄 200" name="" placeholder="제품명">
+
+                                    <button type="button" name="" class="comBtn" id="inp_name01">조회</button>
+                                </div>
+                            </dd>
+                        </dl>
+
+                        <div class="btnGroup right">
+                            <button type="button" name="" class="inquBtn" data-id="modalAgencyViews">등록</button>
+                        </div>
+                    </div>
+                    <!-- 조회 -->
+
+                    <!-- grid -->
+                    <div class="girdBoxGroup">
+                        <div class="girdBox w55per">
+                            <div class="titleArea">
+                                <h3 class="tit01">표준제품 목록</h3>
+                            </div>
+
+                            <div class="titleArea right">
+                                <p class="numState">
+                                    <em>총 <span class="pColor01 fb">100</span></em> 건 이 조회되었습니다.
+                                </p>
+        
+                                <button type="button" name="" class="comBtn small" data-id="modalAgencyViews02">순서변경</button>
+                            </div>
+
+                            <div id="grid_wrap"></div>
+                        </div>
+
+                        <div class="conBox w43per">
+                            <div class="titleArea right">
+                                <h3 class="tit01">세부 정보</h3>
+
+                                <div class="btnGroup">
+                                    <button type="button" name="" class="comBtn small" data-id="modalAgencyViews03">제품 변경</button>                                    
+                                    <button type="button" name="" class="cancelBtn small">삭제</button>
+                                    <button type="button" name="" class="inquBtn small">저장</button>
+                                </div>
+                            </div>
+
+                            <!-- 세부정보 -->
+                            <div class="tblWrap">
+                                <table class="tbl">
+                                    <caption>세부 정보</caption>
+                                    <colgroup>
+                                        <col style="width:132px;">
+                                        <col>
+                                        <col style="width:132px;">
+                                        <col>
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">
+                                                매입처명
+                                            </th>
+                                            <td>
+                                                <p>남양</p>
+                                            </td>
+                                            <th scope="row">
+                                                사용여부
+                                            </th>
+                                            <td>
+                                                <p>사용</p>
+                                            </td>
+                                        </tr> 
+                                        <tr>
+                                            <th scope="row">
+                                                <label for="sel_bankNum02" title="필수입력">제품코드</label>
+                                            </th>
+                                            <td>
+                                                <p>00791</p>
+                                            </td>
+                                            <th scope="row">
+                                                <label for="inp_account_name02">표준제품</label>
+                                            </th>
+                                            <td>
+                                                <select name="" class="sel" id="sel_bankNum02">
+                                                    <option>사용</option>
+                                                    <option>미사용</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                제품 대분류
+                                            </th>
+                                            <td>
+                                                <p>A</p>
+                                            </td>
+                                            <th scope="row">
+                                                제품 중분류
+                                            </th>
+                                            <td>
+                                                <p>가</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                제품 소분류
+                                            </th>
+                                            <td>
+                                                <p>a</p>
+                                            </td>
+                                            <th scope="row">
+                                                주문여부
+                                            </th>
+                                            <td>
+                                                <p>주문가능</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                <label for="inp_proName">본사 제품명</label>
+                                            </th>
+                                            <td colspan="3">
+                                                <p>GT프리미엄20</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                <label for="inp_proName" class="required" title="필수입력">제품명</label>
+                                            </th>
+                                            <td colspan="3">
+                                                <input type="text" id="inp_proName" class="inp" value="" name="">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                BOX 입수량
+                                            </th>
+                                            <td class="ar">
+                                                <p>20</p>
+                                            </td>
+                                            <th scope="row">
+                                                과세구분
+                                            </th>
+                                            <td>
+                                                <p>과세</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                규격
+                                            </th>
+                                            <td class="ar">
+                                                <p>200</p>
+                                            </td>
+                                            <th scope="row">
+                                                단위
+                                            </th>
+                                            <td>
+                                                <p>ml</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                낱봉단가
+                                            </th>
+                                            <td class="ar">
+                                                <p>704.00</p>
+                                            </td>
+                                            <th scope="row">
+                                                유효기간(일)
+                                            </th>
+                                            <td class="ar">
+                                                <p>13</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                공장도가(공급)
+                                            </th>
+                                            <td class="ar">
+                                                <p>640.00</p>
+                                            </td>
+                                            <th scope="row">
+                                                <label for="inp_barcodeNum" title="필수입력">바코드번호</label>
+                                            </th>
+                                            <td>
+                                                <input type="text" id="inp_barcodeNum" class="inp" value="" name="">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                공장도가(VAT)
+                                            </th>
+                                            <td class="ar">
+                                                <p>64.00</p>
+                                            </td>
+                                            <th scope="row">
+                                                <label for="sel_crate" title="필수입력">크레이트</label>
+                                            </th>
+                                            <td>
+                                                <select name="" class="sel" id="sel_crate">
+                                                    <option>사용</option>
+                                                    <option>미사용</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                주문단위
+                                            </th>
+                                            <td>
+                                                <p>BOX</p>
+                                            </td>
+                                            <th scope="row">
+                                                단가변경 일시
+                                            </th>
+                                            <td>
+                                                <p>2022-01-03 01:00:00</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                주문기간
+                                            </th>
+                                            <td>
+                                                <p>1전주문</p>
+                                            </td>
+                                            <th scope="row">
+                                                단가적용일
+                                            </th>
+                                            <td>
+                                                <p>2022-01-05</p>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                <label for="inp_stockMax" title="필수입력">재고최대량</label> 
+                                            </th>
+                                            <td>
+                                                <input type="text" id="inp_stockMax" class="inp ar" value="" name="">
+                                            </td>
+                                            <th scope="row">
+                                                홉수
+                                            </th>
+                                            <td class="ar">
+                                                <p>1.0 / 2.5 / 3.0</p>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <!-- 세부정보 -->
+
+                            <div class="titleArea">
+                                <h3 class="tit01">출고증 인쇄시 사용항목</h3>
+                            </div>
+
+                            <table class="tbl">
+                                <caption>출고증 인쇄시 사용항목 정보</caption>
+                                <colgroup>
+                                    <col style="width:132px;">
+                                    <col>
+                                    <col style="width:132px;">
+                                    <col>
+                                </colgroup>
+                                <tbody>
+                                    <tr>
+                                        <th scope="row">
+                                            <label for="sel_bankNum02">약어(8 Byte)</label>
+                                        </th>
+                                        <td>
+                                            <input type="text" id="inp_stockMax" class="inp" value="" name="">
+                                        </td>
+                                        <th scope="row">
+                                            <label for="inp_account_name02">대표제품명</label>
+                                        </th>
+                                        <td>
+                                            <input type="text" id="inp_stockMax" class="inp" value="" name="">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- grid -->
+                </div>
+
+                <footer>
+                    COPYRIGHT-NAMYANG-DAIRY-PRODUCTS-COLTD-ALL-RIGHT-RESERVED
+                </footer>
+            </div>
+            <!-- content -->
+		</div>
+	</div>
+
+    <!-- 표준제품 등록 -->
+    <div class="modal_bg" style="display:block"></div> <!-- modal 배경 -->
+    <div class="popWrap large modal_wrap" data-popup="modalAgencyViews"> <!-- small 사이즈 600px * 370px -->
+        <header>
+            <h3>표준제품 등록</h3>
+            <button type="button" name="" class="closeBtn" id="modalCloseBtn"></button>
+        </header>  
+
+        <!-- popCon -->
+        <div class="popCon">
+            <div class="popTitArea">
+                <h3>표준제품 등록</h3>
+    
+                <div class="popBtnArea">
+                    <button type="button" name="" class="inquBtn">저장</button>
+                    <button type="button" name="" class="comBtn" id="modalCloseBtn">닫기</button>                   
+                </div>
+            </div>
+
+            <!-- 조회 -->
+            <div class="inquiryBox dtShort">
+                <dl>
+                    <dt>분류</dt>
+                    <dd>
+                        <div class="formWrap">
+                            <select name="" class="sel w120 mr10" id="sel_class01">
+                                <option>대분류</option>
+                            </select>
+
+                            <select name="" class="sel w120 mr10" id="sel_class02">
+                                <option>중분류</option>
+                            </select>
+
+                            <select name="" class="sel w120" id="sel_class03">
+                                <option>소분류</option>
+                            </select>
+
+                            <div class="checkGroup">
+                                <input type="checkbox" id="stdPrdNm01" class="type01" checked=""><label for="stdPrdNm01"><span>표준제품제외</span></label>
+                            </div>
+                            
+                        </div>
+                    </dd>
+                    <dt>제품</dt>
+                    <dd>
+                        <div class="formWrap">
+                            <input type="text" id="inp_product01" class="inp w120 mr10" value="" name="" placeholder="제품코드">
+                            <input type="text" id="inp_product02" class="inp w160 mr7" value="프리미엄 200" name="" placeholder="제품명">
+
+                            <button type="button" name="" class="comBtn" id="inp_name01">조회</button>
+                        </div>
+                    </dd>
+                </dl>
+            </div>
+            <!-- 조회 -->
+
+            <div class="girdBoxGroup">
+                <div class="girdBox w55per">
+                    <div class="titleArea">
+                        <h3 class="tit01">남양제품 목록</h3>
+                    </div>
+
+                    <p class="numState">
+                        <em>총 <span class="pColor01 fb">24</span></em> 건 이 조회되었습니다.
+                    </p>
+        
+                    <!-- grid -->
+                    <div class="girdBox">
+                        <div id="grid_wrap2"></div>
+                    </div>
+                    <!-- grid -->
+                </div>
+
+                <div class="conBox w43per">
+                    <div class="titleArea">
+                        <h3 class="tit01">세부 정보</h3>
+                    </div>
+
+                    <div class="tblWrap">
+                        <table class="tbl">
+                            <caption>세부 정보</caption>
+                            <colgroup>
+                                <col style="width:132px;">
+                                <col>
+                                <col style="width:132px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">
+                                        매입처명
+                                    </th>
+                                    <td>
+                                        <p>남양</p>
+                                    </td>
+                                    <th scope="row">
+                                        사용여부
+                                    </th>
+                                    <td>
+                                        <p>사용</p>
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <th scope="row">
+                                        <label for="sel_bankNum02" title="필수입력">제품코드</label>
+                                    </th>
+                                    <td>
+                                        <p>00791</p>
+                                    </td>
+                                    <th scope="row">
+                                        <label for="inp_account_name02">표준제품</label>
+                                    </th>
+                                    <td>
+                                        <p>미사용</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        제품 대분류
+                                    </th>
+                                    <td>
+                                        <p>A</p>
+                                    </td>
+                                    <th scope="row">
+                                        제품 중분류
+                                    </th>
+                                    <td>
+                                        <p>가</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        제품 소분류
+                                    </th>
+                                    <td>
+                                        <p>a</p>
+                                    </td>
+                                    <th scope="row">
+                                        주문여부
+                                    </th>
+                                    <td>
+                                        <p>주문가능</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="inp_proName">본사 제품명</label>
+                                    </th>
+                                    <td colspan="3">
+                                        <p>GT프리미엄20</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="inp_proName" class="required" title="필수입력">제품명</label>
+                                    </th>
+                                    <td colspan="3">
+                                        <input type="text" id="inp_proName" class="inp" value="" name="" placeholder="이 대리점 시스템에서 사용할 제품명 입니다.">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        BOX 입수량
+                                    </th>
+                                    <td class="ar">
+                                        <p>20</p>
+                                    </td>
+                                    <th scope="row">
+                                        과세구분
+                                    </th>
+                                    <td>
+                                        <p>과세</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        규격
+                                    </th>
+                                    <td class="ar">
+                                        <p>200</p>
+                                    </td>
+                                    <th scope="row">
+                                        단위
+                                    </th>
+                                    <td>
+                                        <p>ml</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        낱봉단가
+                                    </th>
+                                    <td class="ar">
+                                        <p>704.00</p>
+                                    </td>
+                                    <th scope="row">
+                                        유효기간(일)
+                                    </th>
+                                    <td class="ar">
+                                        <p>13</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        공장도가(공급)
+                                    </th>
+                                    <td class="ar">
+                                        <p>640.00</p>
+                                    </td>
+                                    <th scope="row">
+                                        <label for="inp_barcodeNum" title="필수입력">바코드번호</label>
+                                    </th>
+                                    <td>
+                                        <input type="text" id="inp_barcodeNum" class="inp" value="" name="">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        공장도가(VAT)
+                                    </th>
+                                    <td class="ar">
+                                        <p>64.00</p>
+                                    </td>
+                                    <th scope="row">
+                                        <label for="sel_crate" title="필수입력">크레이트</label>
+                                    </th>
+                                    <td>
+                                        <select name="" class="sel" id="sel_crate">
+                                            <option>사용</option>
+                                            <option>미사용</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        주문단위
+                                    </th>
+                                    <td>
+                                        <p>BOX</p>
+                                    </td>
+                                    <th scope="row">
+                                        단가변경 일시
+                                    </th>
+                                    <td>
+                                        <p>2022-01-03 01:00:00</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        주문기간
+                                    </th>
+                                    <td>
+                                        <p>1전주문</p>
+                                    </td>
+                                    <th scope="row">
+                                        단가적용일
+                                    </th>
+                                    <td>
+                                        <p>2022-01-05</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="inp_stockMax" title="필수입력">재고최대량</label> 
+                                    </th>
+                                    <td>
+                                        <input type="text" id="inp_stockMax" class="inp ar" value="" name="">
+                                    </td>
+                                    <th scope="row">
+                                        홉수
+                                    </th>
+                                    <td class="ar">
+                                        <p>1.0 / 2.5 / 3.0</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="titleArea">
+                        <h3 class="tit01">출고증 인쇄시 사용항목</h3>
+                    </div>
+
+                    <table class="tbl">
+                        <caption>출고증 인쇄시 사용항목 정보</caption>
+                        <colgroup>
+                            <col style="width:132px;">
+                            <col>
+                            <col style="width:132px;">
+                            <col>
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th scope="row">
+                                    <label for="sel_bankNum02">약어(8 Byte)</label>
+                                </th>
+                                <td>
+                                    <input type="text" id="inp_stockMax" class="inp" value="" name="">
+                                </td>
+                                <th scope="row">
+                                    <label for="inp_account_name02">대표제품명</label>
+                                </th>
+                                <td>
+                                    <input type="text" id="inp_stockMax" class="inp" value="" name="">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+        <!-- popCon -->
+    </div>
+    <!--// 표준제품 등록 -->
+
+    
+    <!-- 표준제품 순서변경 -->
+    <div class="popWrap inGrid modal_wrap" data-popup="modalAgencyViews02">
+        <header>
+            <h3>표준제품 순서변경</h3>
+            <button type="button" name="" class="closeBtn" id="modalCloseBtn"></button>
+        </header>  
+
+        <div class="popCon">
+            <div class="popTitArea">
+                <h3>표준제품 순서변경</h3>
+    
+                <div class="popBtnArea">
+                    <button type="button" name="" class="inquBtn">저장</button>
+                    <button type="button" name="" class="comBtn modalCloseBtn" id="modalCloseBtn">닫기</button>                   
+                </div>
+            </div>
+
+            <p class="numState">
+                <em>총 <span class="pColor01 fb">123</span></em> 건 이 조회되었습니다.
+            </p>
+
+            <!-- grid -->
+            <div class="girdBox">
+                <div id="grid_wrap3"></div>
+            </div>
+            <!-- grid -->
+
+        </div>
+    </div>
+    <!-- 표준제품 순서변경 -->
+
+
+    <!-- 제품 변경 -->
+    <div class="popWrap large modal_wrap" data-popup="modalAgencyViews03" style="display:block; left:0; right:0; margin:50px auto;">
+        <header>
+            <h3>제품 변경</h3>
+            <button type="button" name="" class="closeBtn" id="modalCloseBtn"></button>
+        </header>  
+
+        <!-- popCon -->
+        <div class="popCon">
+            <div class="popTitArea">
+                <h3>제품 변경</h3>
+    
+                <div class="popBtnArea">
+                    <button type="button" name="" class="inquBtn">저장</button>
+                    <button type="button" name="" class="comBtn" id="modalCloseBtn">닫기</button>                   
+                </div>
+            </div>
+
+            <!-- 조회 -->
+            <div class="inquiryBox dtShort">
+                <dl>
+                    <dt>분류</dt>
+                    <dd>
+                        <div class="formWrap">
+                            <select name="" class="sel w120 mr10" id="sel_class01">
+                                <option>대분류</option>
+                            </select>
+
+                            <select name="" class="sel w120 mr10" id="sel_class02">
+                                <option>중분류</option>
+                            </select>
+
+                            <select name="" class="sel w120" id="sel_class03">
+                                <option>소분류</option>
+                            </select>
+
+                            <div class="checkGroup">
+                                <input type="checkbox" id="stdPrdNm01" class="type01" checked=""><label for="stdPrdNm01"><span>표준제품제외</span></label>
+                            </div>
+                            
+                        </div>
+                    </dd>
+                    <dt>제품</dt>
+                    <dd>
+                        <div class="formWrap">
+                            <input type="text" id="inp_product01" class="inp w120 mr10" value="" name="" placeholder="제품코드">
+                            <input type="text" id="inp_product02" class="inp w160 mr7" value="프리미엄 200" name="" placeholder="제품명">
+
+                            <button type="button" name="" class="comBtn" id="inp_name01">조회</button>
+                        </div>
+                    </dd>
+                </dl>
+            </div>
+            <!-- 조회 -->
+
+            <div class="girdBoxGroup">
+                <div class="girdBox w55per">
+                    <div class="titleArea">
+                        <h3 class="tit01">남양제품 목록</h3>
+                    </div>
+
+                    <p class="numState">
+                        <em>총 <span class="pColor01 fb">24</span></em> 건 이 조회되었습니다.
+                    </p>
+        
+                    <!-- grid -->
+                    <div class="girdBox">
+                        <div id="grid_wrap4"></div>
+                    </div>
+                    <!-- grid -->
+                </div>
+
+                <div class="conBox w43per">
+                    <div class="titleArea">
+                        <h3 class="tit01">제품 변경 적용일</h3>
+                    </div>
+
+                    <div class="tblWrap">
+                        <table class="tbl">
+                            <caption>출고증 인쇄시 사용항목 정보</caption>
+                            <colgroup>
+                                <col style="width:132px;">
+                                <col>
+                                <col style="width:132px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">
+                                        변경자
+                                    </th>
+                                    <td>
+                                        이남양
+                                    </td>
+                                    <th scope="row">
+                                        <label for="datepicker" class="required" title="필수입력">변경적용일</label>
+                                    </th>
+                                    <td>
+                                        <div class="dateWrap">
+                                            <input type="text" name="date" value="10/24/1984" class="inp" id="datepicker" readonly>
+                                            <button type="button" class="datepickerBtn" title="날짜입력"></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="titleArea">
+                        <h3 class="tit01">세부 정보</h3>
+                    </div>
+
+                    <div class="tblWrap">
+                        <table class="tbl">
+                            <caption>세부 정보</caption>
+                            <colgroup>
+                                <col style="width:132px;">
+                                <col>
+                                <col style="width:132px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">
+                                        매입처코드
+                                    </th>
+                                    <td>
+                                        <p>151515</p>
+                                    </td>
+                                    <th scope="row">
+                                        매입처명
+                                    </th>
+                                    <td>
+                                        <p>남양유업</p>
+                                    </td>
+                                </tr> 
+                                <tr>
+                                    <th scope="row">
+                                        <label for="sel_bankNum02" title="필수입력">제품코드</label>
+                                    </th>
+                                    <td>
+                                        <p>00791</p>
+                                    </td>
+                                    <th scope="row">
+                                        표준제품
+                                    </th>
+                                    <td>
+                                        <p>1사용</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        제품 대분류
+                                    </th>
+                                    <td>
+                                        <p>A</p>
+                                    </td>
+                                    <th scope="row">
+                                        제품 중분류
+                                    </th>
+                                    <td>
+                                        <p>가</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        제품 소분류
+                                    </th>
+                                    <td>
+                                        <p>a</p>
+                                    </td>
+                                    <th scope="row">
+                                        제품 세분류
+                                    </th>
+                                    <td>
+                                        <p>ㄱ</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        주문여부
+                                    </th>
+                                    <td>
+                                        <p>주문가능</p>
+                                    </td>
+                                    <th scope="row">
+                                        <label for="inp_proName03">표준제품</label>
+                                    </th>
+                                    <td>
+                                        <select name="" class="sel" id="inp_proName03">
+                                            <option>사용</option>
+                                            <option>미사용</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        본사 제품명
+                                    </th>
+                                    <td colspan="3">
+                                        <p>GT프리미엄20</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="inp_proName04" class="required" title="필수입력">제품명</label>
+                                    </th>
+                                    <td colspan="3">
+                                        <input type="text" id="inp_proName04" class="inp" value="" name="">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        BOX 입수량
+                                    </th>
+                                    <td class="ar">
+                                        <p>20</p>
+                                    </td>
+                                    <th scope="row">
+                                        과세구분
+                                    </th>
+                                    <td>
+                                        <p>과세</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        규격
+                                    </th>
+                                    <td class="ar">
+                                        <p>200</p>
+                                    </td>
+                                    <th scope="row">
+                                        단위
+                                    </th>
+                                    <td>
+                                        <p>ml</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        낱봉주문
+                                    </th>
+                                    <td>
+                                        <p>불가</p>
+                                    </td>
+                                    <th scope="row">
+                                        주문기간
+                                    </th>
+                                    <td>
+                                        <p>1전주문</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        매입단가
+                                    </th>
+                                    <td class="ar">
+                                        <p>704,00</p>
+                                    </td>
+                                    <th scope="row" class="tRow">
+                                        매입단가<br/>공급가/VAT
+                                    </th>
+                                    <td class="ar">
+                                        640.00/64
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="inp_regPrice03">지역표준단가</label>
+                                    </th>
+                                    <td>
+                                        <input type="text" id="inp_regPrice03" class="inp ar" value="" name="">                                     
+                                    </td>
+                                    <th scope="row" class="tRow">
+                                        지역표준단가<br/>공급가/VAT
+                                    </th>
+                                    <td class="ar">
+                                        <p>800.00 / 80.00</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="inp_drinkerPrice03">애음자표준단가</label>
+                                    </th>
+                                    <td class="ar">
+                                        <input type="text" id="inp_drinkerPrice03" class="inp ar" value="" name="">
+                                    </td>
+                                    <th scope="row" class="tRow">
+                                        애음자표준단가<br/>공급가/VAT
+                                    </th>
+                                    <td class="ar">
+                                        <p>64.000 / 1,000</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="inp_sellPrice03">판매단가</label>
+                                    </th>
+                                    <td class="ar">
+                                        <input type="text" id="inp_sellPrice03" class="inp ar" value="" name="">
+                                    </td>
+                                    <th scope="row" class="tRow">
+                                        판매단가<br/>공급가/VAT
+                                    </th>
+                                    <td class="ar">
+                                        <p>64.000 / 1,000</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="inp_barNum03">바코드번호</label>
+                                    </th>
+                                    <td>
+                                        <input type="text" id="inp_barNum03" class="inp" value="" name="">
+                                    </td>
+                                    <th scope="row">
+                                        <label for="sel_create03">크레이트</label>
+                                    </th>
+                                    <td>
+                                        <select name="" class="sel" id="sel_create03">
+                                            <option>가</option>
+                                            <option>나</option>
+                                            <option>다</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="inp_proName05" class="required" title="필수입력">대표제품명</label>
+                                    </th>
+                                    <td>
+                                        <input type="text" id="inp_proName05" class="inp" value="" name="">
+                                    </td>
+                                    <th scope="row">
+                                        <label for="sel_size03" class="required" title="필수입력">사이즈</label>
+                                    </th>
+                                    <td>
+                                        <select name="" class="sel" id="sel_size03">
+                                            <option>대</option>
+                                            <option>중</option>
+                                            <option>소</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="inp_attr03" class="required" title="필수입력">약어(6Byte)</label>
+                                    </th>
+                                    <td>
+                                        <input type="text" id="inp_attr03" class="inp" value="" name="">
+                                    </td>
+                                    <th scope="row" class="blank"></th>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                </div>
+            </div>
+
+        </div>
+        <!-- popCon -->
+    </div>
+    <!-- 제품 변경 -->
+
+</body>
+</html>

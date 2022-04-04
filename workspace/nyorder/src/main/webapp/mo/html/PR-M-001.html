@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템 - 거래명세서</title>
+<!--<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>-->
+<!--<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>-->
+<style>
+	body,html{height:100%; font-size:12pt;}
+	* {color-adjust: exact!important; -webkit-print-color-adjust: exact!important; print-color-adjust: exact!important; box-sizing:border-box; -moz-box-sizing: border-box; margin:0; padding:0;}
+     .page {/*width:21cm;*/ width:10cm;  min-height:29.7cm; padding:0.8cm 0.7cm; margin:1cm auto; background:#fff; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);}
+	/*.subpage {padding:1cm; height:256mm;}*/
+	@page {
+		/*size: A4 landscape;*/    /*Portrait*/
+		size: A4 Portrait;
+		margin:20px 0 10px;
+		/*size: landscape;*/
+	}
+	@media print {
+		html, body {width:100mm; height:297mm;}
+		.page {width:10cm; padding:0.8cm 0.7cm; margin:1cm auto; border:initial; border-radius:initial; width:initial; min-height:initial; box-shadow:initial; background:initial; page-break-after:avoid}
+	}
+
+	.printWrap{text-align:center;}
+	.printWrap h2{font-size:25px; margin-bottom:10px;}
+
+	.tblWrap{height:100%; margin-bottom:10px;}
+	table[class*="tbl"] {table-layout:fixed; width:100%; height:100%; clear:both; border-collapse:collapse;}
+	table[class*="tbl"] tr > * {vertical-align:middle;}
+	.tbl {}
+	.tbl tbody th, .tbl tbody td{white-space:nowrap;}
+	.tbl thead th.al{text-align:left;}
+	.tbl thead th.ar{text-align:right;}
+	.tbl thead th {font-size:10pt; font-weight:bold; height:30px; line-height:30px; border-top:1px dashed #000; border-bottom:1px dashed #000; padding:0; color:#000;}
+	.tbl tbody tr:first-child td{padding-top:10px;}
+	.tbl tbody tr:last-child td{padding-bottom:10px;}
+	.tbl tbody td {font-size:9.5pt; text-align:left; padding:0px; height:100%;}
+	.tbl tbody td p{margin:0;}
+	.tbl tbody td.ar{text-align:right;}
+	.tbl tfoot td {border-top:1px dashed #000; border-bottom:1px dashed #000; padding:10px 0; color:#000; font-weight:bold; font-size:14pt;}
+	.tbl tfoot td.al{text-align:left;}
+	.tbl tfoot ul{display:flex; justify-content:space-between;}
+	.tbl tfoot ul li{list-style:none;}
+	caption,legend{visibility:hidden;}
+	
+	.title{font-size:12pt; letter-spacing:8px; margin-bottom:10px;}
+	.title p{border-top:1px dashed #000; border-bottom:1px dashed #000; padding:3px 0;}
+	.info{text-align:left;}
+	.info dl{display:flex; margin:2px 0; font-size:10pt;}
+	.info dl dt{position:relative; width:130px; text-align:justify; text-align-last:justify; display:inline-block; margin-right:15px;}
+	.info dl dt:after{display:inline-block; content:":"; position:absolute; right:-12px}
+	.info dl dd{margin-left:10px;}
+	.info dl.venName{font-size:13pt; font-weight:bold;}
+	.info.type02 dt{letter-spacing:2.5px;}
+	.info.type02 dl{display:flex; justify-content:space-between; letter-spacing:-0.8px;}
+	.info.type02 dl dt{width:100px;}
+	.info.type02 dl.price dt:after{position:absolute; right:-7px}
+	.info.type02 dl.price dt,.info.type02 dl.price dd{font-size:13pt; font-weight:bold; letter-spacing:-2.8px;}
+	.info.type02 dl.price dd{letter-spacing:-1px;}
+
+	.venInfo{padding:10px 0; margin:12px 0 8px; border-top:1px dashed #000; border-bottom:1px dashed #000; text-align:left}
+	.venInfo dl{display:flex; justify-content:space-between; letter-spacing:-0.8px; font-size:10pt}
+	.venInfo .name{font-size:14pt; font-weight:bold;}
+	.venInfo .address,.bankNum{font-size:10pt;}
+
+	p.date{text-align:left; font-size:10pt;}
+
+	.ac{text-align:center;}
+	.ar{text-align:right;}
+</style>
+</head>
+<body>
+	<div class="printWrap">
+		<div class="page">
+			<div class="contents">
+				<h2>[ 남양유업 ]</h2>
+
+				<div class="title">
+					<p>거래명세서</p>
+				</div>
+
+				<div class="info">
+					<dl>
+						<dt>전 표 번 호</dt>
+						<dd>20211217-0001</dd>
+					</dl>
+					<dl class="venName">
+						<dt>거 래 처 명</dt>
+						<dd>콜콜콜 마트</dd>
+					</dl>
+					<dl>
+						<dt>사 업 자 등 록 번 호</dt>
+						<dd>505-07-28254</dd>
+					</dl>
+					<dl>
+						<dt>대 표 자 명</dt>
+						<dd>이남양</dd>
+					</dl>
+					<dl>
+						<dt>전 화 번 호</dt>
+						<dd>010-4550-8888</dd>
+					</dl>
+				</div>
+
+				<div class="tblWrap">
+					<table class="tbl">
+						<caption>거래명세서</caption>
+						<colgroup>
+							<col>
+							<col style="width:15%;">
+							<col style="width:15%;">
+							<col style="width:25%;">
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col" class="al">제품명</th>
+								<th scope="col">수량</th>
+								<th scope="col">단가</th>
+								<th scope="col" class="ar">금액</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td colspan="4">
+									[판매]
+								</td>
+							</tr>
+							<tr>
+								<td colspan="4">
+									요구65ml(96입)
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td class="ar">
+									6
+								</td>
+								<td class="ar">
+									16
+								</td>
+								<td class="ar">
+									6,786
+								</td>
+							</tr>
+							<tr>
+								<td colspan="4">
+									남양 GT 500
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td class="ar">
+									6
+								</td>
+								<td class="ar">
+									4,200
+								</td>
+								<td class="ar">
+									6,786
+								</td>
+							</tr>
+							<tr>
+								<td colspan="4">
+									위산프로젝트 위쎈
+								</td>
+							</tr>
+							<tr>
+								<td></td>
+								<td class="ar">
+									6
+								</td>
+								<td class="ar">
+									5,000
+								</td>
+								<td class="ar">
+									6,786
+								</td>
+							</tr>
+						</tbody>
+						<tfoot>
+							<tr>
+								<td class="al" colspan="4">
+									<ul>
+										<li>품종 : 5</li>
+										<li>수량 : 115</li>
+										<li>6,786</li>
+									</ul>
+								</td>
+							</tr>
+						</tfoot>
+					</table>
+				</div>
+
+				<div class="info type02">
+					<dl>
+						<dt>매출금액</dt>
+						<dd>25,300</dd>
+					</dl>
+					<dl>
+						<dt>할인금액</dt>
+						<dd>0</dd>
+					</dl>
+					<dl class="price">
+						<dt>실매출액</dt>
+						<dd>25,300</dd>
+					</dl>
+					<dl>
+						<dt>현금수금</dt>
+						<dd>1,000</dd>
+					</dl>
+					<dl>
+						<dt>어음수금</dt>
+						<dd>0</dd>
+					</dl>
+				</div>
+
+				<div class="venInfo">
+					<p class="name">남양우유(신) 경주동부대리점</p>
+					<p class="busiNum">505-15-82971</p>
+
+					<dl>
+						<dt>정석원</dt>
+						<dd>25,300</dd>
+					</dl>
+					<dl>
+						<dt>도소매</dt>
+						<dd>우유</dd>
+					</dl>
+
+					<p class="address">경주시 대만길 19 (동천길) 0</p>
+					<p class="bankNum">계좌 : 하나은행 512-910601-05901</p>
+				</div>
+
+				<p class="date">2022년 12월 13일 10시 20분 출력</p>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

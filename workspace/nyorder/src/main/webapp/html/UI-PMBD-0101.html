@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템 - 비밀번호 변경</title>
+<link rel="stylesheet" type="text/css" href="../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<script>
+    // 비밀번호 변경 클릭 이벤트
+    function btnDisabled()  {
+        var pwBtnId = $('.cerNum_wrap');
+        const target = document.getElementById('btn_pwEdit');
+        target.disabled = true;
+        $(pwBtnId).removeClass('disabled');
+        $(pwBtnId).removeAttr('style');
+}
+</script>
+</head>
+<body>
+	<div class="mdbWrap">
+		<header>
+            <h1><a href="#" class="logo" title="남양유업"></a></h1>         
+		</header>
+
+		<div class="contentWrap">
+            <!-- content -->
+            <div class="login_wrap">
+                <div class="content">
+                    <div class="login_box">
+                        <!-- 1 -->
+                        <div class="content01">
+                            <div class="titleArea right">
+                                <h2 class="login_mainTit">MDB 파일 업로드</h2>
+                                <ul class="lnb">
+                                    <li class="active" rel="tab01">1</li>
+                                    <li class="" rel="tab02">2</li>
+                                </ul>
+                            </div>
+                        
+                            <div class="txt_wrap active">
+                                <span class=" num">1</span>
+                                <div class="txt">
+                                '사업자등록번호'를 입력 후 "확인" 버튼을 클릭하면 "대리점코드"를 선택할 수 있습니다.
+                                </div>                                
+                            </div>
+                        
+                            <div class="formGroup">
+                                <div class="formWrap jStart">
+                                    <label for="inp_num">사업자등록번호</label>
+                                    <input type="text" name="" value="" id="inp_num" class="inp type02 w180" placeholder="-없이 숫자만 입력">
+                                    <button type="button" name="" class="inquBtn" id="inp_num" onclick="location.href='#modalAgencyViews'" data-id="modalAgencyViews">확인</button>
+                                </div>
+                                
+                                <div class="formWrap jStart">
+                                    <label for="inp_agenCd">대리점코드(agen cd)</label>
+                                    <div class="selectbox">
+                                        <select id="inp_agenCd" name="" class="sel large w270">
+                                            <option>전체</option>
+                                            <option>사용</option>
+                                            <option>중지</option>
+                                        </select>
+                                    </div>
+                                    
+                                </div>
+
+                                <div class="formWrap jStart">
+                                    <label for="inp_name">대리점명</label>
+                                    <input type="text" id="inp_name" class="inp readonly" value="" name="" disabled="">
+                                </div>
+                            </div>
+                        </div>
+                        <!--// 1 -->
+
+                        <!-- 2 -->
+                        <div class="content02">
+                            <div class="txt_wrap mt50">
+                                <span class=" num">2</span>
+                                <div class="txt">
+                                “C:\Pams21\db”의 경로에서 “Pams21_01.MDB” 파일을 찾아 업로드해 주세요.<br>
+                                별도의 드라이브나 폴더에 프로그램이 설치되어 있을 경우에는 해당 위치에서 “Pams21_01.MDB” 파일을 찾아 업로드해 주세요.
+                                </div>
+                            </div>
+
+                            <div class="formWrap jStart right">
+                                <label for="inp_name">MDB 파일</label>
+                                <div class="formWrap filebox">
+                                    <input class="upload">
+                                    <label for="file" class="comBtn">찾기</label> 
+                                    <input type="file" id="file">
+                                    <button type="button" name="" class="inquBtn" id="inp_num" onclick="location.href='#modalAgencyViews'" data-id="modalAgencyViews">저장</button>
+                                    <button type="button" id="" name="" class="delBtn">삭제</button>
+                                </div>
+                            </div>
+
+                            
+                        </div>
+                        <!--// 2 -->  
+                    </div>
+                </div>
+            <!-- content -->
+            <footer>
+                COPYRIGHT-NAMYANG-DAIRY-PRODUCTS-COLTD-ALL-RIGHT-RESERVED
+            </footer>
+		</div>
+	</div>
+    
+</body>
+</html>

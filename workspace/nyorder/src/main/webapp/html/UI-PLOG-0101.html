@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템 - 로그인</title>
+<link rel="stylesheet" type="text/css" href="../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<script type="text/javascript">
+      var myGridID;
+      var gridData = [
+        {
+          id: "#Cust0",
+          code: "FG51000",
+          name: "비티소프트(구로)",
+          employeeCode: "20",
+        },
+        {
+          id: "#Cust1",
+          code: "FG51000",
+          name: "비티소프트(구로)",
+          employeeCode: "20",
+        },
+        {
+          id: "#Cust2",
+          code: "FG51000",
+          name: "비티소프트(구로)",
+          employeeCode: "20",
+        },
+        {
+          id: "#Cust3",
+          code: "FG51000",
+          name: "비티소프트(구로)",
+          employeeCode: "20",
+        },
+        {
+          id: "#Cust4",
+          code: "FG51000",
+          name: "비티소프트(구로)",
+          employeeCode: "20",
+        }, 
+        {
+          id: "#Cust5",
+          code: "FG51000",
+          name: "비티소프트(구로)",
+          employeeCode: "20",
+        },
+      ];
+
+      $(document).ready(function () {
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid(columnLayout);
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.
+
+        AUIGrid.setGridData(myGridID, gridData);
+      });
+
+      // AUIGrid 를 생성합니다.
+      function createAUIGrid(columnLayout) {
+        // 그리드 속성 설정
+        var gridPros = {
+          headerHeight: 29,
+          rowHeight: 29,
+          // 편집 가능 여부 (기본값 : false)
+          editable: false,
+
+          // 엔터키가 다음 행이 아닌 다음 칼럼으로 이동할지 여부 (기본값 : false)
+          enterKeyColumnBase: true,
+
+          // 셀 선택모드 (기본값: singleCell)
+          selectionMode: "multipleCells",
+
+          // 컨텍스트 메뉴 사용 여부 (기본값 : false)
+          useContextMenu: true,
+
+          // 필터 사용 여부 (기본값 : false)
+          enableFilter: true,
+
+          // 그룹핑 패널 사용
+          useGroupingPanel: false,
+
+          // 그룹핑 또는 트리로 만들었을 때 펼쳐지게 할지 여부 (기본값 : false)
+          displayTreeOpen: true,
+
+          noDataMessage: "출력할 데이터가 없습니다.",
+
+          groupingMessage: "여기에 칼럼을 드래그하면 그룹핑이 됩니다.",
+          width: 500,
+        };
+
+        // 실제로 #grid_wrap 에 그리드 생성
+        myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+      }
+
+      var columnLayout = [
+        {
+          dataField: "code",
+          headerText: "대리점 코드",
+          width: "50%",
+        },
+        {
+          dataField: "name",
+          headerText: "대리점명",
+        },
+        {
+          dataField: "employeeCode",
+          headerText: "직원코드",
+          width: "20%",
+        },
+      ];
+    </script>
+</head>
+<style>
+  .logWrap .contentWrap { display: block; padding-top: 80px; height: 100%; overflow-y: auto;}
+  .logWrap footer {height: auto; padding:30px 0; bottom:0; right: 0; left: 0; display: flex; justify-content: center; flex-wrap: wrap;}
+  .logWrap .login_wrap {display: flex;
+    position: relative;
+    width: 100%;
+    height: 100%;
+    justify-content: center;
+    flex-wrap: wrap;
+  align-items: flex-start;
+  min-height:599px;
+  min-width: 980px;
+  }
+  .logWrap .login_wrap .contGroup {display:flex; justify-content: space-between;}
+  .logWrap .login_wrap .content {width:860px; border-radius:24px; border:1px solid #d6d6d6;padding: 40px 80px; box-sizing: border-box; justify-items: center;
+    justify-self: center;}
+  .logWrap .login_wrap .content .login_box {
+    width: auto;
+    height: auto;
+    padding: 0;
+    padding-bottom: 20px;
+    border: 0;
+    border-radius:0;
+    justify-self: center;
+  }
+  .logWrap .login_wrap .content .login_box .formWrap:first-child {padding-top:0;}
+  .logWrap .titltArea .login_mainTit {font-size:24px; color:#222; font-weight:900; line-height: 1.5; letter-spacing: -1.2px;}
+  .logWrap .titltArea .login_susTxt {font-size:14px; color:#8d8d8d; font-weight: 300; margin-bottom:30px;}
+  .logWrap .titltArea .login_subTit {font-size:22px; color:#222; font-weight:900; letter-spacing: -1.1px; position:relative; margin-bottom:30px;}
+  .logWrap .titltArea .login_subTit:before {content:""; display:inline-block; width:16px; height:16px; background-color:#dc000c;border-radius: 50%; margin-right:6px; vertical-align:middle;}
+  .notice {width: 350px;
+    padding: 20px;
+    box-sizing: border-box;
+    border: 1px solid #e2e2e2;
+    height: 100%;
+    border-radius: 10px;
+    
+  }
+    .notice .titleArea {display: flex; color:#3674bc; font-size:14px; margin-bottom: 20px;}
+    .notice .titleArea::before {content:""; display: inline-block; width: 20px; height: 20px; margin-right: 4px; background:url("../images/ico_notice_alarm.png") no-repeat 0 0; background-size: 100%;}
+    .notice .dl_wrap {margin-bottom: 20px;}
+    .notice li {margin-bottom: 10px; }
+    .notice li a {display: flex; justify-content: space-between; align-items: center;}
+    .notice li:last-child {margin-bottom: 0;}
+    .notice li p {font-size: 14px;}
+    .notice li p:before {content: ''; display: inline-block; width: 4px; height: 4px; border-radius: 50%; background: #666; position: relative;
+    top: -3px; margin-right: 4px;}
+    .notice li span {font-size: 12px; color:#666;}
+    .logWrap .formWrap .txtInfo {margin-bottom: 0; padding: 0; border: 0;}
+    .logWrap .formWrap .txtInfo a { color:#666;}
+    .logWrap .login_wrap .content .login_box .formWrap button {width:86px; margin-left: 4px;}
+    .logWrap .login_wrap .login_bg {right: 263px;bottom: 83px;}
+    .linkGroup {width: 860px; box-sizing: border-box; padding:0 80px;}
+    .linkGroup a {margin-right:20px;}
+    .linkGroup a:nth-child(2):before {content:""; display: inline-block; width: 4px; height: 4px; margin-right: 20px; background: #969696; border-radius: 50%; vertical-align: middle; margin-top: -3px;}
+    .linkGroup a:nth-child(2) {color:#222; font-weight: 900;}
+    .footerList {width: 860px;display: flex; flex-shrink: 0; flex-wrap: wrap; color:#444;}
+    .footerList li {margin-right: 10px; margin-bottom: 10px; flex-shrink: 0; letter-spacing: 0px;}
+    .footerList li:first-child::before {display: none;}
+    .footerList li::before {content: ""; display: inline-block; width: 1px; height: 10px; margin-right: 10px; background: gray;}
+    .footerList li:last-of-type::before {display: none;}
+    .footerList li.row::before {display: none;}
+    .botList {display: flex; width: 860px; margin-top: 30px;}
+    .botList li {margin-right: 4px; letter-spacing: 0.1px;}
+    .botList li::before {content: ""; display: inline-block; width: 1px; height: 12px; margin-right: 5px; background: gray;}
+    .botList li:first-child::before {display: none;}
+    .botList li:last-of-type {letter-spacing: -0.3px;}
+    .logo {width: 860px;flex-shrink: 0;text-align: left; margin-bottom: 20px;}
+    .logo a {width: 70px; height: 18px; text-indent: -999rem; background:url("../images/logo.png") no-repeat 0 0; background-size: 100%;}
+    /* @media screen and (max-width: 1700px) {
+      .footerList {display: inline-block;}
+      .footerList li {display: flex;}
+    } */
+</style>
+<body>
+	<div class="logWrap">
+		<header>
+            <h1><a href="#" class="logo" title="남양유업"></a></h1>         
+		</header>
+
+		<div class="contentWrap">
+            <!-- content -->
+            <div class="login_wrap">
+                <div class="content">
+                  <div class="titltArea">
+                    <h2 class="login_mainTit">남양유업 대리점 주문시스템</h2>
+                    <span class="login_susTxt">Namyang online order system</span>
+                    <h3 class="login_subTit">Login</h3>
+                  </div>
+
+                  <div class="contGroup right">
+                    <!-- 로그인 -->
+                    <div class="login_box">
+                      <div class="formWrap">
+                          <label for="inp_name01" class="required hide" title="필수입력">사업자등록번호</label>
+                          <input type="text" name="" value="" id="inp_name01" class="inp type02" placeholder="사업자등록번호">
+                          <button type="button" name="" class="inquBtn" id="inp_name01" onClick="location.href='#modalAgencyViews'" data-id="modalAgencyViews">확인</button>
+                      </div>
+                      <div class="formWrap">
+                          <label for="inp_name02" class="required hide" title="필수입력">대리점코드/직원코드</label>
+                          <input type="text" id="inp_name02" class="inp bg_gray" value="" name="" placeholder="대리점코드/직원코드" disabled>
+                      </div> 
+                      <div class="formWrap">
+                          <label for="inp_name03" class="required hide" title="필수입력">비밀번호</label>
+                          <input type="password" id="inp_name03" class="inp" value="" name="" placeholder="비밀번호">
+                      </div>
+                      <div class="formWrap">
+                            <button type="button" name="" class="inquBtn loginBtn" id="inp_name04">로그인</button>
+                      </div>
+                      <div class="formWrap right">
+                          <div class="checkGroup">
+                              <input type="checkbox" id="save" class="type01"><label for="save"><span>사업자등록번호 저장</span></label>
+                          </div>
+                          <div class="txtInfo">
+                            <a href="#">비밀번호 찾기</a>
+                          </div>
+                      </div>                                
+                    </div>
+                    <!--// 로그인 -->
+
+                    <!-- notice -->
+                    <div class="notice">
+                      <div class="titleArea">
+                        <h3>공지 / 알림</h3>
+                      </div>
+                      <ul class="dl_wrap">
+                        <li>
+                          <a href="#">
+                            <p>남양유업 스마일 배송샵 오픈</p>
+                            <span>2022-03-28</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="#">
+                            <p>남양유업 스마일 배송샵 오픈</p>
+                            <span>2022-03-28</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="#">
+                            <p>남양유업 스마일 배송샵 오픈</p>
+                            <span>2022-03-28</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="#">
+                            <p>남양유업 스마일 배송샵 오픈</p>
+                            <span>2022-03-28</span>
+                          </a>
+                        </li>
+                        <li>
+                          <a href="#">
+                            <p>남양유업 스마일 배송샵 오픈</p>
+                            <span>2022-03-28</span>
+                          </a>
+                        </li>
+                      </div>
+                    </div>
+                    <!--// notice -->
+                  </div>
+                  <div class="linkGroup">
+                    <a href="#">이용약관</a>
+                    <a href="#">개인정보처리방침</a>
+                  </div>
+                  <div class="login_bg"><img src="../images/login_main.png" class="login_bgimg" alt="로그인 이미지"/></div>  
+                </div>
+                
+                
+                 <footer>
+                   <div class="footCenter">
+                      <div class="logo">
+                        <a href="#">남양유업</a>
+                      </div>
+                      <ul class="footerList">
+                        <li>대표전화 02-000-0000</li>
+                          <li>팩스번호 02-733-6389</li>
+                          <li>서울시 강남구 도산대로 240, 1964빌딩 남양유업 ㈜</li>
+                          <li>사업자등록번호 202-81-04367</li>
+                        <li class="row">대표자 성명: 이광범</li>
+                        <li>개인정보보호책임자: 구자성</li>
+                        <li>통신판매업신고 서울강남 000873호</li>
+                      </ul>
+                      <ul class="botList">
+                          <li>COPYRIGHT©NAMYANG DAIRY PRODUCTS CO., LTD. ALL RIGHTS RESERVED</li>
+                          <li>webmaster@namyangi.com</li>
+                      </ul>
+                   </div>                    
+                </footer>
+            </div>
+            <!-- content -->
+		</div>
+	</div>
+    <!-- modal -->
+    <div class="modal_bg"></div> <!-- modal 배경 -->
+    <div class="popWrap small modal_wrap" data-popup="modalAgencyViews"> <!-- small 사이즈 600px * 370px -->
+		<header>
+            <h3>대리점 조회</h3>
+            <button type="button" name="" class="closeBtn" id="modalCloseBtn"></button>
+		</header>  
+
+        <!-- popCon -->
+        <div class="popCon">
+            <div class="popTitArea">
+                <h3>대리점 정보조회</h3>
+    
+                <div class="popBtnArea">
+                    <button type="button" name="" class="comBtn" id="modalCloseBtn" >닫기</button>
+                    <!-- <button type="button" name="" class="inquBtn">확인</button> -->
+                </div>
+            </div>
+
+            <p class="numState">
+                <em>총 <span class="pColor01 fb">24</span></em> 건 이 조회되었습니다.
+            </p>
+
+            <!-- grid -->
+            <div class="girdBox logGridBox" style="width: 300px">
+                <div id="grid_wrap"></div>
+            </div>
+            <!-- grid -->
+        </div>
+        <!-- popCon -->
+	</div>
+    <!--// modal -->
+    
+</body>
+</html>

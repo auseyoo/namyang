@@ -1,0 +1,45 @@
+@charset "UTF-8";
+
+.contentWrap .rContentBox .mContent.main{background:#f6f8f9;}
+.contentWrap .rContentBox .mContent.main{width:100%; padding:20px 30px;}
+
+[class^="mConBox"]{width:100%; padding:20px 30px; background:#fff; border:1px solid #d9d9d9; margin-bottom:20px; border-radius:10px;}
+.mConWrap{display:flex; justify-content:space-between;}
+.mConWrap [class^="mConBox"]{margin-right:20px; margin-bottom:0px;}
+.mConWrap [class^="mConBox"]:last-child{margin-right:0px;}
+
+.mTitArea{display:flex; justify-content:space-between; width:100%; position:relative; padding-bottom:10px; border-bottom:1px solid #dcdcdc;}
+.mTitArea.type02{border-bottom:0}
+.mTitArea h2{font-size:18px;}
+.mTitArea .dateInfo{position:absolute; right:0; top:0; font-size:14px;}
+.mTitArea .dateInfo span.date{position:relative; top:-7px; letter-spacing:-0.35px; color:#000; font-weight:bold;}
+.mTitArea .dateInfo span.date em{color:#4d4d4d; font-weight:normal;}
+.mTitArea .dateInfo .reSetBtn{margin-left:10px;}
+.mTitArea span.unit{font-size:14px; color:#666}
+
+.creInquiry{display:flex; justify-content:space-between; height:37px; margin:37px 0 15px;}
+.creInquiry [class^="cre"]{position:relative; width:33.3%; border-right:1px solid #d8d8d8; padding-left:60px; font-size:16px;}
+.creInquiry [class^="cre"]:before{display:inline-block; content: ""; width:22px; height:22px; background:url("../images/ico_credit.png") no-repeat 0 0; position:relative; top:5px; left:-8px}
+.creInquiry [class^="cre"] p{display:inline-block;}
+.creInquiry [class^="cre"] p.num{position:absolute; right:35px; top:-8px; font-size:32px; font-weight:bold; font-family: 'NotoKR medium';}
+.creInquiry [class^="cre"] p.num span{font-size:20px; font-weight:normal; color:#000}
+.creInquiry [class^="cre"]:nth-child(1){padding-left:20px;}
+.creInquiry [class^="cre"]:nth-child(2):before{background-position-y:-22px;}
+.creInquiry [class^="cre"]:nth-child(3):before{background-position-y:-44px;}
+.creInquiry [class^="cre"]:nth-child(3){border-right:0}
+.creInquiry .creTotal{color:#3674bc}
+.creInquiry .creShortPrice{color:#bb0000}
+
+.mConWrap .mConBox .girdBox{height:195px}
+
+.byDaySale {width:100%; height:250px; margin:22px 0 30px; padding-bottom:20px;}
+.byDaySale #myChart{margin-top:17px;}
+.byDaySale .state{display:flex; justify-content:right; font-size:14px; color:#222; margin-top:15px;}
+.byDaySale .state li{padding:0 30px 0 0;}
+.byDaySale .state li:before{display:inline-block; content:""; width:10px; height:10px; border-radius:100%; margin-right:7px;}
+.byDaySale .state li:nth-child(1):before{background:#ff8800;}
+.byDaySale .state li:nth-child(2):before{background:#b5268f;}
+.byDaySale .state li:nth-child(3):before{background:#0696b9;}
+.byDaySale .state li:nth-child(4):before{background:#3cb24a;}
+.byDaySale .state li:nth-child(5):before{background:#534296;}
+.byDaySale .state li:nth-child(6):before{background:#f20c00;}

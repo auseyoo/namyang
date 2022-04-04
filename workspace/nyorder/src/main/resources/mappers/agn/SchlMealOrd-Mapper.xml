@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.agn.dao.SchlMealOrdMapper">
+
+	<select id="selectSchlMealOrdList" parameterType="com.namyang.nyorder.agn.vo.SchlMealOrdVO" resultType="com.namyang.nyorder.agn.vo.SchlMealOrdVO">
+		/* SchlMealOrd-Mapper - selectSchlMealOrdList */
+        SELECT i.PRD_DTL_SEQ
+             , ISNULL( f.REQ_BOX_QTY , 0 ) + ISNULL( h.REQ_BOX_QTY , 0 ) AS TOTAL_REQ_BOX_QTY
+             , ISNULL( f.REQ_IDDY_QTY , 0 ) + ISNULL(h.REQ_IDDY_QTY , 0 ) AS TOTAL_REQ_IDDY_QTY
+             , f.UNTPC
+             , f.TAXT_CD
+             , k.PRD_NM
+             , k.PRD_SAP_CD
+             , k.FALT_QTY
+             , CONVERT(CHAR(10), CONVERT(DATETIME, a.ORD_DT), 23) AS ORD_DT
+             , tod.CAR_NO
+             , CONVERT(varchar, DecryptByKey(tod.DRIV_NM)) AS DRIV_NM
+             , CONVERT(CHAR(10), CONVERT(DATETIME, tod.START_TM), 23) AS START_TM
+             , CONVERT(CHAR(10), CONVERT(DATETIME, tod.PRAT_TM), 23) AS PRAT_TM
+             , tod.TEL_NO
+             , CONVERT(CHAR(10), CONVERT(DATETIME, tod.COS_DT), 23) AS COS_DT
+          FROM T_ORD_MST a
+          LEFT OUTER JOIN ( /* 골격 맥스값 */
+                           SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                , ORD_SEQ
+                                , AGEN_SEQ
+                                , PRD_DTL_SEQ
+                             FROM T_ORD_PRD
+                            GROUP BY ORD_SEQ , AGEN_SEQ , PRD_DTL_SEQ
+                           ) b
+            ON a.AGEN_SEQ = b.AGEN_SEQ
+           AND a.ORD_SEQ = b.ORD_SEQ
+         /* 골격 데이터들 */
+         INNER JOIN T_ORD_PRD c
+            ON c.ORD_PRD_SEQ = b.ORD_PRD_SEQ
+          LEFT OUTER JOIN ( /* 오너 골격 맥스값 */
+                           SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                , ORD_SEQ
+                                , PRD_DTL_SEQ
+                             FROM T_ORD_PRD a
+                            INNER JOIN T_AGEN_EMPL b
+                               ON a.EMPL_SEQ = b.EMPL_SEQ 
+                              AND b.EMPL_SEC_CD = 'STOR_OWNR'
+                            GROUP BY ORD_SEQ, PRD_DTL_SEQ
+                           ) d
+            ON d.ORD_SEQ = c.ORD_SEQ
+           AND d.PRD_DTL_SEQ = c.PRD_DTL_SEQ
+          LEFT OUTER JOIN T_ORD_PRD f
+            ON f.ORD_PRD_SEQ = d.ORD_PRD_SEQ
+           AND f.AGEN_SEQ = #{agenSeq}
+          LEFT OUTER JOIN (/*오너 골격 맥스값*/
+                           SELECT MAX(ORD_PRD_SEQ) ORD_PRD_SEQ
+                                , ORD_SEQ
+                                , PRD_DTL_SEQ
+                             FROM T_ORD_PRD a
+                            INNER JOIN T_AGEN_EMPL b
+                               ON a.EMPL_SEQ = b.EMPL_SEQ
+                              AND b.EMPL_SEC_CD = 'GRFR_EMPL'
+                            GROUP BY ORD_SEQ , PRD_DTL_SEQ
+                           ) g
+            ON g.ORD_SEQ = c.ORD_SEQ
+           AND g.PRD_DTL_SEQ = c.PRD_DTL_SEQ
+          LEFT OUTER JOIN T_ORD_PRD h
+            ON h.ORD_PRD_SEQ = g.ORD_PRD_SEQ
+           AND h.AGEN_SEQ = #{agenSeq}
+         INNER JOIN T_PRD_DTL i
+            ON c.PRD_DTL_SEQ = i.PRD_DTL_SEQ
+          LEFT JOIN T_ORD_DLV tod
+            ON a.AGEN_SEQ = tod.AGEN_SEQ
+           AND a.ORD_SEQ = tod.ORD_SEQ
+         INNER JOIN T_PRD_MST k 
+            ON k.PRD_SEQ = i.PRD_SEQ 
+         WHERE 1=1
+           AND a.AGEN_SEQ = #{agenSeq}
+           AND a.ORD_TYPE = #{ordType}
+           AND a.ORD_STUS = 'PCHA'
+       <if test="searchType != null and searchType != '' and searchType == 'order' ">
+           AND a.ORD_DT = #{stdrDate}
+       </if>
+       <if test="searchType != null and searchType != '' and searchType == 'delivery' ">
+           AND tod.COS_DT = #{stdrDate}
+       </if>
+         ORDER BY ISNULL( i.PRD_ORDR , 999 ), k.PRD_SAP_CD ASC
+	</select>
+</mapper>

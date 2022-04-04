@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.cmmc.dao.RqbodMapper">
+
+	<select id="selectRqstList"	parameterType="com.namyang.nyorder.cmmc.vo.NttVO" resultType="com.namyang.nyorder.cmmc.vo.NttVO">
+	/*RqbodMapper - selectRqstList */
+		SELECT 
+			  tnm.NTT_SEQ
+			, tnm.NTT_SUB
+			, tnm.NTT_CNTT
+			, CASE WHEN tnm.RES_SEC_CD = '1' THEN '본사' ELSE '지점' END RES_SEC_CD
+			, tnm.CFM_YN
+			, CONVERT(varchar(10),tnm.REG_DTM, 120) as REG_DTM
+			, tam.AGEN_SEQ 
+			, tam.AGEN_CD 
+			, tam.AGEN_NM 
+			, tnm.NTT_ATCL_SEQ
+		FROM	T_NTT_MST tnm
+		LEFT 
+		OUTER 
+		JOIN 	T_AGEN_MST tam 
+		ON tnm.AGEN_SEQ = tam.AGEN_SEQ 
+		
+		<where>
+			AND tnm.USE_YN = 'Y'
+			AND tam.AGEN_USE_YN = 'Y'
+			AND tnm.NTT_CD = 3
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(srcType)">
+				<choose>
+					<when test="srcType == 'all' ">
+						AND ( tnm.NTT_SUB like '%'+#{srcKeyword}+'%' OR tnm.NTT_CNTT like '%'+#{srcKeyword}+'%')
+					</when>
+					<when test="srcType == 'title' ">
+						AND tnm.NTT_SUB like '%'+#{srcKeyword}+'%'
+					</when>
+					<when test="srcType == 'content' ">
+						AND tnm.NTT_CNTT like '%'+#{srcKeyword}+'%'
+					</when>
+				</choose>
+			</if>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(resSecCd)">
+				AND tnm.RES_SEC_CD = #{resSecCd}
+			</if>
+			AND tnm.REG_DTM BETWEEN DATEADD(DAY, -90, GETDATE()) AND GETDATE()
+		</where>
+		ORDER BY NTT_SEQ DESC
+	</select>
+	
+	
+	<select id="selectRqst" parameterType="com.namyang.nyorder.cmmc.vo.NttVO" resultType="com.namyang.nyorder.cmmc.vo.NttVO">
+		/*RqbodMapper - selectRqst */
+			SELECT 
+					NTT_SEQ,
+					AGEN_SEQ,
+					NTT_CD,
+					NTT_SUB,
+					NTT_CNTT,
+					NTT_ATCL_SEQ,
+					USE_YN,
+					RES_SEC_CD,
+					CFM_YN,
+					REG_DTM,
+					REG_SEQ
+			FROM	T_NTT_MST
+			WHERE 	NTT_SEQ = #{nttSeq} 
+	</select>
+	
+	<!-- 요청등록 -->
+	<insert id="insertNttRqbod" parameterType="com.namyang.nyorder.cmmc.vo.NttVO">
+		/*RqbodMapper - insertNttRqbod*/
+		INSERT INTO T_NTT_MST
+		(
+			NTT_SEQ,
+			AGEN_SEQ,
+			NTT_CD,
+			NTT_SUB,
+			NTT_CNTT,
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(nttAtclSeq)">
+				NTT_ATCL_SEQ,
+			</if>
+			USE_YN,
+			RES_SEC_CD,
+			CFM_YN,
+			REG_DTM,
+			REG_SEQ
+		)
+		VALUES
+		(
+			NEXT VALUE FOR SQ_NTT,
+			#{agenSeq},
+			'3',
+			#{nttSub},
+			#{nttCntt},
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(nttAtclSeq)">
+				#{nttAtclSeq, jdbcType=NUMERIC},
+			</if>
+			'Y',
+			#{resSecCd},
+			'N',
+			CURRENT_TIMESTAMP, 
+			#{emplSeq}
+		)
+	</insert>
+	
+	<!-- 요청게시판 - 삭제-->
+	<update id="delRqbod" parameterType="com.namyang.nyorder.cmmc.vo.NttVO">
+		/*RqbodMapper - delRqbod*/
+		UPDATE T_NTT_MST 
+		SET USE_YN = 'N', 
+			UPD_DTM = CURRENT_TIMESTAMP,
+			UPD_SEQ = #{emplSeq}
+		WHERE ntt_seq = #{nttSeq}
+	</update>
+	<!-- 수정 버튼 클릭 시 내용 업데이트 -->
+	<update id="updateNttMst" parameterType="com.namyang.nyorder.cmmc.vo.NttVO">
+		/*RqbodMapper - updateNttMst*/
+		UPDATE 	T_NTT_MST 
+		SET		NTT_SUB		=	#{nttSub},
+				NTT_CNTT	=	#{nttCntt},
+				RES_SEC_CD	=	#{resSecCd},
+				<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(nttAtclSeq)">
+					NTT_ATCL_SEQ = #{nttAtclSeq, jdbcType=NUMERIC},
+				</if>
+				UPD_DTM		=	CURRENT_TIMESTAMP, 
+				UPD_SEQ		=	#{emplSeq}
+		WHERE	ntt_seq = #{nttSeq}
+	</update>
+	
+	<select id="selectNttAtcl" parameterType="com.namyang.nyorder.cmmc.vo.NttVO" resultType="com.namyang.nyorder.cmmc.vo.NttVO">
+	/*RqbodMapper - selectnttAtcl*/
+	SELECT 
+	  tnam.NTT_ATCL_SEQ 
+	, tnad.NTT_ATCL_DTL_SEQ 
+	, tnad.FILE_NM 
+	, tnad.FILE_ORI_NM 
+	, tnad.FILE_LC 
+	, tnad.FILE_SIZE 
+	, tnad.FILE_EXT
+	FROM 
+	T_NTT_ATCL_MST tnam 
+	INNER JOIN T_NTT_ATCL_DTL tnad 
+	ON tnam.NTT_ATCL_SEQ = tnad.NTT_ATCL_SEQ 
+	LEFT OUTER JOIN T_NTT_MST tnm 
+	ON tnam.NTT_ATCL_SEQ = tnm.NTT_ATCL_SEQ 
+	WHERE 1=1
+	AND tnam.USE_YN = 'Y'
+	AND tnad.USE_YN  = 'Y'
+	AND tnm.NTT_SEQ = #{nttSeq}
+	</select>
+	<insert id="insertNttAtclMst" parameterType="com.namyang.nyorder.cmmc.vo.NttVO">
+	/*RqbodMapper - insertNttAtclMst*/
+	INSERT INTO T_NTT_ATCL_MST
+	(
+	  NTT_ATCL_SEQ
+	, USE_YN
+	, REG_DTM
+	, REG_SEQ
+	)
+	VALUES
+	(
+	  NEXT VALUE FOR SQ_NTT_ATCL
+	, 'Y'
+	, CURRENT_TIMESTAMP
+	, 0
+	)
+	</insert>
+	<insert id="insertNttAtclDtl" parameterType="com.namyang.nyorder.cmmc.vo.NttVO">
+	/*RqbodMapper - insertNttAtclDtl*/
+	INSERT INTO T_NTT_ATCL_DTL
+	(
+	  NTT_ATCL_DTL_SEQ
+	, NTT_ATCL_SEQ
+	, FILE_NM
+	, FILE_ORI_NAME
+	, FILE_LC
+	, FILE_EXT
+	, ORDR
+	, USE_YN
+	, REG_DTM
+	, REG_SEQ
+	)
+	VALUES
+	(
+	NEXT VALUE FOR SQ_NTT_ATCL_DTL
+	, ISNULL(MAX(SQ_NTT_ATCL), NEXT VALUE FOR SQ_NTT_ATCL)
+	, #{fileNm}
+	, #{fileOriName}
+	, #{fileLc}
+	, #{fileExt}
+	, 0
+	, 'Y'
+	. CURRENT_TIMESTAMP
+	, 0
+	)
+	</insert>
+</mapper>

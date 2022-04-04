@@ -1,0 +1,641 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.cst.dao.CstMngMapper">
+	<select id="selectArea" parameterType="com.namyang.nyorder.cst.vo.CstMngVO" resultType="com.namyang.nyorder.cst.vo.CstMngVO">
+		/* cstmng-mapper selectArea : 지역조회*/
+		EXEC P_OPEN_KEY
+		
+		SELECT
+			*
+		FROM
+		(
+			SELECT
+				a.AGEN_SEQ
+				, a.AREA_SEQ
+				, a.AGEN_AREA_CD 
+				, a.EMPL_SEQ
+				, b.EMPL_CD 
+				, dbo.F_GET_DECRYT(b.EMPL_NM) AS EMPL_NM
+				, a.AREA_NM 		/*지역명*/
+				, a.AREA_RM
+				, a.STPG_EXCL_YN
+				, a.DLV_STPG_YN
+				, a.AREA_ORDR
+			FROM 
+				T_AGEN_AREA a
+				LEFT OUTER JOIN
+					T_AGEN_EMPL b
+					ON a.EMPL_SEQ = b.EMPL_SEQ 
+					and a.AGEN_SEQ = b.AGEN_SEQ 
+			WHERE 
+			1=1
+			AND a.AGEN_SEQ = #{agenSeq}
+		) a
+		WHERE
+		1=1
+		<if test="selAreaSrh == 'areaNm'">
+			AND AREA_NM LIKE  '%'+#{inptSrhArea}+'%'  
+		</if>
+		<if test="selAreaSrh == 'emplNm'">
+			AND EMPL_NM LIKE  '%'+#{inptSrhArea}+'%'
+		</if>
+		ORDER BY AREA_ORDR ASC
+	</select>
+	
+	<select id="selectCstArea" parameterType="com.namyang.nyorder.cst.vo.CstMngVO" resultType="com.namyang.nyorder.cst.vo.CstMngVO">
+		/* cstmng-mapper selectCstArea : 지역 - 애음자 조회*/
+		EXEC P_OPEN_KEY
+		
+		SELECT
+			a.AGEN_SEQ
+			, a.AREA_SEQ
+			, a.EMPL_SEQ
+			, d.EMPL_CD 
+			, dbo.F_GET_DECRYT(d.EMPL_NM) AS EMPL_NM
+			, dbo.F_GET_DECRYT(b.APPCT_NM) AS APPCT_NM 
+			, a.AREA_NM 		/*지역명*/
+			, a.AGEN_AREA_CD 
+			, b.CST_SEQ 
+			, b.CST_AGEN_CD 
+			, dbo.F_GET_DECRYT(b.CST_NM) AS CST_NM
+			, dbo.F_GET_TEL_NO(dbo.F_GET_DECRYT(b.MOB_NO)) AS MOB_NO
+			, dbo.F_GET_TEL_NO(dbo.F_GET_DECRYT(b.TEL_NO)) AS TEL_NO
+			, b.DLV_ADDR1
+			, dbo.F_GET_DECRYT(b.DLV_ADDR2) AS DLV_ADDR2
+			, CONCAT(b.DLV_ADDR1, dbo.F_GET_DECRYT(b.DLV_ADDR2)) AS DLV_ADDR
+			, c.COMM_NM AS CNTR_CST_STR	/*계약상태*/
+			, f.COMM_NM AS SBSCRB_COS_STR /*계약상태*/
+			, b.CNTR_CST_CD
+			, b.SBSCRB_COS_CD
+			, CASE 
+				WHEN b.BADN_YN	= 'Y' THEN '불량'
+				ELSE '양호'
+			END AS BADN_YN_STR /*수금상태*/
+			, a.AREA_RM
+			, a.STPG_EXCL_YN
+			, a.DLV_STPG_YN
+			, a.AREA_ORDR
+			, b.ORDR
+			/*, b.UPD_DTM*/ 
+			, CONVERT(VARCHAR(10), b.UPD_DTM, 23) AS UPD_DTM
+			, b.UPD_SEQ 
+			, dbo.F_GET_DECRYT(g.EMPL_NM) AS UPD_EMPL_NM
+		FROM 
+			T_AGEN_AREA a
+			LEFT OUTER JOIN
+				T_CST_MST b
+				ON a.AGEN_SEQ = b.AGEN_SEQ 
+				AND a.AREA_SEQ = b.AREA_SEQ 
+				AND b.USE_YN = 'Y'
+			LEFT OUTER JOIN
+				T_COMM c
+				ON c.COMM_GRP_CD = 'CNTR_CST_STR'
+				AND c.USE_YN = 'Y'
+				AND b.CNTR_CST_CD = c.COMM_CD 
+			LEFT OUTER JOIN
+				T_AGEN_EMPL d
+				ON a.EMPL_SEQ = d.EMPL_SEQ 
+				and a.AGEN_SEQ = d.AGEN_SEQ 
+			LEFT OUTER JOIN
+				T_COMM f
+				ON f.COMM_GRP_CD = 'SBSCRB_COS_CD' 
+				and f.USE_YN = 'Y'
+				and b.SBSCRB_COS_CD = c.COMM_CD 
+			LEFT OUTER JOIN
+				T_AGEN_EMPL g
+				ON b.UPD_SEQ = g.EMPL_SEQ 
+		WHERE 
+		1=1
+		AND a.AGEN_SEQ = #{agenSeq}
+		<if test="targetAreaSeq != null and targetAreaSeq != '' ">
+			AND a.AREA_SEQ in 
+				<foreach collection="areaSeqArr" item="item" index="index" separator=","  open="(" close=")">
+                    #{item}
+				</foreach>
+		</if>
+		<if test="cntrCstType != null and cntrCstType != ''  and cntrCstType != '전체' ">
+			AND b.CNTR_CST_CD = #{cntrCstType}
+		</if>
+		<if test="sbscrbCosType != null and sbscrbCosType != '' and sbscrbCosType != '전체' ">
+			AND b.SBSCRB_COS_CD = #{sbscrbCosType}
+		</if>	
+		ORDER BY AREA_ORDR, ISNULL(b.ORDR, 9999999) ASC
+	</select>
+	
+	<select id="selectCstContract" parameterType="com.namyang.nyorder.cst.vo.CstMngVO" resultType="com.namyang.nyorder.cst.vo.CstMngVO">
+		/* cstmng-mapper selectCstContract : 애음자 관리 - 배달 정보(탭) - 지역, 애음자 검색 -> 계약 정보*/
+		EXEC P_OPEN_KEY
+		
+		SELECT 
+			a.CST_SEQ
+			 , a.AGEN_SEQ 
+			 , a.AREA_SEQ 
+			 , a.CST_AGEN_CD 
+			 , dbo.F_GET_DECRYT(a.CST_NM) AS CST_NM
+			 , c.PRD_DTL_SEQ 
+			 , c.PRD_SEQ 
+			 , c.STD_PRD_NM 
+			 , d.PRD_NM 
+			 , a.SBSCRB_COS_CD
+			 , e.COMM_NM  as SBSCRB_COS_STR	/*가입경로*/
+			 , CONVERT(VARCHAR(10), a.REG_DTM, 23) AS REG_DTM	/*가입일*/
+			 , CONVERT(VARCHAR(10), b.STPG_DT, 23) AS STPG_DTM	/*중지일*/
+			 , b.STDR_QTY /*수량(기준수량)*/
+			 , b.STPG_YN /*중지여부*/
+			 , dbo.F_GET_INPUT_DAY(f.PTTN_SEQ) AS PTTN_STR
+			 , f.MON_QTY
+			 , f.TUE_QTY
+			 , f.WED_QTY
+			 , f.THU_QTY
+			 , f.FRI_QTY
+			 , f.SAT_QTY
+			 , f.SUN_QTY
+			 , f.MON_QTY+f.TUE_QTY+f.WED_QTY+f.THU_QTY+f.FRI_QTY+f.SAT_QTY+f.SUN_QTY AS DAY_TOT_QTY
+			 , dbo.F_TRAN_STR_TO_YMD(g.STAT_DT) AS STAT_DT	/*투입일*/
+			 , dbo.F_TRAN_STR_TO_YMD(g.END_DT) AS END_DT /*계약 종료일*/
+			 , CASE 
+			 	WHEN g.END_DT IS NULL THEN 'N'
+			 	WHEN CONVERT (DATETIME2, g.END_DT) <![CDATA[<]]> GETDATE() THEN 'Y'
+			 	ELSE 'N' 
+			 END AS END_ALERT	/*계약 종료일이 지난 경우 빨간색 글자 처리*/
+			 , h.CHG_SEC_CD 	/*투입상태*/			 
+			 , CASE
+			 	WHEN h.CHG_SEC_CD = 'POSE' THEN 'Y'
+			 	ELSE 'N'
+			 END AS POSE_ALERT
+			 , dbo.F_GET_UNTPC(a.AGEN_SEQ, a.AREA_SEQ, a.CST_SEQ, null, c.PRD_DTL_SEQ, f1.CST_PRD_SEQ) AS UNTPC	/*단가, 판매가*/
+			 , b.PRMT_EMPL_SEQ
+			 , dbo.F_GET_DECRYT(j.EMPL_NM) as PRMT_EMPL_NM /*판촉사원*/ 
+			 , b.HOP	/*홉수*/
+			 , b.HOP_UNTPC 	/*홉단가*/
+			 , DATEDIFF(month, CONVERT (DATE, g.STAT_DT), CONVERT (DATE, g.END_DT)) AS PRIOD_DT	/*계약 기간*/
+			 , b.CST_PRD_SEQ
+			 , c.PUCH_SEQ
+			 , h.CHG_SEC_CD
+			 , h.STAT_DT
+			 , h.END_DT
+			 , (SELECT COMM_NM FROM T_COMM WHERE COMM_GRP_CD = 'CHG_SEC_CD' AND COMM_CD = h.CHG_SEC_CD) AS CHG_SEC_CD_STR
+		FROM 
+		T_CST_MST a
+			LEFT OUTER JOIN 	
+				T_CST_PRD b
+				ON a.CST_SEQ = b.CST_SEQ
+				AND b.LAST_YN = 'Y'
+			LEFT OUTER JOIN
+				T_PRD_DTL c 
+				ON b.AGEN_SEQ = c.AGEN_SEQ 
+				AND b.PRD_SEQ = c.PRD_SEQ 
+			LEFT OUTER JOIN
+				T_PRD_MST d
+				ON  b.PRD_SEQ = d.PRD_SEQ 
+			LEFT OUTER JOIN 	
+				T_COMM e
+				ON e.COMM_GRP_CD ='SBSCRB_COS_CD'
+				AND a.SBSCRB_COS_CD = e.COMM_CD 
+			LEFT OUTER JOIN (
+				SELECT 
+				 AGEN_SEQ, AREA_SEQ, CST_SEQ, CST_PRD_SEQ, PRD_DTL_SEQ, PUCH_SEQ
+				 , MIN(PTTN_SEQ) AS PTTN_SEQ
+				FROM 
+				T_CST_PTTN
+				WHERE 
+				1=1
+				AND (MON_QTY > 0 OR TUE_QTY > 0 OR WED_QTY > 0 OR THU_QTY > 0 OR FRI_QTY > 0 OR SAT_QTY > 0 OR SUN_QTY > 0)
+				AND LAST_YN = 'Y'
+				GROUP BY AGEN_SEQ, AREA_SEQ, CST_SEQ, CST_PRD_SEQ, PRD_DTL_SEQ, PUCH_SEQ			
+				) f1
+				ON f1.CST_PRD_SEQ = b.CST_PRD_SEQ
+				AND f1.PRD_DTL_SEQ = c.PRD_DTL_SEQ
+			LEFT OUTER JOIN 
+				T_CST_PTTN f
+				ON f1.PTTN_SEQ = f.PTTN_SEQ
+			LEFT OUTER JOIN 
+				T_CST_PRD_UNTPC g
+				ON b.CST_PRD_SEQ = g.CST_PRD_SEQ 
+				AND g.LAST_YN = 'Y'
+			LEFT OUTER JOIN 
+				T_CST_PRD_STPG h
+				ON b.CST_PRD_SEQ = h.CST_PRD_SEQ 
+				AND h.LAST_YN = 'Y'
+				AND ((h.CHG_SEC_CD = 'RERV' AND GETDATE() BETWEEN h.STAT_DT AND h.END_DT)
+					OR (h.CHG_SEC_CD = 'POSE' AND GETDATE() > h.STAT_DT))			
+			LEFT OUTER JOIN
+				T_AGEN_EMPL j
+				ON b.PRMT_EMPL_SEQ = j.EMPL_SEQ
+		WHERE 
+		1=1
+		AND a.AGEN_SEQ = #{agenSeq}
+		AND a.CST_SEQ = #{cstSeq}
+		AND a.STPG_YN = 'N' 
+		AND a.USE_YN = 'Y'
+	</select>
+	
+	<select id="selectPrmtEmplSeqList" parameterType="com.namyang.nyorder.cst.vo.CstMngVO" resultType="com.namyang.nyorder.cst.vo.CstMngVO">
+		/* cstmng-mapper selectPrmtEmplSeqList : 애음자 관리 - 배달 정보(탭) - 신규제품등록 -> 판촉사원 목록*/
+		EXEC P_OPEN_KEY
+		
+		SELECT EMPL_SEQ
+			 , dbo.F_GET_DECRYT(EMPL_NM) as PRMT_EMPL_NM /*판촉사원*/
+		FROM T_AGEN_EMPL
+		WHERE 1=1
+			AND RETE_YN = 'Y' 
+			AND AGEN_SEQ = #{agenSeq}		
+	</select>
+	
+	<select id="selectPopPrdSearchList" parameterType="com.namyang.nyorder.cst.vo.CstMngVO" resultType="com.namyang.nyorder.cst.vo.CstMngVO">
+		/* cstmng-mapper selectPopPrdSearchList : 애음자 관리*/
+		SELECT tpd.PRD_DTL_CD, tpd.PRD_SEQ, tpd.PRD_DTL_SEQ, tpm.PUCH_SEQ
+			, IIF((IIF(tpd.SHTN_NM is null, tpd.STD_PRD_NM, tpd.SHTN_NM)) is null, '', tpd.SHTN_NM) SHTN_NM
+			, DBO.F_GET_UNTPC(tpd.AGEN_SEQ, null 
+			<choose>
+				<when test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(cstSeq)">
+					, #{cstSeq}
+				</when>
+				<otherwise>
+					, null
+				</otherwise>
+			</choose>	
+				, tpd.PRD_SEQ, tpd.PRD_DTL_SEQ, null) UNTPC
+		FROM dbo.T_PRD_DTL tpd
+			INNER JOIN T_PRD_MST tpm 
+				ON tpd.PUCH_SEQ = tpm.PUCH_SEQ AND tpd.PRD_SEQ = tpm.PRD_SEQ 	
+		WHERE 1=1 
+			AND tpd.USE_YN = 'Y'
+			AND tpm.PRD_TYPE = 'FER1'
+			AND tpd.PUCH_SEQ = '1'
+			AND tpd.AGEN_SEQ = #{agenSeq}
+			<choose>
+				<when test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(selPrdSearch)">
+					<choose>
+						<when test="selPrdSearch == 'PRD'">
+							AND tpd.SHTN_NM LIKE '%' + #{prdSearchValue} + '%'
+						</when>
+						<when test="selPrdSearch == 'CODE'">
+							AND tpd.PRD_DTL_CD LIKE '%' + #{prdSearchValue} + '%'					
+						</when>														
+					</choose>
+				</when>
+				<otherwise>
+    				<if test="prdSearchValue != null and prdSearchValue != ''">
+						AND (tpd.SHTN_NM LIKE '%' + #{prdSearchValue} + '%' OR tpd.PRD_DTL_CD LIKE '%' + #{prdSearchValue} + '%')
+					</if>
+    			</otherwise>				
+			</choose>				
+		ORDER BY PRD_DTL_CD
+	</select>
+    
+    <select id="selectOverlapCheck" parameterType="com.namyang.nyorder.cst.vo.CstMngVO" resultType="Integer">
+		/* cstmng-mapper selectOverlapCheck : 애음자 관리*/
+		SELECT COUNT(CST_SEQ) AS cstCnt
+		FROM T_CST_MST tcm			
+		WHERE 1=1
+			AND tcm.APPCT_NM = #{cstNm}
+			AND tcm.APPCT_NM = #{mobNo} 
+			AND tcm.APPCT_NM = #{dlvZipCd}
+		
+	</select>
+	
+	<select id="selectBasicCstInfo" parameterType="com.namyang.nyorder.cst.vo.CstMngVO" resultType="com.namyang.nyorder.cst.vo.CstMngVO">
+		/* cstmng-mapper selectBasicCstInfo : 애음자 관리*/
+		EXEC P_OPEN_KEY
+		SELECT tsm.CST_SEQ, tsm.AGEN_SEQ, tsm.AREA_SEQ, CST_AGEN_CD, dbo.F_GET_DECRYT(CST_NM) CST_NM
+			, dbo.F_GET_DECRYT(APPCT_NM) APPCT_NM, TEL_NO, dbo.F_GET_DECRYT(MOB_NO) MOB_NO, MOB_NO2, CST_EML
+			, tsm.BILCT_MTH, CNTR_CST_CD, SBSCRB_COS_CD, STPG_DT, STPG_RSON
+			, STPG_YN, DLV_ZIP_CD, DLV_ADDR1, dbo.F_GET_DECRYT(DLV_ADDR2) DLV_ADDR2, REPT_ZIP_CD
+			, REPT_ADDR1, dbo.F_GET_DECRYT(REPT_ADDR2) REPT_ADDR2, CASH_RECP_YN, USE_YN, BADN_YN
+			, ORDR, MAP_LATU, MAP_LOTU, LALO_YN, tsm.REG_DTM
+			, tsm.REG_SEQ, tsm.UPD_DTM, tsm.UPD_SEQ
+			, (SELECT DISTINCT AREA_NM FROM T_AGEN_AREA taa WHERE AGEN_SEQ = '24' AND AREA_SEQ = '936' ) AREA_NN
+			, (SELECT COMM_NM FROM T_COMM tc WHERE COMM_GRP_CD = 'SBSCRB_COS_CD' AND COMM_CD = SBSCRB_COS_CD ) SBSCRB_COS_STR
+			, (SELECT TOP 1 DIRET_DTM FROM T_CST_DIRET_HIS tcdh WHERE CST_SEQ = CST_SEQ ORDER BY CST_DIRET_SEQ DESC ) DIRET_DTM
+		FROM T_CST_MST tsm 
+		WHERE 1=1
+			AND tsm.CST_SEQ = #{cstSeq}		
+	</select>
+	
+	<select id="selectPrmtPrdList" parameterType="com.namyang.nyorder.cst.vo.CstMngVO" resultType="com.namyang.nyorder.cst.vo.CstMngVO">
+		/* cstmng-mapper selectPrmtPrdList : 애음자 관리*/	
+		SELECT tpm.PRD_SEQ, tpm.PRD_SAP_CD, tpm.PRD_NM, tpp.PRMT_PRD_SEQ
+		FROM T_PRMT_PRD tpp
+			INNER JOIN T_PRD_MST tpm 
+			ON tpp.PRD_SEQ = tpm.PRD_SEQ 
+		WHERE tpp.USE_YN = 'Y'	
+	</select>
+	
+	<select id="selectPrmtElplList" parameterType="com.namyang.nyorder.cst.vo.CstMngVO" resultType="com.namyang.nyorder.cst.vo.CstMngVO">
+		/* cstmng-mapper selectPrmtElplList : 애음자 관리*/	
+		EXEC P_OPEN_KEY
+		SELECT
+			EMPL_SEQ,
+			EMPL_CD,
+			CONVERT(varchar, DecryptByKey(AE.EMPL_NM)) as EMPL_NM			
+		FROM T_AGEN_EMPL AE
+		WHERE 1=1
+			AND AE.AGEN_SEQ = #{agenSeq}
+			AND AE.EMPL_SEC_CD IN (
+				'HOFF_PRMT_EMPL',
+				'AGENT_PRMT_EMPL',
+				'STOR_OWNR'
+			)		
+		ORDER  by EMPL_SEQ 
+	</select>
+	
+	<select id="selectCstPrmtList" parameterType="com.namyang.nyorder.cst.vo.CstMngVO" resultType="com.namyang.nyorder.cst.vo.CstMngVO">
+		/* cstmng-mapper selectPrmtElplList : 애음자 관리*/	
+		SELECT 
+			a.CST_SEQ
+			 , a.AGEN_SEQ 
+			 , a.AREA_SEQ 
+			 , a.CST_AGEN_CD 
+			 , c.PRD_DTL_SEQ 
+			 , c.PRD_SEQ 
+			 , c.STD_PRD_NM 
+			 , d.PRD_NM 
+			 , a.CNTR_CST_CD
+			 , dbo.F_GET_INPUT_DAY(f.PTTN_SEQ) AS PTTN_STR
+			 , f.MON_QTY
+			 , f.TUE_QTY
+			 , f.WED_QTY
+			 , f.THU_QTY
+			 , f.FRI_QTY
+			 , f.SAT_QTY
+			 , f.SUN_QTY
+			 , f.MON_QTY+f.TUE_QTY+f.WED_QTY+f.THU_QTY+f.FRI_QTY+f.SAT_QTY+f.SUN_QTY AS DAY_TOT_QTY
+			 , dbo.F_TRAN_STR_TO_YMD(b.INPT_DT) AS INPT_DT	/*투입일*/			
+			 , dbo.F_GET_UNTPC(a.AGEN_SEQ, a.AREA_SEQ, a.CST_SEQ, null, c.PRD_DTL_SEQ, f1.CST_PRD_SEQ) AS UNTPC	/*단가, 판매가*/
+			 , b.PRMT_EMPL_SEQ			 
+			 , b.CST_PRD_SEQ
+			 , c.PUCH_SEQ
+			 , h.CST_PRMT_SEQ
+			 , g.END_DT
+			 , g.END_DT AS CNTR_END_DT
+		FROM 
+		T_CST_MST a
+			LEFT OUTER JOIN 	
+				T_CST_PRD b
+				ON a.CST_SEQ = b.CST_SEQ
+				AND b.LAST_YN = 'Y'
+			LEFT OUTER JOIN
+				T_PRD_DTL c 
+				ON b.AGEN_SEQ = c.AGEN_SEQ 
+				AND b.PRD_SEQ = c.PRD_SEQ 
+			LEFT OUTER JOIN
+				T_PRD_MST d
+				ON  b.PRD_SEQ = d.PRD_SEQ 
+			LEFT OUTER JOIN 	
+				T_COMM e
+				ON e.COMM_GRP_CD ='SBSCRB_COS_CD'
+				AND a.SBSCRB_COS_CD = e.COMM_CD 
+			LEFT OUTER JOIN (
+				SELECT 
+				 AGEN_SEQ, AREA_SEQ, CST_SEQ, CST_PRD_SEQ, PRD_DTL_SEQ, PUCH_SEQ
+				 , MIN(PTTN_SEQ) AS PTTN_SEQ
+				FROM 
+				T_CST_PTTN
+				WHERE 
+				1=1
+				AND (MON_QTY > 0 OR TUE_QTY > 0 OR WED_QTY > 0 OR THU_QTY > 0 OR FRI_QTY > 0 OR SAT_QTY > 0 OR SUN_QTY > 0)
+				AND LAST_YN = 'Y'
+				GROUP BY AGEN_SEQ, AREA_SEQ, CST_SEQ, CST_PRD_SEQ, PRD_DTL_SEQ, PUCH_SEQ			
+				) f1
+				ON f1.CST_PRD_SEQ = b.CST_PRD_SEQ
+				AND f1.PRD_DTL_SEQ = c.PRD_DTL_SEQ
+			LEFT OUTER JOIN 
+				T_CST_PTTN f
+				ON f1.PTTN_SEQ = f.PTTN_SEQ
+			LEFT OUTER JOIN 
+				T_CST_PRD_UNTPC g
+				ON b.CST_PRD_SEQ = g.CST_PRD_SEQ 
+				AND g.LAST_YN = 'Y'
+			LEFT OUTER JOIN 
+				T_CST_PRD_PRMT h
+				ON b.CST_PRD_SEQ = h.CST_PRD_SEQ 
+				AND h.PRMT_SEC_CD IN ('FREE', 'DSCT')	
+		WHERE 1=1
+			AND a.AGEN_SEQ = #{agenSeq}
+			AND a.CST_SEQ = #{cstSeq}
+			AND a.STPG_YN = 'N' 
+			AND a.USE_YN = 'Y'		
+			AND h.CST_PRMT_SEQ IS NULL
+	</select>
+	
+	<select id="selectCstPttn" parameterType="com.namyang.nyorder.cst.vo.CstMngVO" resultType="com.namyang.nyorder.cst.vo.CstMngVO">
+		/* cstmng-mapper selectCstPttn : 애음자 관리*/	
+		SELECT PTTN_SEQ, AGEN_SEQ, AREA_SEQ, CST_SEQ, CST_PRD_SEQ
+			, PRD_DTL_SEQ, PUCH_SEQ, WEEKS, MON_QTY, TUE_QTY
+			, WED_QTY, THU_QTY, FRI_QTY, SAT_QTY, SUN_QTY
+			, USE_YN, LAST_YN, BEF_PTTN_STR, REG_DTM, REG_SEQ
+			, UPD_DTM, UPD_SEQ, MIG_YN
+		FROM NY_ORDER.dbo.T_CST_PTTN
+		WHERE 1=1
+			AND CST_PRD_SEQ = #{cstPrdSeq}
+			AND USE_YN = 'Y'
+			AND LAST_YN = 'Y'	
+		ORDER BY WEEKS	
+			
+	</select>
+	
+	<select id="selectDlvyDtls" parameterType="com.namyang.nyorder.cst.vo.CstMngVO" resultType="hashMap">
+		/* cstmng-mapper selectPrmtElplList : 애음자 관리*/	
+		DECLARE @COLUMNS NVARCHAR(MAX)
+		DECLARE @SQL	 NVARCHAR(MAX)
+			,	@I_AGEN_SEQ VARCHAR(13) = #{agenSeq}
+		   	,  	@I_CST_SEQ VARCHAR(13) = #{cstSeq}
+			,   @I_DLV_DT VARCHAR(8) = #{dlvyMonth}
+			,   @START_DATE VARCHAR(8) = ''			
+		SET @START_DATE   = @I_DLV_DT + '01'
+		SET @COLUMNS = (SELECT STUFF((SELECT ',[' + RIGHT(TARGET_DATE, 2) + ']'
+			                FROM (
+								SELECT CONVERT(VARCHAR, DATEADD(D, NUMBER, @START_DATE), 112) AS TARGET_DATE 			 
+								FROM MASTER..SPT_VALUES 
+								<![CDATA[
+								WHERE TYPE = 'P' AND NUMBER <= DATEDIFF(D, @START_DATE, CONVERT(VARCHAR(8), EOMONTH(CONVERT(DATETIME, @START_DATE)), 112))
+								]]>
+							) COL_TAB					
+							FOR XML PATH('')
+			   ), 1, 1, '') AS COLUMNS)
+		
+		SET @SQL = 'WITH MONTH_TABLE
+			AS
+			(	
+				SELECT CONVERT(VARCHAR, DATEADD(D, NUMBER, ''' + @START_DATE + '''), 112) AS TARGET_DATE 			 
+				FROM MASTER..SPT_VALUES 
+				<![CDATA[
+				WHERE TYPE = ''P'' AND NUMBER <= DATEDIFF(D, ''' + @START_DATE + ''', CONVERT(VARCHAR(8), EOMONTH(CONVERT(DATETIME,''' + @START_DATE + ''')), 112))
+				]]>
+			),
+			DATA_TABLE
+			AS 
+			(
+				SELECT AA_DT, CST_PRD_SEQ AS cstPrdSeq
+					, ISNULL(STPG_QTY, ISNULL(DLVY_QTY, DFLT_QTY)) AS DLVY_QTY
+					, (SELECT IIF(SHTN_NM is null, STD_PRD_NM, SHTN_NM) FROM T_PRD_DTL WHERE PRD_DTL_SEQ = TT.PRD_DTL_SEQ) AS shtnNm
+				FROM 
+					(SELECT
+						RIGHT(mt.TARGET_DATE, 2) AS AA_DT
+						, tcp.CST_PRD_SEQ
+						, tcp.PRD_DTL_SEQ
+						, (SELECT 0 FROM T_CST_PRD_STPG WHERE CST_PRD_SEQ = tcp.CST_PRD_SEQ AND USE_YN = ''Y'' AND LAST_YN = ''Y'' AND mt.TARGET_DATE BETWEEN STAT_DT AND END_DT  ) AS STPG_QTY
+						, (SELECT SUM(ISNULL(DLVY_QTY, 0)) FROM T_CST_PRD_DLVY tcpd WHERE CST_PRD_SEQ = tcp.CST_PRD_SEQ AND USE_YN = ''Y'' AND DLVY_DT = mt.TARGET_DATE ) AS DLVY_QTY
+						, CASE DATEPART(WEEKDAY, mt.TARGET_DATE)
+							WHEN 1 THEN tcp2.SUN_QTY 
+							WHEN 2 THEN tcp2.MON_QTY  
+							WHEN 3 THEN tcp2.TUE_QTY  
+							WHEN 4 THEN tcp2.WED_QTY  
+							WHEN 5 THEN tcp2.THU_QTY  
+							WHEN 6 THEN tcp2.FRI_QTY  
+							WHEN 7 THEN tcp2.SAT_QTY 
+							ELSE 0 END DFLT_QTY	
+					FROM T_CST_PRD tcp 
+						INNER JOIN T_CST_PTTN tcp2 
+						ON tcp.CST_PRD_SEQ = tcp2.CST_PRD_SEQ AND tcp2.USE_YN = ''Y'' AND tcp2.LAST_YN = ''Y''				
+						INNER JOIN T_CST_PRD_UNTPC tcpu 
+						ON tcp.CST_PRD_SEQ  = tcpu.CST_PRD_SEQ AND tcpu.LAST_YN = ''Y''
+						INNER JOIN MONTH_TABLE mt
+						ON 1=1
+					WHERE 1=1
+						AND tcp.CST_SEQ = '+@I_CST_SEQ+'
+						AND tcp.LAST_YN = ''Y''
+						AND tcp2.WEEKS = CASE 
+							WHEN tcp2.WEEKS = DATEDIFF(week, DATEADD(MONTH, DATEDIFF(MONTH, 0, convert(varchar(10), mt.TARGET_DATE, 120)), 0), convert(varchar(10), mt.TARGET_DATE ,120)) +1
+								THEN DATEDIFF(week, DATEADD(MONTH, DATEDIFF(MONTH, 0, convert(varchar(10), mt.TARGET_DATE, 120)), 0), convert(varchar(10), mt.TARGET_DATE ,120)) +1
+							ELSE ''1'' END
+					) TT	
+			)
+		SELECT * FROM DATA_TABLE 
+		PIVOT (MAX(DLVY_QTY) FOR AA_DT IN (' + @COLUMNS + ' )) pvt'
+		EXEC(@SQL)
+	</select>
+	
+    <insert id="saveCstPrd" parameterType="com.namyang.nyorder.cst.vo.CstMngVO" >
+    	<selectKey resultType="string" keyProperty="cstPrdSeq" order="BEFORE"> 
+    		SELECT NEXT VALUE FOR SQ_CST_PRD  
+    	</selectKey>
+    	    	
+    	INSERT INTO NY_ORDER.dbo.T_CST_PRD
+			(CST_PRD_SEQ, AGEN_SEQ, AREA_SEQ, CST_SEQ, PUCH_SEQ
+			, PRD_DTL_SEQ, PRD_SEQ
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prmtEmplSeq)">
+				, PRMT_EMPL_SEQ
+			</if>
+			, CNTR_SEC_CD
+			, UNTPC, STDR_QTY, PRMT_DT, INPT_DT, CST_COS_CD
+			, CNTR_MONTH			
+			, STPG_YN
+			, STPG_RSON, DLV_SEC_CD, CST_BEF_CD, PRD_BEF_CD, LAST_YN
+			, REG_DTM, REG_SEQ, UPD_DTM, UPD_SEQ)
+		VALUES(#{cstPrdSeq}, #{agenSeq}, #{areaSeq}, #{cstSeq}, #{puchSeq}
+			, #{prdDtlSeq}, #{prdSeq}
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prmtEmplSeq)">
+				, #{prmtEmplSeq}
+			</if>			
+			, #{cntrSecCd} 
+			, #{untpc}, #{stdrQty}, #{prmtDt}, #{inptDt}, #{cstCosCd}
+			, #{cntrMonth}
+			
+			,'N'
+			, #{stpgRson}, #{dlvSecCd}, #{cstBefCd}, #{prdBefCd}, 'Y'
+			, CURRENT_TIMESTAMP, #{emplSeq}, CURRENT_TIMESTAMP, #{emplSeq})    	
+    </insert>
+    
+    <insert id="saveCstPttn" parameterType="com.namyang.nyorder.cst.vo.CstMngVO">
+    	INSERT INTO NY_ORDER.dbo.T_CST_PTTN
+			(PTTN_SEQ, AGEN_SEQ, AREA_SEQ, CST_SEQ, CST_PRD_SEQ
+			, PRD_DTL_SEQ, PUCH_SEQ, WEEKS, MON_QTY, TUE_QTY
+			, WED_QTY, THU_QTY, FRI_QTY, SAT_QTY, SUN_QTY
+			, USE_YN, LAST_YN, REG_DTM, REG_SEQ
+			, UPD_DTM, UPD_SEQ)
+		VALUES(NEXT VALUE FOR SQ_CST_PTTN, #{agenSeq}, #{areaSeq}, #{cstSeq}, #{cstPrdSeq}
+			, #{prdDtlSeq}, #{puchSeq}, #{weeks}, #{monQty}, #{tueQty}
+			, #{wedQty}, #{thuQty}, #{friQty}, #{satQty}, #{sunQty}
+			, 'Y', 'Y', CURRENT_TIMESTAMP, #{emplSeq}
+			, CURRENT_TIMESTAMP, #{emplSeq}
+			);
+    </insert>
+    
+    <insert id="saveCstPrdUntpc" parameterType="com.namyang.nyorder.cst.vo.CstMngVO">
+    	INSERT INTO NY_ORDER.dbo.T_CST_PRD_UNTPC
+			(UNTPC_SEQ, AGEN_SEQ, AREA_SEQ, CST_SEQ, CST_PRD_SEQ
+			, PRD_DTL_SEQ, PUCH_SEQ
+			, DFLT_QTY
+			, UNTPC, STAT_DT
+			, END_DT, LAST_YN, REG_DTM, REG_SEQ, UPD_DTM
+			, UPD_SEQ)
+		VALUES(NEXT VALUE FOR SQ_CST_UNTPC, #{agenSeq}, #{areaSeq}, #{cstSeq}, #{cstPrdSeq}
+			, #{prdDtlSeq}, #{puchSeq}
+			, #{dfltQty}
+			, #{untpc}, #{statDt}
+			, #{endDt}, 'Y', CURRENT_TIMESTAMP, #{emplSeq}, CURRENT_TIMESTAMP
+			, #{emplSeq}
+			);
+    </insert>
+    
+    <insert id="saveCstPrdPrmt" parameterType="com.namyang.nyorder.cst.vo.CstMngVO">
+    	INSERT INTO NY_ORDER.dbo.T_CST_PRD_PRMT
+			(CST_PRMT_SEQ, CST_PRD_SEQ, AGEN_SEQ, AREA_SEQ, CST_SEQ
+			, PUCH_SEQ
+			, PRD_DTL_SEQ, PRMT_LNGTR_CD, PRMT_SEC_CD
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prmtSeq)">
+				, PRMT_SEQ, PRMT_CT, PRMT_CST_CT
+			</if>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prmtRate)">
+				, PRMT_RATE
+			</if>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prmtMonth)">
+				, PRMT_MONTH
+			</if>
+			, APPL_DT, END_DT, REG_DTM, REG_SEQ, UPD_DTM
+			, UPD_SEQ )
+		VALUES(NEXT VALUE FOR SQ_CST_PRTM , #{cstPrdSeq}, #{agenSeq}, #{areaSeq}, #{cstSeq}
+			, #{puchSeq}
+			, #{prdDtlSeq}, #{prmtLngtrCd}, #{prmtSecCd}
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prmtSeq)">
+				, #{prmtSeq}, #{prmtCt}, #{prmtCstCt}
+			</if>	
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prmtRate)">
+				, #{prmtRate}
+			</if>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(prmtMonth)">
+				, #{prmtMonth}
+			</if>			
+			, #{applDt}, #{endDt}, CURRENT_TIMESTAMP, #{emplSeq}, CURRENT_TIMESTAMP
+			, #{emplSeq});
+    </insert>
+    
+    <insert id="savePdRerv" parameterType="com.namyang.nyorder.cst.vo.CstMngVO">
+    	INSERT INTO NY_ORDER.dbo.T_CST_PRD_STPG
+			(CST_STPG_SEQ, CST_PRD_SEQ, AGEN_SEQ, AREA_SEQ, CST_SEQ
+			, PUCH_SEQ, PRD_DTL_SEQ, CHG_SEC_CD, STAT_DT
+			<if test='chgSecCd == "RERV"'>
+				, END_DT
+			</if>			
+			, USE_YN, LAST_YN
+			, REG_DTM, REG_SEQ, UPD_DTM, UPD_SEQ)
+		VALUES(NEXT VALUE FOR SQ_CST_PRD_STPG, #{cstPrdSeq}, #{agenSeq}, #{areaSeq}, #{cstSeq}
+			, #{puchSeq}, #{prdDtlSeq}, #{chgSecCd}, #{statDt}
+			<if test='chgSecCd == "RERV"'>
+				, #{endDt}
+			</if>
+			, 'Y', 'Y'
+			, CURRENT_TIMESTAMP, #{emplSeq}, CURRENT_TIMESTAMP, #{emplSeq}
+			)
+    </insert>
+    
+    <update id="saveReDlv" parameterType="com.namyang.nyorder.cst.vo.CstMngVO">
+    	UPDATE T_CST_PRD_STPG
+    	SET END_DT = #{endDt}    		
+    	WHERE CST_PRD_SEQ = #{cstPrdSeq}
+    		AND CHG_SEC_CD = #{chgSecCd}
+    		AND LAST_YN = 'Y'    		
+    </update>
+
+    <update id="updCstPrdUntpc" parameterType="com.namyang.nyorder.cst.vo.CstMngVO">
+    	UPDATE T_CST_PRD_UNTPC
+    	SET END_DT = #{cntrEndDt}    		
+    	WHERE CST_PRD_SEQ = #{cstPrdSeq}    		
+    		AND LAST_YN = 'Y'    		
+    </update>
+
+
+
+</mapper>

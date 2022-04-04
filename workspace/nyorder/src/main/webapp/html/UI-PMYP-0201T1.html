@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템</title>
+<link rel="stylesheet" type="text/css" href="../AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+
+<script type="text/javascript">
+    var myGridID;
+    var myGridID2;
+    var gridData = [
+			{"id":"#Cust0","level1":"기준정보 관리","level2":"기준정보 관리","level3":"제품조회","state":"사용","quantity":3,"phone":"010-8000-0007","regiDate":"2014-10-07","stopDate":"2014-10-07","worker":"김동주","workDate":"2014-10-07"},
+			{"id":"#Cust1","level1":"기준정보 관리","level2":"기준정보 관리","level3":"표준제품관리","state":"중지","quantity":1,"phone":"010-8000-0007","regiDate":"2014-10-07","stopDate":"2014-10-07","worker":"류태준","workDate":"2014-10-07"}
+		];
+    var gridData2 = [
+        {"id":"#Cust0","level1":"기준정보 관리","level2":"기준정보 관리","level3":"제품조회","state":"사용","quantity":3,"phone":"010-8000-0007","regiDate":"2014-10-07","stopDate":"2014-10-07","worker":"김동주","workDate":"2014-10-07"},
+        {"id":"#Cust1","level1":"기준정보 관리","level2":"기준정보 관리","level3":"표준제품관리","state":"중지","quantity":1,"phone":"010-8000-0007","regiDate":"2014-10-07","stopDate":"2014-10-07","worker":"류태준","workDate":"2014-10-07"}
+    ];
+   
+   $(document).ready(function(){
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid(columnLayout);
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.        
+        
+        AUIGrid.setGridData(myGridID, gridData);
+    });
+    
+
+    // AUIGrid 칼럼 설정
+    // 데이터 형태는 다음과 같은 형태임,
+    //[{"id":"#Cust0","date":"2014-09-03","name":"Han","country":"USA","product":"Apple","color":"Red","price":746400}, { .....} ];
+    
+    
+    // AUIGrid 를 생성합니다.
+    function createAUIGrid(columnLayout) {
+        // 그리드 속성 설정
+        var gridPros = {
+				//showRowNumColumn : false,				
+				//showRowCheckColumn : false,
+
+                // rowIdField 설정
+            rowIdField : "id",            
+            editable : true,
+
+                headerHeight : 26,
+                // 편집 가능 여부 (기본값 : false)
+                editable : false,
+                //applyRestPercentWidth = true,
+               // autoGridHeight = true,
+                
+                // 엔터키가 다음 행이 아닌 다음 칼럼으로 이동할지 여부 (기본값 : false)
+                enterKeyColumnBase : true,
+                
+                // 셀 선택모드 (기본값: singleCell)
+                selectionMode : "multipleCells",
+                
+                // 컨텍스트 메뉴 사용 여부 (기본값 : false)
+                useContextMenu : true,                
+                
+                // 필터 사용 여부 (기본값 : false)
+                enableFilter : true,
+            
+                // 그룹핑 패널 사용
+                useGroupingPanel : false,
+                                
+                // 그룹핑 또는 트리로 만들었을 때 펼쳐지게 할지 여부 (기본값 : false)
+                displayTreeOpen : true,
+                
+                noDataMessage : "출력할 데이터가 없습니다.",
+                
+                groupingMessage : "여기에 칼럼을 드래그하면 그룹핑이 됩니다."
+        };
+    
+        // 실제로 #grid_wrap 에 그리드 생성
+        myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+        myGridID2 = AUIGrid.create("#grid_wrap2", columnLayout, gridPros);
+    }
+
+    var columnLayout = [{
+            dataField : "level1",
+			headerText : "Level1",
+			width : 250
+		},{
+			dataField : "level2",
+			headerText : "Level2",
+			width : 250
+		},{
+			dataField : "level3",
+			headerText : "Level3",
+			width : 250				
+		},{
+            headerText : "직원 그룹",
+            dataField : "myGroupField", // 그룹 헤더의 dataField 는 무의미 하지만, 접근자로  사용하기 위해 임의 지정함.(중복되지 않게 임의 지정하세요.)
+            children : [{
+                    dataField : "name",
+                    headerText : "점주",
+                    //width:120,
+                    headerRenderer : {
+                    type : "CheckBoxHeaderRenderer",
+                    dependentMode : true, 			
+                    position : "bottom" // 기본값 "bottom"
+                },
+                renderer : {
+                    type : "CheckBoxEditRenderer",
+                    showLabel : false, // 참, 거짓 텍스트 출력여부( 기본값 false )
+                    editable : true, // 체크박스 편집 활성화 여부(기본값 : false)
+                    checkValue : "Active", // true, false 인 경우가 기본
+                    unCheckValue : "Inactive"
+                }
+                }, {
+                    dataField : "country",
+                    headerText : "총무",
+                    //width:120,
+                    headerRenderer : {
+                    type : "CheckBoxHeaderRenderer",
+                    dependentMode : true, 			
+                    position : "bottom" // 기본값 "bottom"
+                },
+                renderer : {
+                    type : "CheckBoxEditRenderer",
+                    showLabel : false, // 참, 거짓 텍스트 출력여부( 기본값 false )
+                    editable : true, // 체크박스 편집 활성화 여부(기본값 : false)
+                    checkValue : "Active1", // true, false 인 경우가 기본
+                    unCheckValue : "Inactive"
+                }
+                }, {
+                    dataField : "country",
+                    headerText : "판촉사원",
+                    //width:120,
+                    headerRenderer : {
+                    type : "CheckBoxHeaderRenderer",
+                    dependentMode : true, 			
+                    position : "bottom" // 기본값 "bottom"
+                },
+                renderer : {
+                    type : "CheckBoxEditRenderer",
+                    showLabel : false, // 참, 거짓 텍스트 출력여부( 기본값 false )
+                    editable : true, // 체크박스 편집 활성화 여부(기본값 : false)
+                    checkValue : "Active2", // true, false 인 경우가 기본
+                    unCheckValue : "Inactive"
+                }
+                }, {
+                    dataField : "product",
+                    headerText : "판매원",
+                    //width:120,
+                    headerRenderer : {
+                    type : "CheckBoxHeaderRenderer",
+                    dependentMode : true, 			
+                    position : "bottom" // 기본값 "bottom"
+                },
+                renderer : {
+                    type : "CheckBoxEditRenderer",
+                    showLabel : false, // 참, 거짓 텍스트 출력여부( 기본값 false )
+                    editable : true, // 체크박스 편집 활성화 여부(기본값 : false)
+                    checkValue : "Active4", // true, false 인 경우가 기본
+                    unCheckValue : "Inactive"
+                }
+            }]
+        }
+        
+	];
+
+    // 전체 체크 설정/ 해제
+function checkAll(checked) {
+	var rowCount = AUIGrid.getRowCount(myGridID);
+	if(checked) {
+		// 전체 데이터를 대상으로 isActive 필드를 "Active" 값으로 변경
+		AUIGrid.updateRowBlockToValue(myGridID, 0, rowCount-1, "isActive", "Active");
+	} else {
+		// 전체 데이터를 대상으로 isActive 필드를 "Inactive" 값으로 변경
+		AUIGrid.updateRowBlockToValue(myGridID, 0, rowCount-1, "isActive", "Inactive");
+	}
+};
+
+// 필드값으로 아이템들 얻기
+function getItemsByField() {
+	// 그리드 데이터에서 isActive 필드의 값이 Active 인 행 아이템 모두 반환
+	var activeItems = AUIGrid.getItemsByValue(myGridID, "isActive", "Active");
+	
+	alert("Acitve 체크 개수 : " + activeItems.length);
+	/*
+	var ids = []; 
+	for(var i=0, len=activeItems.length; i<len; i++) {
+		ids.push( activeItems[i].id ); // 아이디만 따로 보관해서 alert 출력
+	}
+	var str = ids.join("\n"); 
+	alert(str);*/
+};
+
+function myCheckboxHandler(event) {
+	// charge 의 값들 얻기
+	var uniqueValues = AUIGrid.getColumnDistinctValues(event.pid, "charge");
+	
+	// Anna 제외하기
+	uniqueValues.splice(uniqueValues.indexOf("Anna"),1);
+
+	// Anna 제외한 행들 모두 얻기
+	var rows = AUIGrid.getRowsByValue(event.pid, "charge", uniqueValues);
+	var items = [];
+	var rowIdField = AUIGrid.getProp(event.pid, "rowIdField");
+	rows.forEach(function(v, n) {
+		var item = {
+			id : v[rowIdField],
+			isChecked : event.checked
+		};
+		items.push(item);
+	});
+	
+	// 행들 수정
+	AUIGrid.updateRowsById(event.pid, items);
+};
+
+    // 윈도우 리사이징 이벤트
+    window.onresize = function(){
+		// 크기가 변경되었을 때 AUIGrid.resize() 함수 호출 
+		if (typeof myGridID !== "undefined") {
+			AUIGrid.resize(myGridID);
+		}
+    };
+
+    // function resizeGrid(w, h) {
+    //     if(myGridID)
+    //         AUIGrid.resize(myGridID, w, h);
+    // }
+
+    function requestJsonData() {
+        
+        // 요청 URL
+        var url = "./data/normal_500.json";
+        
+        // ajax 요청 전 그리드에 로더 표시
+        AUIGrid.showAjaxLoader(myGridID);
+        
+        // ajax (XMLHttpRequest) 로 그리드 데이터 요청
+        ajax( {
+            url : url,
+            onSuccess : function(data) {
+                
+                //console.log(data);
+                    
+                // 그리드에 JSON 데이터 설정
+                // data 는 JSON 을 파싱한 Array-Object 임
+                AUIGrid.setGridData(myGridID, data);
+                
+                // 로더 제거
+                AUIGrid.removeAjaxLoader(myGridID);
+            },
+            onError : function(status, e) {
+                alert("데이터 요청에 실패하였습니다.\r\n status : " + status + "\r\nWAS 를 IIS 로 사용하는 경우 json 확장자가 web.config 의 handler 에 등록되었는지 확인하십시오.");
+                // 로더 제거
+                AUIGrid.removeAjaxLoader(myGridID);
+            }
+        });
+     };
+
+</script>
+</head>
+<body>
+	<div class="allWrap">
+		<header>
+            <h1><a href="#" class="logo" title="남양유업"></a></h1>
+
+            <div class="logInfo">
+                <ul>
+                    <li><span class="user">김 남양</span> 님 을 환영합니다.</li>
+                    <li>최근접속일시 : <span class="date">2021.12.10 09:30:00</span></li>
+                    <li><a href="#" class="logOut"><span class="blind">로그아웃</span></a></li>
+                </ul>
+            </div>
+		</header>  
+
+		<div class="contentWrap">
+            <!-- lnb -->
+			<div class="lnb">
+                <!-- 검색영역 -->
+                <div class="leftSearBox">
+                    <input type="text" name="" value="" class="inp type02">
+                    <button type="button" class="searBtn" name="" title="검색하기"></button>
+                </div>
+                <!-- 검색영역 -->
+
+				<!-- 메뉴영역 -->
+                <div class="etcMenu">
+                    <a href="#" class="allMenu" title="전체메뉴"><span>전체메뉴</span></a>
+                    <a href="#" class="favSearch" title="즐겨찾기"><span>즐겨찾기</span></a>
+                </div>
+
+                <ul>
+                    <li class="depth1">
+                        <a href="#" title="기준정보 관리"><span>기준정보 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="대리점 관리"><span>대리점 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="애음자 관리"><span>애음자 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="판매 관리"><span>판매 관리</span></a>
+                        <ul class="depth2"> <!--style="display:block" -->
+                            <li>
+                                <h3>거래처 관리</h3>
+                            </li>
+                            <li><a href="#">거래처 관리</a></li>
+                            <li><a href="#">거래처별 단가 관리</a></li>
+                            <li>
+                                <h3>판매 관리</h3>
+                            </li>
+                            <li><a href="#">판매등록</a></li>
+                            <li><a href="#">거래명세표 발행</a></li>
+                            <li><a href="#">대리점 일보</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="매출 관리"><span>매출 분석</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="세무/회계 관리"><span>세무/회계 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="장비 관리"><span>장비 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="판촉 관리"><span>판촉 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="커뮤니케이션 관리"><span>커뮤니케이션 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="마이페이지"><span>마이페이지</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="로그인"><span>로그인</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <!-- 메뉴영역 -->
+
+                <a href="#" class="sideBtn"></a>
+			</div>
+            <!-- lnb -->
+			
+            <!-- content -->
+            <div class="rContentBox">
+                <div class="content">
+                    <div class="titTopArea">
+                        <h2 class="tit01">여신 조회 <a href="#" class="favor" title="즐겨찾기"></a></h2>
+
+                        <div class="location">
+                            <ul>
+                                <li><i class="home"></i></li>
+                                <li>마이페이지</li>
+                                <li>정보관리</li>
+                                <li>여신조회</li>
+                            </ul>
+                        </div>
+                    </div>  
+
+                    <!-- tabs -->
+                    <div class="tabsWrap">
+                        <ul class="tabs">
+                            <li class="active" rel="tab01">여신 현황</li>
+                            <li class="" rel="tab02">여신 이력</li>
+                        </ul>
+
+                        <!-- tabContent 여신 현황 -->
+                        <div id="tab01" class="tabContent">
+                            <div class="titleArea">
+                                <h3 class="tit01">여신 정보</h3>
+                            </div>
+
+                            <div class="tblWrap">
+                                <table class="tbl">
+                                    <caption>여신정보</caption>
+                                    <colgroup>
+                                        <col style="width:170px;">
+                                        <col>
+                                        <col style="width:170px;">
+                                        <col>
+                                    </colgroup>
+                                    <tbody>
+                                        <tr>
+                                            <th scope="row">
+                                                여신잔액
+                                            </th>
+                                            <td>
+                                                41,922,523
+                                            </td>
+                                            <th scope="row">
+                                                사용율(%)
+                                            </th>
+                                            <td>
+                                                57.7
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                총 여신금액
+                                            </th>
+                                            <td>
+                                                99,032,990
+                                            </td>
+                                            <th scope="row">
+                                                여신사용액
+                                            </th>
+                                            <td>
+                                                57,110,467
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                부동산담보
+                                            </th>
+                                            <td>
+                                                67,000,000
+                                            </td>
+                                            <th scope="row">
+                                                매출채권
+                                            </th>
+                                            <td>
+                                                54,693,713
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                보증보험/금융채권
+                                            </th>
+                                            <td>
+                                                30,000,000
+                                            </td>
+                                            <th scope="row">
+                                                CMS연체금액
+                                            </th>
+                                            <td>
+                                                0
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                특별여신
+                                            </th>
+                                            <td>
+                                                2,032,990
+                                            </td>
+                                            <th scope="row">
+                                                미매출액(A+B+C)
+                                            </th>
+                                            <td>
+                                                2,413,754
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                임시여신
+                                            </th>
+                                            <td colspan="3">
+                                                0
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                미결주문(A)
+                                            </th>
+                                            <td>
+                                                서울시 구로구
+                                            </td>
+                                            <th scope="row">
+                                                상세주소
+                                            </th>
+                                            <td>
+                                                에이스테크노타워 8층
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                담당지점
+                                            </th>
+                                            <td>
+                                                강남지점
+                                            </td>
+                                            <th scope="row">
+                                                담당사원
+                                            </th>
+                                            <td>
+                                                김남양
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                계약종류명
+                                            </th>
+                                            <td>
+                                                도매, 위탁(유통)
+                                            </td>
+                                            <th scope="row">
+                                                계약잔여일
+                                            </th>
+                                            <td>
+                                                283
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <th scope="row">
+                                                계약시작일
+                                            </th>
+                                            <td>
+                                                2021.10.01
+                                            </td>
+                                            <th scope="row">
+                                                계약종료일
+                                            </th>
+                                            <td>
+                                                2022.09.30
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- grid -->
+                            <div class="girdBox">
+                                <div id="grid_wrap" style="height:500px"></div>
+                            </div>
+                            <!-- grid -->
+                        </div>
+                        <!-- tabContent 여신 현황 -->
+
+
+                        <!-- tabContent 여신 이력 -->
+                        <div id="tab02" class="tabContent">
+
+    
+                        </div>
+                        <!-- tabContent 여신 이력 -->
+                    </div>
+                    <!-- tabs -->
+
+                </div>
+
+                <footer>
+                    COPYRIGHT-NAMYANG-DAIRY-PRODUCTS-COLTD-ALL-RIGHT-RESERVED
+                </footer>
+            </div>
+            <!-- content -->
+		</div>
+	</div>
+</body>
+</html>

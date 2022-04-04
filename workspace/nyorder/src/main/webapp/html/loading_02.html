@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템</title>
+<link rel="stylesheet" type="text/css" href="../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker_range_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<script type="text/javascript">
+    var myGridID;
+    var myGridID2;
+
+    var gridData = [
+            {"id":"#Cust0","venNm":"대왕 킹마트"},
+			{"id":"#Cust1","venNm":"대왕 킹마트"},
+			{"id":"#Cust2","venNm":"대왕 킹마트"},
+            {"id":"#Cust3","venNm":"대왕 킹마트"}
+	];
+    var gridData2 = [
+        {"id":"#Cust01","sellDate":"2022-05-05","pType01":"50","pType02":"150","pType03":"150","pType04":"80","sAmount01":36100,"sAmount02":36100,"sAmount03":136100,"cAmount01":36100,"cAmount02":36100,"cAmount03":136100,"cAmount04":136100},
+        {"id":"#Cust12","sellDate":"2022-05-05","pType01":"50","pType02":"150","pType03":"150","pType04":"80","sAmount01":36100,"sAmount02":36100,"sAmount03":136100,"cAmount01":36100,"cAmount02":36100,"cAmount03":136100,"cAmount04":136100}
+	];
+   
+   $(document).ready(function(){
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid();
+        //createAUIGrid(columnLayout2);
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.        
+        
+        AUIGrid.setGridData(myGridID, gridData);
+	    //AUIGrid.setFooter(myGridID, footerLayout);
+
+        AUIGrid.setGridData(myGridID2, gridData2);
+	    AUIGrid.setFooter(myGridID2, footerLayout2);
+
+    });
+    
+   
+    // AUIGrid 를 생성합니다.
+    function createAUIGrid() {
+        // 그리드 속성 설정
+        var gridPros = {
+                headerHeight : 29,
+                rowHeight : 29,
+                // 편집 가능 여부 (기본값 : false)
+                editable : false,
+                
+                enterKeyColumnBase : true, // 엔터키가 다음 행이 아닌 다음 칼럼으로 이동할지 여부 (기본값 : false)
+                //fixedColumnCount : 7,
+                editingOnKeyDown : true, // 키보드 입력으로 편집 모드 진입 (기본값:true임;)
+                wrapSelectionMove : true,
+				showRowCheckColumn : false, // 체크박스 사용 
+                
+                // 셀 선택모드 (기본값: singleCell)
+                selectionMode : "singleRow",
+                showFooter: false,
+                
+                // 컨텍스트 메뉴 사용 여부 (기본값 : false)
+                useContextMenu : true,
+                
+                // 필터 사용 여부 (기본값 : false)
+                enableFilter : true,
+            
+                // 그룹핑 패널 사용
+                useGroupingPanel : false,                
+                
+                // 그룹핑 또는 트리로 만들었을 때 펼쳐지게 할지 여부 (기본값 : false)
+                displayTreeOpen : true,
+                
+                noDataMessage : "출력할 데이터가 없습니다.",
+                
+                groupingMessage : "여기에 칼럼을 드래그하면 그룹핑이 됩니다."
+                
+        };
+
+		var gridPros2 = {
+			headerHeight : 29,
+            rowHeight : 29,
+			showFooter: true,
+            selectionMode : "singleRow",
+		}
+
+        // 실제로 #grid_wrap 에 그리드 생성
+        myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+        myGridID2 = AUIGrid.create("#grid_wrap2", columnLayout2, gridPros2);
+    }
+
+    // 그리드 속성 설정
+	var auiGridProps = {
+			//scrollHeight : 18, // 스크롤의 높이
+			//scrollThumbHeight : 16, // 스크롤 썸(thumb)의 높이
+			fixedColumnCount : 1
+	};
+
+    var columnLayout = [{
+            dataField : "venNm",
+			headerText : "거래처명",
+			width : "100%",	
+			style: "auiLink auiLeft"
+		}
+	];
+
+    var columnLayout2 = [{
+            dataField : "sellDate",
+			headerText : "판매일자",
+		},{
+			dataField : "pType",
+			headerText : "유형",
+                children : [{
+                    dataField : "pType01",
+                    headerText : "판매",
+                    width : "7%",
+					style : "auiRight"
+                }, {
+                    dataField : "pType02",
+                    headerText : "반품",
+					width : "7%",
+					style : "auiRight"
+                }, {
+                    dataField : "pType03",
+                    headerText : "증정",
+					width : "7%",
+                    style : "auiRight"
+                }, {
+                    dataField : "pType04",
+                    headerText : "교환",
+					headerStyle : "auiRightBorR",
+					width : "7%",
+					style : "auiRight"
+                }]
+		},{
+			dataField : "sAmount",
+			headerText : "매출금액",
+                children : [{
+                    dataField : "sAmount01",
+                    headerText : "공급가",
+					dataType : "numeric",
+					width : "9%",
+                    style : "auiRight"
+                }, {
+                    dataField : "sAmount02",
+                    headerText : "VAT",
+					dataType : "numeric",
+					width : "9%",
+                    style : "auiRight"
+                }, {
+                    dataField : "sAmount03",
+                    headerText : "計",
+					headerStyle : "auiRightBorR",
+					dataType : "numeric",
+					width : "9%",
+                    style : "auiRight"
+                }]
+		},{
+			dataField : "cAmount",
+			headerText : "수금금액",
+                children : [{
+                    dataField : "cAmount01",
+                    headerText : "현금",
+					dataType : "numeric",
+					width : "9%",
+                    style : "auiRight"
+                }, {
+                    dataField : "cAmount02",
+                    headerText : "현금 외",
+					dataType : "numeric",
+					width : "9%",
+                    style : "auiRight"
+                }, {
+                    dataField : "cAmount03",
+                    headerText : "수금합계",
+					dataType : "numeric",
+					width : "9%",
+                    style : "auiRight"
+				}, {
+                    dataField : "cAmount04",
+                    headerText : "미수금액",
+					dataType : "numeric",
+					width : "9%",
+                    style : "auiRight"
+                }]
+		}
+		
+	];
+
+
+    // 푸터 설정
+    var footerLayout2 = [{
+        labelText : "∑",
+        positionField : "#base"
+        }, {
+            dataField : "sellDate",
+            positionField : "sellDate",
+            operation : "SUM",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+            // return "합계 : " + AUIGrid.formatNumber(value, "#,##0");
+            return "합계 : " 
+            }
+        }, {
+            dataField : "pType01",
+            positionField : "pType01",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "pType03",
+            positionField : "pType03",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "pType04",
+            positionField : "pType04",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "sAmount01",
+            positionField : "sAmount01",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "sAmount02",
+            positionField : "sAmount02",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+		}, {
+            dataField : "sAmount03",
+            positionField : "sAmount03",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+		}, {
+            dataField : "sAmount04",
+            positionField : "sAmount04",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+    }];
+
+</script>
+</head>
+<body>
+    <!-- 로딩바 -->
+	<div class="loadBoxGrid">
+		<div class="loading">
+			<img src="../images/loading_02.png" alt="loading">
+		</div>		
+	</div>
+	<!-- 로딩바 -->
+
+</body>
+</html>

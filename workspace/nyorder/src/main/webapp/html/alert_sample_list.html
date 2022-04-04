@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>알럿 샘플 팝업</title>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<style>
+    html, body {overflow-y: auto;}
+    .alert_listWrap .formWrap > button {margin:10px;}
+</style>
+</head>
+<body>
+    <div class="alert_listWrap">
+        <div class="formWrap">
+            <button type="button" data-id="modalAlert" class="inquBtn small">버튼</button>
+            <!--<button type="button" name="" class="comBtn" id="inp_name01" onclick="searchList()">조회</button>-->
+        </div>
+
+        <!-- modal 배경 -->
+        <div class="modal_bg"></div> 
+        
+        <!-- Alert03 -->
+        <div class="alertWrap small" data-popup="modalAlert" id="modalAlert">  <!--alert_sample_list.html-->
+            <header>
+                <h3>주문등록</h3>
+                <button type="button" name="" class="closeBtn" id="modalCloseBtn"></button>
+            </header>
+            <div class="alertCon">
+                <p>
+                    주문정보가 전송되었습니다.<br/>
+                    주문은 [전송]으로 최종 확정됩니다.
+                </p>
+                <div class="popBtnArea">
+                    <button type="button" name="" class="inquBtn">확인</button>
+                    <button type="button" name="" class="comBtn" id="modalCloseBtn">취소</button>
+                </div>
+            </div>
+        </div>
+        <!--// Alert03 -->
+    </div>
+	
+</body>
+</html>

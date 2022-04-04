@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템</title>
+<link rel="stylesheet" type="text/css" href="../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker_range_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<script type="text/javascript">
+    var myGridID;
+
+    var gridData = [
+        {"id":"#Cust01","divi":"상품","detail":"뽀로로 식기세트","unitPrice":"500","startDate":"2021-12-31","endDate":"2022-01-03","cus":4500,"pro":4500,"payDate":"2021-05-31","payer":"홍길순"},
+        {"id":"#Cust02","divi":"상품","detail":"뽀로로 식기세트","unitPrice":"500","startDate":"2021-12-31","endDate":"2022-01-03","cus":4500,"pro":4500,"payDate":"2021-05-31","payer":"홍길순"},
+        {"id":"#Cust03","divi":"상품","detail":"뽀로로 식기세트","unitPrice":"500","startDate":"2021-12-31","endDate":"2022-01-03","cus":4500,"pro":4500,"payDate":"2021-05-31","payer":"홍길순"},
+        {"id":"#Cust04","divi":"상품","detail":"뽀로로 식기세트","unitPrice":"500","startDate":"2021-12-31","endDate":"2022-01-03","cus":4500,"pro":4500,"payDate":"2021-05-31","payer":"홍길순"},
+        {"id":"#Cust01","divi":"상품","detail":"뽀로로 식기세트","unitPrice":"500","startDate":"2021-12-31","endDate":"2022-01-03","cus":4500,"pro":4500,"payDate":"2021-05-31","payer":"홍길순"},
+        {"id":"#Cust02","divi":"상품","detail":"뽀로로 식기세트","unitPrice":"500","startDate":"2021-12-31","endDate":"2022-01-03","cus":4500,"pro":4500,"payDate":"2021-05-31","payer":"홍길순"},
+        {"id":"#Cust03","divi":"상품","detail":"뽀로로 식기세트","unitPrice":"500","startDate":"2021-12-31","endDate":"2022-01-03","cus":4500,"pro":4500,"payDate":"2021-05-31","payer":"홍길순"},
+        {"id":"#Cust04","divi":"상품","detail":"뽀로로 식기세트","unitPrice":"500","startDate":"2021-12-31","endDate":"2022-01-03","cus":4500,"pro":4500,"payDate":"2021-05-31","payer":"홍길순"},
+        {"id":"#Cust03","divi":"상품","detail":"뽀로로 식기세트","unitPrice":"500","startDate":"2021-12-31","endDate":"2022-01-03","cus":4500,"pro":4500,"payDate":"2021-05-31","payer":"홍길순"},
+        {"id":"#Cust04","divi":"상품","detail":"뽀로로 식기세트","unitPrice":"500","startDate":"2021-12-31","endDate":"2022-01-03","cus":4500,"pro":4500,"payDate":"2021-05-31","payer":"홍길순"},
+    ];
+
+    var posList =  ["홍길동","이남양","허남양"];
+   
+    $(document).ready(function(){
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid();
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.        
+        
+        AUIGrid.setGridData(myGridID, gridData);
+    });
+    
+   
+    // AUIGrid 를 생성합니다.
+    function createAUIGrid() {
+        // 그리드 속성 설정
+        var gridPros = {
+                headerHeight : 29,
+                rowHeight : 29,
+                // 편집 가능 여부 (기본값 : false)
+                editable : true,
+                
+                rowIdField : "id",
+				showStateColumn : false,
+				wrapSelectionMove : true,
+				editingOnKeyDown : true, // 키보드 입력으로 편집 모드 진입 (기본값:true임;)
+                enterKeyColumnBase : true,
+                
+                // 셀 선택모드 (기본값: singleCell)
+                selectionMode : "singleRow",
+                
+                // 컨텍스트 메뉴 사용 여부 (기본값 : false)
+                useContextMenu : true,
+                
+                // 필터 사용 여부 (기본값 : false)
+                enableFilter : true,
+            
+                // 그룹핑 패널 사용
+                useGroupingPanel : false,
+                      
+                // 그룹핑 또는 트리로 만들었을 때 펼쳐지게 할지 여부 (기본값 : false)
+                displayTreeOpen : true,
+                
+                noDataMessage : "출력할 데이터가 없습니다.",
+                
+                groupingMessage : "여기에 칼럼을 드래그하면 그룹핑이 됩니다."
+                
+        };
+    
+        // 실제로 #grid_wrap 에 그리드 생성
+        myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+        
+    }
+
+
+    var columnLayout = [{
+			dataField : "divi",
+			headerText : "구분",
+            width : "10%" ,
+        },{
+			dataField : "detail",
+			headerText : "상세",
+            style : "auiLeft"         	
+        },{
+			dataField : "unitPrice",
+			headerText : "단가",
+            style : "auiRight",
+            width : "9%"	
+        },{
+			dataField : "startDate",
+			headerText : "적용시작일",
+            width : "12%",
+		},{
+			dataField : "endDate",
+			headerText : "적용종료일",
+            width : "12%",
+		},{
+			dataField : "cus",
+			headerText : "소비자부담금",
+            dataType : "numeric",
+            style : "auiRight",
+            width : "12%",
+        },{
+			dataField : "pro",
+			headerText : "판촉사원부담금",
+            dataType : "numeric",
+            style : "auiRight",
+            width : "15%",            
+        },{
+			dataField : "payDate",
+			headerText : "지급일",
+            width : "10%",
+            dataType : "date",
+                dateInputFormat : "yyyy/mm/dd", // 실제 데이터의 형식 지정
+                formatString : "yyyy - mm - dd", // 실제 데이터 형식을 어떻게 표시할지 지정
+                renderer : {
+                    type : "IconRenderer",
+                    iconWidth : 24, 
+                    iconHeight : 24,
+                    iconPosition : "aisleRight",
+                    iconTableRef :  { 
+                        "default" : "../images/AUIGrid/calendar-icon.png"
+                    },
+                    onClick : function(event) {
+                        AUIGrid.openInputer(event.pid);
+                    }
+                },
+                editRenderer : {
+                    type : "CalendarRenderer",
+                    defaultFormat : "yyyy/mm/dd", // 달력 선택 시 데이터에 적용되는 날짜 형식
+                    showEditorBtn : false,
+                    showEditorBtnOver : false, // 마우스 오버 시 에디터버턴 출력 여부
+                    onlyCalendar : true, // 사용자 입력 불가, 즉 달력으로만 날짜입력 (기본값 : true)
+                    showExtraDays : true // 지난 달, 다음 달 여분의 날짜(days) 출력
+                }
+        },{
+			dataField : "payer",
+			headerText : "지급인",
+            style : "auiLeft",
+            width : "9%",
+            renderer : {
+			    type : "DropDownListRenderer",
+                list : posList
+            }
+        }
+	];
+
+   
+</script>
+</head>
+<body>
+    <!-- 실제 개발시 style 모두 지워주세요 (style 퍼블용 preview 입니다.) - 가로사이즈 1600px -->
+
+    <!-- layerPopup -->
+    <div class="modal_bg" style="display:block; position:fixed;top:0;left:0;right:0;bottom:0;z-index:10; background:rgba(0, 0, 0, .43);"></div> <!-- modal 배경 -->
+
+    <div tabindex="-1" role="dialog" class="ui-dialog ui-corner-all ui-widget ui-widget-content ui-front" aria-describedby="readPop" aria-labelledby="ui-id-1" style="width:1600px; height:420px; top:170px; left:8%; visibility: visible;">
+        <div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix">
+            <span id="ui-id-1" class="ui-dialog-title">&nbsp;</span>
+            <button type="button" class="ui-button ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-close" title="Close">
+            <span class="ui-button-icon ui-icon ui-icon-closethick"></span>
+            <span class="ui-button-icon-space"> </span>Close</button>
+        </div>
+            
+        <div id="readPop" class="ajaxDialog ui-dialog-content ui-widget-content">
+
+        <!-- 판촉물 지급 정보 조회 팝업 -->
+        <div class="popWrap large modal_wrap h420" data-popup="modalAgencyViews03">
+            <header>
+                <h3>판촉물 지급 정보 조회</h3>
+            </header>  
+
+            <!-- popCon -->
+            <div class="popCon">
+                <div class="popTitArea">
+                    <h3>판촉물 지급 정보 조회</h3>
+                    <div class="popBtnArea">
+                        <button type="button" name="" class="comBtn modalCloseBtn" id="modalCloseBtn">닫기</button>                   
+                        <button type="button" name="" class="inquBtn">저장</button>
+                    </div>
+                </div>
+                
+                <div class="titleArea">
+                    <p class="numState">
+                        <em>총 <span class="pColor01 fb">123</span></em> 건 이 조회되었습니다.
+                    </p>
+                </div>
+                
+                <!-- grid -->
+                <div class="girdBox">
+                    <div id="grid_wrap"></div>
+                </div>
+                <!-- grid -->
+                
+
+            </div>
+            <!-- popCon -->
+        </div>
+        <!-- 조회할 지역선택 팝업 -->
+        <!--// layerPopup -->
+    </div>
+</div>
+
+</body>
+</html>

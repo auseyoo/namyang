@@ -1,0 +1,2767 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>List 남양유업 대리점 주문시스템</title>
+<link rel="stylesheet" type="text/css" href="../css/reset.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<style>
+	body.html{letter-spacing:1px}
+	h1{font-size:20px;text-align:center; padding:10px 0}
+	table{border-spacing:0;}
+	.content{padding:0 20px 20px;}
+	.tableStyle{width:100%; margin-bottom:50px}
+	.tableStyle thead th {height:35px;line-height:35px; background:#fafafa; font-weight:bold; font-size:14px; border-top:2px solid #000;border-bottom:1px solid #c7c7c7;border-right:1px solid #c7c7c7; padding:0 5px; color:#000}
+	.tableStyle a{color:#2f7bca; text-decoration:none}
+	.tableStyle td{height:30px; padding:2px 5px; border-bottom:1px solid #e8e8e8; border-right:1px solid #e8e8e8; font-size:13px;}
+	.tableStyle th:last-child,.tableStyle td:last-child{border-right:0;}
+	.tableStyle td.tCenter{text-align:center}
+	.tableStyle td p{line-height:13px}
+	.tabsWrap{}
+	.tabs{display:flex; height:40px; border-bottom:1px solid #222}
+	.tabs li{width:120px; height:40px; line-height:40px; font-size:14px; border-top:1px solid #b2b2b2; border-left:1px solid #b2b2b2; border-right:1px solid #b2b2b2; text-align:center; margin-right:4px; border-radius:4px 4px 0 0; cursor:pointer;}
+	.tabs li.active{background:#222; color:#fff; border:0}
+	.tabContent{width:100%; padding:10px 0 0}
+	span.work{display:inline-block; width:22px; height:22px; background:url("../images/s_check.png") no-repeat 0 -22px; position:relative; top:2px}
+	span.work.on{background:url("../images/s_check.png") no-repeat 0 0;}
+	span.work.mo{background-position:0 -44px}
+	span.ing{color:#e82612}
+</style>
+<script>
+	$(function(){
+		var $pgNum = $('table td.pgNum');
+		var number = 1;
+		$pgNum.each(function(){
+			$(this).text(number);
+			number = number+1;
+		});
+	});
+</script>
+</head>
+<body>
+	<h1>남양유업 대리점 주문시스템 퍼블리싱 LIST</h1>
+
+	<div class="content">
+		<div class="tabsWrap">
+			<!-- <ul class="tabs">
+				<li class="active" rel="tab01">PC</li>
+				<li class="" rel="tab02">MOBLIE</li>
+				<li class="" rel="tab03">ADMIN</li>
+			</ul> -->
+
+			<!-- tabContent PC 퍼블리싱 -->
+			<div id="tab01" class="tabContent">
+				<table class="tableStyle">
+					<caption>PC 퍼블리싱</caption>
+					<colgroup>
+						<col width="50px" />
+						<col width="200px" />
+						<col width="250px" />
+						<col width="" />
+						<col width="120px" />
+						<col width="100px" />
+						<col width="100px" />
+						<col width="80px" />
+						<col width="80px" />
+						<col width="500px" />
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col">No.</th>
+							<th scope="col">depth1</th>
+							<th scope="col">depth2</th>
+							<th scope="col">파일명</th>
+							<th scope="col">유형</th>
+							<th scope="col">작업자</th>
+							<th scope="col">완료일</th>
+							<th scope="col">완료여부</th>
+							<th scope="col">개발여부</th>
+							<th scope="col">비고</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td>공통</td>
+							<td>공통</td>
+							<td><a href="@guide.html" target="_blank" title="새창열림" class="page-link">@guide.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="work mo"></span></td> <!-- work on -->
+							<td class="tCenter"><span class="work on"></span></td> <!-- work on -->
+							<td>
+								계속 업데이트 예정 / 2022-02-14 개발요청 footer 위치수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>lnb 메뉴 및 상단 레이아웃</td>
+							<td><a href="layout.html" target="_blank" title="새창열림" class="page-link">layout.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="work mo"></span></td> <!-- work on -->
+							<td class="tCenter"><span class="work mo"></span></td> <!-- work on -->
+							<td>
+								추후 수정예정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>로딩바(전체)</td>
+							<td><a href="./loading.html" target="_blank" title="새창열림" class="page-link">loading.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-14</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>로딩바(그리드용)</td>
+							<td><a href="./loading_02.html" target="_blank" title="새창열림" class="page-link">loading_02.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-14</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>에러메세지</td>
+							<td><a href="./error.html" target="_blank" title="새창열림" class="page-link">error.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-17</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>알럿 유형별 전체보기</td>
+							<td><a href="./alert_sample_list.html" target="_blank" title="새창열림" class="page-link">alert_sample_list.html</a></td>
+							<td class="tCenter">popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-12</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>레이어 팝업</td>
+							<td><a href="./000.html" target="_blank" title="새창열림" class="page-link">layerPopup.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr> -->
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>중요 공지 (팝업)</td>
+							<td><a href="./notice.html" target="_blank" title="새창열림" class="page-link">notice.html</a></td>
+							<td class="tCenter">popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+							</td>
+						</tr> -->
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td>메인</td>
+							<td>메인</td>
+							<td><a href="./UI-PHOM-0101.html" target="_blank" title="새창열림" class="page-link">UI-PHOM-0101.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-28</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td>로그인</td>
+							<td>로그인</td>
+							<td><a href="UI-PLOG-0101.html" target="_blank" title="새창열림" class="page-link">UI-PLOG-0101.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-04</td>
+							<td class="tCenter"><span class="ing">진행중</span></td> <!-- work on -->
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								04-01 1차 기획수정 반영
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>본인인증(팝업)</td>
+							<td><a href="UI-PLOG-0101P2.html" target="_blank" title="새창열림" class="page-link">UI-PLOG-0101P2.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">진행중</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>이용약관</td>
+							<td><a href="UI-PLOG-0103.html" target="_blank" title="새창열림" class="page-link">UI-PLOG-0103.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>MDB 파일 업로드</td>
+							<td><a href="./UI-PMBD-0101.html" target="_blank" title="새창열림" class="page-link">UI-PMBD-0101.html</a></td> PG-PMBD-0101.html
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-02-21</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>대리점 정보조회</td>
+							<td><a href="./UI-PLOG-0101P1.html" target="_blank" title="새창열림" class="page-link">UI-PLOG-0101P1.html</a></td>
+							<td class="tCenter">popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-05</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>비밀번호 변경</td>
+							<td><a href="UI-PLOG-0102.html" target="_blank" title="새창열림" class="page-link">UI-PLOG-0102.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-06</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-21 1차 기획 수정적용
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td>마이페이지</td>
+							<td>내정보조회</td>
+							<td><a href="./UI-PMYP-0101.html" target="_blank" title="새창열림" class="page-link">UI-PMYP-0101.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-12-27</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-01-24 기획수정예정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>직원관리</td>
+							<td><a href="./UI-PMYP-0301.html" target="_blank" title="새창열림" class="page-link">UI-PMYP-0301.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-12-28</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								휴대폰번호, 전화번호 디자인변경됨 / 2022-02-08 1차기획변경수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>권한관리 (그룹별권한)</td>
+							<td><a href="./UI-PMYP-0401T1.html" target="_blank" title="새창열림" class="page-link">UI-PMYP-0401T1.html</a></td>				
+							<td class="tCenter">page (탭화면)</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-01-05</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								2022-02-08 1차기획변경수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>권한관리 (직원별권한)</td>
+							<td><a href="./UI-PMYP-0401T1.html" target="_blank" title="새창열림" class="page-link">UI-PMYP-0401T2.html</a></td>				
+							<td class="tCenter">page (탭화면)</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-01-05</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>여신조회</td>
+							<td><a href="./UI-PMYP-0201.html" target="_blank" title="새창열림" class="page-link">UI-PMYP-0201.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-01-06</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>장려금 조회</td>
+							<td><a href="./UI-PMYP-0501.html" target="_blank" title="새창열림" class="page-link">UI-PMYP-0501.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-01-21</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-00-24 기획삭제됨
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td>기준정보관리</td>
+							<td>제품조회</td>
+							<td><a href="./UI-PSTD-0101.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0101.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-12</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								2022-01-24 퍼블 2차수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>표준제품 관리-제품 정보</td>
+							<td><a href="./UI-PSTD-0201.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0201.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-01-06</td> 
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								<p>표준제품 등록, 순서변경, 제품변경 레이어팝업 하단에 포함<p>
+							</td> 
+						</tr>
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>표준제품 관리-변경 이력(탭)</td>
+							<td><a href="./UI-PSTD-0201T2.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0201T2.html</a></td>				
+							<td class="tCenter">page (탭화면)</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-01-06</td> 
+							<td class="tCenter"><span class="work mo"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								2022-01-12 기획/디자인변경
+							</td> 
+						</tr> -->
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>표준제품 관리</td>
+							<td><a href="./UI-PSTD-0201.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0201.html</a></td>	
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-01-06</td> 
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								<p>표준제품 등록, 순서변경, 제품변경 레이어팝업 하단에 포함<p>
+							</td> 
+						</tr> -->
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>표준제품 등록</td>
+							<td><a href="./UI-PSTD-0201P1.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0201P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-11</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>표준제품 순서변경</td>
+							<td><a href="./UI-PSTD-0201P2.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0201P2.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-11</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>표준제품 일괄 변경</td>
+							<td><a href="./UI-PSTD-0202.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0202.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-21</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>남양제품 조회(팝업)</td>
+							<td><a href="./UI-PSTD-0202P3.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0202P3.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-24</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>타사제품코드 관리</td>
+							<td><a href="./UI-PSTD-0301.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0301.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-11</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								기획요청 삭제후 2022-03-16 원복
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>타사제품 불러오기(팝업)</td>
+							<td><a href="./UI-PSTD-0301P1.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0301P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-03-16</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								조회 두줄고정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>매입처 관리</td>
+							<td><a href="./UI-PSTD-0401.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0401.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-10</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								기획요청 삭제후 2022-03-16 원복
+							</td>
+						</tr> 
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>제품 변경</td>
+							<td><a href="./UI-PSTD-0201P3.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0201P3.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-11</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								
+							</td>
+						</tr> -->
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>타사제품코드 관리</td>
+							<td><a href="./UI-PSTD-0301.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0301.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-11</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr> -->
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>매입처 관리</td>
+							<td><a href="./UI-PSTD-0401.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0401.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-10</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr> -->
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>단가정보 관리-지역단가 관리(탭)</td>
+							<td><a href="./UI-PSTD-0501T1.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0501T1.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-13</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								컨폼예정
+							</td>
+						</tr> -->
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>단가정보 관리-애음자단가 관리(탭)</td>
+							<td><a href="./UI-PSTD-0501T2.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0501T2.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-13</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr> -->
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>순서변경</td>
+							<td><a href="./UI-PSTD-0502P1.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0502P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-13</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								
+							</td>
+						</tr> -->
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>지역 관리</td>
+							<td><a href="./UI-PSTD-0502.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0502.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-13</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								판매원 선택, 순서변경, 본사주간판매점 선택 레이어팝업 하단에 포함
+								애음자 메뉴로 이동됨 2022-01-24
+							</td>
+						</tr> -->
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판매원 선택</td>
+							<td><a href="./UI-PSTD-0502P2.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0502P2.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-13</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>본사주간판매점 선택</td>
+							<td><a href="./UI-PSTD-0502P3.html" target="_blank" title="새창열림" class="page-link">UI-PSTD-0502P3.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-13</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td>대리점 관리</td>
+							<td>주문등록 방판</td>
+							<td><a href="./UI-PORD-0101.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0101.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-12-30</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-02-07 1차기획변경수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>주문등록 시판</td>
+							<td><a href="./UI-PORD-0102.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0102.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-18</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-02-07 1차기획변경수정
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>주문등록 상온</td>
+							<td><a href="./UI-PORD-0103.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0103.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-03-08</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>여신 상세보기(팝업)</td>
+							<td><a href="./UI-PORD-0101P1.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0101P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-24</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						
+						</tr>
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>주문전송 이력</td>
+							<td><a href="./UI-PORD-0101P1.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0101P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-18</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						
+						</tr> -->
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>주문확정/배송 조회</td>
+							<td><a href="./UI-PORD-0201.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0201.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-12-30</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>반품/반송 관리</td>
+							<td><a href="./UI-PORD-0301.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0301.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-12-31</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-01-27 문구추가
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>반품 등록</td>
+							<td><a href="./UI-PORD-0302.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0302.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-14</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-01-27 1차기획변경수정
+							</td>
+
+						</tr>
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>반품대상불러오기</td>
+							<td><a href="./UI-PORD-0302P1.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0302P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">진행중</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>반품전송이력</td>
+							<td><a href="./UI-PORD-0302P2.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0302P2.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						
+						</tr> -->
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>학교급식 주문 등록</td>
+							<td><a href="./UI-PORD-0401.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0401.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-20</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-02-08 1차기획변경수정
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>학교급식 주문 조회</td>
+							<td><a href="./UI-PORD-0501.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0501.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-19</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>매입 등록</td>
+							<td><a href="./UI-PORD-0601.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0601.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-03</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>타사제품 조회(팝업)</td>
+							<td><a href="./UI-PORD-0601P1.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0601P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-24</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>매입집계 현황</td>
+							<td><a href="./UI-PORD-0701.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0701.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-03</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>재고관리</td>
+							<td><a href="./UI-PORD-0801.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0801.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-24</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-11 1차 기획수정 반영 
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>크레이트 반납 관리</td>
+							<td><a href="./UI-PORD-0901.html" target="_blank" title="새창열림" class="page-link">UI-PORD-0901.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-20</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>특수처 출고의뢰 주문등록</td>
+							<td><a href="./UI-PORD-1001.html" target="_blank" title="새창열림" class="page-link">UI-PORD-1001.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-03-16</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>특수처 출고의뢰 주문조회</td>
+							<td><a href="./UI-PORD-1101.html" target="_blank" title="새창열림" class="page-link">UI-PORD-1101.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-03-16</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td>애음자 관리</td>
+							<td>지역 관리-지역 관리(탭)</td>
+							<td><a href="./UI-PCLI-1401T1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1401T1.html</a></td>
+							<td class="tCenter">page (탭화면)</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-18</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-01-24 1차기획변경수정 / 2022-01-26 2차기획변경수정 / 2022-02-08 3차기획변경수정
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>지역 관리-지역 관리(탭)</td>  <!-- UI-PCLI-1401T1.html 이였음 -->
+							<td><a href="./UI-PCLI-1401T2.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1401T2.html</a></td>
+							<td class="tCenter">page (탭화면)</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-18</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-01-24 1차기획변경수정 / 2022-01-26 6차기획변경수정
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판매원 선택(팝업)</td>
+							<td><a href="./UI-PCLI-1401P1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1401P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-24</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-03-18 수정
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>순서 변경(팝업)</td>
+							<td><a href="./UI-PCLI-1401P2.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1401P2.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-24</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>코스변경 이력(팝업)</td>
+							<td><a href="./UI-PCLI-1401P3.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1401P3.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-26</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>지역변경 이력(팝업)</td>
+							<td><a href="./UI-PCLI-1401P4.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1401P4.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-24</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<!-- 없어진 파일인지 확인해야 함 -->
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>본사주간판매점 선택(팝업)</td>
+							<td><a href="./UI-PCLI-1401P4.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1401P4.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-24</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						
+						</tr> -->
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>단가 관리-지역단가 관리(탭)</td>
+							<td><a href="./UI-PCLI-1501T1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1501T1.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-13</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-01-27 2차기획변경수정 / 02-04 3차기획변경수정 / 02-22 4차 기획변경 수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>단가정보 관리-애음자단가 관리(탭)</td>
+							<td><a href="./UI-PCLI-1501T2.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1501T2.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-13</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-01-27 2차기획변경수정 / 02-04 3차기획변경수정 / 02-22 4차 기획변경 수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>단가변경 이력(팝업)</td>
+							<td><a href="./UI-PCLI-1501P1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1501P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-13</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-22 1차 기획 수정사항 반영
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>제품 일괄 변경</td>
+							<td><a href="./UI-PCLI-1601.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1601.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-27</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-09 1차 기획 수정사항 반영 / 02-11 2차 기획 수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>제품 일괄 변경 이력(팝업)</td>
+							<td><a href="./UI-PCLI-1601P1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1601P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-27</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-07 1차 기획 수정사항 반영
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 관리 - 배달 정보(탭)</td>
+							<td><a href="./UI-PCLI-0101T1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101T1.html</a></td>
+							<td class="tCenter">page (탭화면)</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-18</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-02-07 1차기획변경수정
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>제품 등록</td>
+							<td><a href="./UI-PCLI-0101P1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-18</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-14 1차기획변경수정
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>신규 제품추가(팝업)</td>
+							<td><a href="./UI-PCLI-0101P2.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101P2.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-24</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-09 1차기획변경수정 / 03-02 2차 기획변경수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판촉물 지급 등록(팝업)</td>
+							<td><a href="./UI-PCLI-0101P3.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101P3.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-18</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-09 1차 기획수정 / 02-17 2차 기획수정 / 03-02 3차 기획수정반영
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>무료/할인 적용(팝업)</td>
+							<td><a href="./UI-PCLI-0101P4.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101P4.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-18</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								03-02 1차 기획변경수정 / 03-03 2차 기획변경수정
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>투입변경(팝업)</td>
+							<td><a href="./UI-PCLI-0101P5.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101P5.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-19</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-08 2차 기획수정 반영 / 03-02 2차 기획변경수정 / 03-25 3차 기획변경수정
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>기간 보류(팝업)</td>
+							<td><a href="./UI-PCLI-0101P6.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101P6.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-19</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-08 2차 기획수정 반영 / 03-23 3차 기획수정 반영
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>중지/일시중지(팝업)</td>
+							<td><a href="./UI-PCLI-0101P7.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101P7.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-24</td>
+							<td class="tCenter"><span class="work on"></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-08 2차 기획수정 반영
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>재배달(팝업)</td>
+							<td><a href="./UI-PCLI-0101P8.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101P8.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-25</td>
+							<td class="tCenter"><span class="work on"></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-08 2차 기획수정 반영
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>개별 수금(팝업)</td>
+							<td><a href="./UI-PCLI-0101P9.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101P9.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-25</td>
+							<td class="tCenter"><span class="work on"></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-08 2차 기획수정 반영
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>지역선택(팝업)</td>
+							<td><a href="./UI-PCLI-0101P10.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101P10.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-25</td>
+							<td class="tCenter"><span class="work on"></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>계약종료(팝업)</td>
+							<td><a href="./UI-PCLI-0101P11.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101P11.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-26</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-08 2차 기획수정 반영
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>조회할 지역 선택(팝업)</td>
+							<td><a href="./UI-PCLI-0101P12.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101P12.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-26</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 관리-기본 정보(탭)</td>
+							<td><a href="./UI-PCLI-0101T2.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101T2.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-18</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 관리-변동사항(탭)</td>
+							<td><a href="./UI-PCLI-0101T3.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101T3.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-19</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 관리-수금내역(탭)</td>
+							<td><a href="./UI-PCLI-0101T4.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101T4.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-19</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 관리-재계약내역(탭)</td>
+							<td><a href="./UI-PCLI-0101T5.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101T5.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-19</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 신규 등록</td>
+							<td><a href="./UI-PCLI-0102.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0102.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-25</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-02-28 기획수정 반영 / 2022-03-07 기획수정 반영
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 전체 변동사항</td>
+							<td><a href="./UI-PCLI-0103.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0103.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-25</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 현황-기간별 조회(탭)</td>
+							<td><a href="./UI-PCLI-0201T1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0201T1.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-25</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-08 1차 기획수정 반영
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 현황-제품별 조회(탭)</td>
+							<td><a href="./UI-PCLI-0201T2.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0201T2.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-25</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-08 1차 기획수정 반영
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 현황-애음자분포(탭)</td>
+							<td><a href="./UI-PCLI-0201T2.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0201T3.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-08</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-01-28 기획추가
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>배달 관리- 출고증(탭)</td>
+							<td><a href="./UI-PCLI-0301T1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0301T1.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-25</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>배달 관리- 일일 배달명단(탭)</td>
+							<td><a href="./UI-PCLI-0301T2.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0301T2.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-25</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>배달지도(팝업)</td>
+							<td><a href="./UI-PCLI-0301P1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0301P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-10</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>이사/직영몰 고객 관리</td>
+							<td><a href="./UI-PCLI-0401T1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0401T1.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-26</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-07 1차 기획수정 / 03-08 2차 탭화면으로 수정
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>이사/직영몰 고객 관리</td>
+							<td><a href="./UI-PCLI-0401T2.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0401T2.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-26</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-07 1차 기획수정 / 03-08 2차 탭화면으로 수정
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 통계</td>
+							<td><a href="./UI-PCLI-0601.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0601.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-26</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-08 1차 기획수정 반영
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>더블 작업</td>
+							<td><a href="./UI-PCLI-0701.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0701.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-28</td>
+							<td class="tCenter"><span class="work on"></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>더블작업 이력(팝업)</td>
+							<td><a href="./UI-PCLI-0701P1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0701P1.html</a></td>				
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-28</td>
+							<td class="tCenter"><span class="work on"></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-08 오타수정
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 수금 관리-수금등록(탭)</td>
+							<td><a href="./UI-PCLI-0801T1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0801T1.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 수금 관리-수금조회(탭)</td>
+							<td><a href="./UI-PCLI-0801T2.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0801T2.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 수금 삭제 이력 조회(팝업)</td>
+							<td><a href="./UI-PCLI-0801P1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0801P1.html</a></td>				
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 수급집계(팝업)</td>
+							<td><a href="./UI-PCLI-0801P1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0801P1.html</a></td>				
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>OCR 관리-전자수납자료(탭)</td>
+							<td><a href="./UI-PCLI-0901T1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0901T1.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>OCR 관리-OCR 수금(탭)</td>
+							<td><a href="./UI-PCLI-0901T2.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0901T2.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>지로 인쇄</td>
+							<td><a href="./UI-PCLI-1001.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1001.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>제품변경(팝업)</td>
+							<td><a href="./UI-PCLI-0101P13.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-0101P13.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-03-24</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>방문영수증 및 수금자료- 애음자 영수증(탭)</td>
+							<td><a href="./UI-PCLI-1101T1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1101T1.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-03-24</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>방문영수증 및 수금자료- 판매사원 수금자료(탭)</td>
+							<td><a href="./UI-PCLI-1101T2.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1101T2.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-03-24</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>방문영수증 및 수금자료- 배달장부(탭)</td>
+							<td><a href="./UI-PCLI-1101T3.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1101T3.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-03-24</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>CMS 관리-회원신청(탭)</td>
+							<td><a href="./UI-PCLI-1201T1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1201T1.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>CMS 관리-이체신청(탭)</td>
+							<td><a href="./UI-PCLI-1201T2.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1201T2.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>CMS 관리-출금신청(탭)</td>
+							<td><a href="./UI-PCLI-1201T3.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1201T3.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>CMS 관리-CMS 상황(탭)</td>
+							<td><a href="./UI-PCLI-1201T4.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1201T4.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>수금방법 상세정보(팝업)</td>
+							<td><a href="./UI-PCLI-1201P1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1201P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 CMS이체 상세 현황(팝업)</td>
+							<td><a href="./UI-PCLI-1201P2.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1201P2.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>수금일자 확인(팝업)</td>
+							<td><a href="./UI-PCLI-1201P3.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1201P3.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>파일 상세내역 조회(팝업)</td>
+							<td><a href="./UI-PCLI-1201P4.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1201P4.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>가상계좌 관리-가상계좌신청(탭)</td>
+							<td><a href="./UI-PCLI-1301T1.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-1301T1.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>가상계좌 관리-가상계좌입금등록(탭)</td>
+							<td><a href="./UI-PCLI-13012.html" target="_blank" title="새창열림" class="page-link">UI-PCLI-13012.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td>판매 관리</td>
+							<td>거래처 관리</td>
+							<td><a href="./UI-PSAL-0101.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0101.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-06</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								 
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>거래처 등록_기본정보(탭)</td>
+							<td><a href="./UI-PSAL-0102T1.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0102T1.html</a></td>
+							<td class="tCenter">page (탭화면)</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-11</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								2022-01-20 기획서 수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>거래처 등록_지원내역(탭)</td>
+							<td><a href="./UI-PSAL-0102T2.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0102T2.html</a></td>
+							<td class="tCenter">page (탭화면)</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-12</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td>
+								2022-02-07 1차기획변경수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>거래처 지원내역 관리</td>
+							<td><a href="./UI-PSAL-0701.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0701.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-27</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								조회영역 (1680에서 두줄) 반응형 샘플
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>거래처 단가관리</td>
+							<td><a href="./UI-PSAL-0201.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0201.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-13</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-01-17 행추가/행삭제 기능추가, 01-26 기획서 변경에 따른 수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>단가변경예약(팝업)</td>
+							<td><a href="./UI-PSAL-0201P1.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0201P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-27</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판매제품 일괄변경</td>
+							<td><a href="./UI-PSAL-0801.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0801.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-27</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-02-17 기획수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판매 제품 변경 이력(팝업)</td>
+							<td><a href="./UI-PSAL-0801P1.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0801P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-17</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-02-17 추가
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판매 제품 및 단가 변경 이력</td>
+							<td><a href="./UI-PSAL-0901.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0901.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-25</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판매등록</td>
+							<td><a href="./UI-PSAL-0301.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0301.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-13</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-01-17 행추가/행삭제 기능추가
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>거래처 수금 관리</td>
+							<td><a href="./UI-PSAL-0401.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0401.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-17</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								행추가/행삭제 기능 샘플페이지
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>거래처 등록(팝업)</td>
+							<td><a href="./UI-PSAL-0401P1.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0401P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-17</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>EDI 발주 조회</td>
+							<td><a href="./UI-PSAL-0501T1.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0501T1.html</a></td>
+							<td class="tCenter">page(탭화면)</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-17</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-01-24 2차수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>EDI 발주 조회(제품별조회 탭)</td>
+							<td><a href="./UI-PSAL-0501T2.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0501T2.html</a></td>
+							<td class="tCenter">page(탭화면)</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-17</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-01-24 2차수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>EDI 납품 조회</td>
+							<td><a href="./UI-PSAL-0601.html" target="_blank" title="새창열림" class="page-link">UI-PSAL-0601.html</a></td>
+							<td class="tCenter">page(탭화면)</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-01-17</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-01-24 2차수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td>매출분석</td>
+							<td>월별판매현황</td>
+							<td><a href="./UI-PSTA-0101.html" target="_blank" title="새창열림" class="page-link">UI-PSTA-0101.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-04</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>제품별판매현황</td>
+							<td><a href="./UI-PSTA-0201.html" target="_blank" title="새창열림" class="page-link">UI-PSTA-0201.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-03</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-02-14 조회버튼추가 및 액셀다운버튼 위치변경
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>담당자별판매현황</td>
+							<td><a href="./UI-PSTA-0301.html" target="_blank" title="새창열림" class="page-link">UI-PSTA-0301.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-03</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-02-14 조회버튼추가 및 액셀다운버튼 위치변경
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>거래처별판매현황</td>
+							<td><a href="./UI-PSTA-0401.html" target="_blank" title="새창열림" class="page-link">UI-PSTA-0401.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-03</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-02-14 조회버튼추가 및 액셀다운버튼 위치변경
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>마감장 조회</td>
+							<td><a href="./UI-PSTA-0501.html" target="_blank" title="새창열림" class="page-link">UI-PSTA-0501.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-03</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판매원 결산 조회</td>
+							<td><a href="./UI-PSTA-0601.html" target="_blank" title="새창열림" class="page-link">UI-PSTA-0601.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-03</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판매원 결산 상세(팝업)</td>
+							<td><a href="./UI-PSTA-0601P1.html" target="_blank" title="새창열림" class="page-link">UI-PSTA-0601P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-03-18</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td>세무/회계관리</td>
+							<td>매출세금계산서발행</td>
+							<td><a href="./UI-PACC-0101.html" target="_blank" title="새창열림" class="page-link">UI-PACC-0101.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-01-28</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>매입세금계산서등록</td>
+							<td><a href="./UI-PACC-0201.html" target="_blank" title="새창열림" class="page-link">UI-PACC-0201.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-01-28</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>세금계산서집계표</td>
+							<td><a href="./UI-PACC-0301.html" target="_blank" title="새창열림" class="page-link">UI-PACC-0301.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-01-28</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>현금영수증 발행 및 조회</td>
+							<td><a href="./UI-PACC-0401.html" target="_blank" title="새창열림" class="page-link">UI-PACC-0401.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2021-02-03</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>경비등록</td>
+							<td><a href="./UI-PACC-0601.html" target="_blank" title="새창열림" class="page-link">UI-PACC-0601.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2021-02-03</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>손익현황</td>
+							<td><a href="./UI-PACC-0501.html" target="_blank" title="새창열림" class="page-link">UI-PACC-0501.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2021-02-03</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td>장비 관리</td>
+							<td>모바일프린터관리</td>
+							<td><a href="./UI-PEQU-0101.html" target="_blank" title="새창열림" class="page-link">UI-PEQU-0101.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-03</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td>판촉 관리</td>
+							<td>판촉물 소요량 요청 관리</td>
+							<td><a href="./UI-PPRO-0101.html" target="_blank" title="새창열림" class="page-link">UI-PPRO-0101.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-20</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-23 1차 기획수정반영
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판촉물 입고 관리</td>
+							<td><a href="./UI-PPRO-0201.html" target="_blank" title="새창열림" class="page-link">UI-PPRO-0201.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-20</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-23 1차 기획수정반영
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판촉물 등록(팝업)</td>
+							<td><a href="./UI-PPRO-0201P1.html" target="_blank" title="새창열림" class="page-link">UI-PPRO-0201P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-20</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판촉 애음자 조회</td>
+							<td><a href="./UI-PPRO-0301.html" target="_blank" title="새창열림" class="page-link">UI-PPRO-0301.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-27</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								02-21 1차 기획 수정 반영
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판촉사원 관리</td>
+							<td><a href="./UI-PPRO-0401.html" target="_blank" title="새창열림" class="page-link">UI-PPRO-0401.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-27</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판촉사원 수당 관리</td>
+							<td><a href="./UI-PPRO-0501.html" target="_blank" title="새창열림" class="page-link">UI-PPRO-0501.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-01-21</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-01-27 1차수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td>커뮤니케이션관리</td>
+							<td>공지사항</td>
+							<td><a href="./UI-PCOM-0101.html" target="_blank" title="새창열림" class="page-link">UI-PCOM-0101.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-02-03</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>자료실</td>
+							<td><a href="./UI-PCOM-0201.html" target="_blank" title="새창열림" class="page-link">UI-PCOM-0201.html</a></td>				
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-02-03</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>요청 게시판</td>
+							<td><a href="./UI-PCOM-0301.html" target="_blank" title="새창열림" class="page-link">UI-PCOM-0301.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-04</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>요청 등록(팝업)</td>
+							<td><a href="./UI-PCOM-0301P1.html" target="_blank" title="새창열림" class="page-link">UI-PCOM-0301P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-04</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-02-11 1차수정(제목추가)
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>SMS/카카오톡 발송_SMS 발송(탭)</td>
+							<td><a href="./UI-PCOM-0401T1.html" target="_blank" title="새창열림" class="page-link">UI-PCOM-0401T1.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-04</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-04-01 탭화면으로 수정
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>SMS/카카오톡 발송_발송내역(탭)</td>
+							<td><a href="./UI-PCOM-0401T2.html" target="_blank" title="새창열림" class="page-link">UI-PCOM-0401T2.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-04-01</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								2022-04-01 탭화면으로 추가
+							</td>
+						</tr>
+						<!-- <tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>문구 선택/발송(팝업)</td>
+							<td><a href="./UI-PCOM-0401P1.html" target="_blank" title="새창열림" class="page-link">UI-PCOM-0401P1.html</a></td>
+							<td class="tCenter">layer popup</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr> -->
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td>출력물</td>
+							<td>반품확인서</td>
+							<td><a href="./PR-F-001.html" target="_blank" title="새창열림" class="page-link">PR-F-001.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-10</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>거래명세서</td>
+							<td><a href="./PR-F-002.html" target="_blank" title="새창열림" class="page-link">PR-F-002.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-02-10</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<!--<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>마감장</td>
+							<td><a href="./PR-F-003.html" target="_blank" title="새창열림" class="page-link">PR-F-003.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>거래장</td>
+							<td><a href="./PR-F-004.html" target="_blank" title="새창열림" class="page-link">PR-F-004.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>일판매현황</td>
+							<td><a href="./PR-F-005.html" target="_blank" title="새창열림" class="page-link">PR-F-005.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>-->
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>지역결산서</td>
+							<td><a href="./PR-F-006.html" target="_blank" title="새창열림" class="page-link">PR-F-006.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>제품별 지역결산서</td>
+							<td><a href="./PR-F-007.html" target="_blank" title="새창열림" class="page-link">PR-F-007.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>전지역결산서</td>
+							<td><a href="./PR-F-008.html" target="_blank" title="새창열림" class="page-link">PR-F-008.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>세무사제출용</td>
+							<td><a href="./PR-F-009.html" target="_blank" title="새창열림" class="page-link">PR-F-009.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 월별 수금 내역</td>
+							<td><a href="./PR-F-010.html" target="_blank" title="새창열림" class="page-link">PR-F-010.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-03-21</td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>출고증</td>
+							<td><a href="./PR-F-011.html" target="_blank" title="새창열림" class="page-link">PR-F-011.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-03-04</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>일일 배달 명단</td>
+							<td><a href="./PR-F-012.html" target="_blank" title="새창열림" class="page-link">PR-F-012.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-03-16</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>배달지도</td>
+							<td><a href="./PR-F-013.html" target="_blank" title="새창열림" class="page-link">PR-F-013.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-15</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 통계</td>
+							<td><a href="./PR-F-014.html" target="_blank" title="새창열림" class="page-link">PR-F-014.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-02-25</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 상태 별 통계</td>
+							<td><a href="./PR-F-015.html" target="_blank" title="새창열림" class="page-link">PR-F-015.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-03-02</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 수금 내역</td>
+							<td><a href="./PR-F-016.html" target="_blank" title="새창열림" class="page-link">PR-F-016.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">허재형</td>
+							<td class="tCenter">2022-03-03</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>지로</td>
+							<td><a href="./PR-F-017.html" target="_blank" title="새창열림" class="page-link">PR-F-017.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>방문 영수증</td>
+							<td><a href="./PR-F-018.html" target="_blank" title="새창열림" class="page-link">PR-F-018.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-03-04</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>애음자 청구서</td>
+							<td><a href="./PR-F-019.html" target="_blank" title="새창열림" class="page-link">PR-F-019.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-03-17</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>판매원 수금자료</td>
+							<td><a href="./PR-F-020.html" target="_blank" title="새창열림" class="page-link">PR-F-020.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter">윤미연</td>
+							<td class="tCenter">2022-03-25</td>
+							<td class="tCenter"><span class="work on"></span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="pgNum tCenter"></td>
+							<td></td>
+							<td>배달장부</td>
+							<td><a href="./PR-F-021.html" target="_blank" title="새창열림" class="page-link">PR-F-021.html</a></td>
+							<td class="tCenter">page</td>
+							<td class="tCenter"></td>
+							<td class="tCenter"></td>
+							<td class="tCenter"><span class="ing">컨폼대기</span></td>
+							<td class="tCenter"><span class="work"></span></td>
+							<td>
+								
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<!-- tabContent PC 퍼블리싱 -->
+
+
+		</div>
+		<!-- tabs -->
+	</div>
+	
+</body>
+</html>

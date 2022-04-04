@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.comm.dao.LoginMapper">
+
+    <select id="selectLoginList" resultType="com.namyang.nyorder.comm.vo.AccountVO">
+        SELECT title, name, purchasePrice, today, todayplus1, todayplus2, quantity, box, totalPrice, regi
+		FROM NY_ORDER.dbo.DB_TEST
+    </select>
+
+    <select id="selectAgenList" parameterType="com.namyang.nyorder.comm.vo.AccountVO" resultType="com.namyang.nyorder.comm.vo.AccountVO">
+   		EXEC P_OPEN_KEY
+        SELECT tam.AGEN_SEQ, tam.AGEN_CD, tam.AGEN_NM, tae.EMPL_SEQ, tae.EMPL_CD, tam.AGEN_CD, tam.SALE_CD ,CONVERT(varchar, DecryptByKey(tae.EMPL_NM)) as EMPL_NM
+		FROM T_AGEN_EMPL tae
+			,T_AGEN_MST tam
+		WHERE tae.AGEN_SEQ = tam.AGEN_SEQ
+			AND tam.BIZ_NO = #{bizNo}
+    </select>
+
+    <insert id="insertPassword" parameterType="com.namyang.nyorder.comm.vo.AccountVO">
+    	INSERT INTO NY_ORDER.dbo.T_AGEN_EMPL_PWD
+			(EMPL_PWD_SEQ
+			, AGEN_SEQ
+			, EMPL_SEQ
+			, EMPL_PWD
+			, LST_PWD_YN
+			, REG_DTM
+			, REG_SEQ
+			, TMP_PWD_YN)
+		VALUES(
+			NEXT VALUE FOR SQ_EMPL_PWD
+			, #{agenSeq}
+			, #{emplSeq}
+			, #{hexPassword}
+			, 'Y'
+			, CURRENT_TIMESTAMP
+			, 0
+			, 'N');
+    </insert>
+
+    <update id="updatePassword" parameterType="com.namyang.nyorder.comm.vo.AccountVO">
+    	UPDATE T_AGEN_EMPL_PWD SET LST_PWD_YN = 'N' WHERE EMPL_PWD_SEQ IN (
+			SELECT EMPL_PWD_SEQ
+			FROM T_AGEN_EMPL tae
+				, T_AGEN_EMPL_PWD taep
+			WHERE 1=1
+				AND tae.AGEN_SEQ = taep.AGEN_SEQ
+				AND tae.EMPL_SEQ = taep.EMPL_SEQ
+				AND taep.LST_PWD_YN = 'Y'
+				AND tae.AGEN_SEQ  = #{agenSeq}
+				AND tae.EMPL_SEQ  = #{emplSeq}
+			);
+    </update>
+
+    <insert id="insertLoginHis" parameterType="com.namyang.nyorder.comm.vo.AccountVO">
+    	INSERT INTO NY_ORDER.dbo.T_AGEN_EMPL_HIS
+		(
+			LOGIN_EMPL_SEQ,
+			AGEN_SEQ,
+			EMPL_SEQ,
+			EMPL_IP,
+			EMPL_MCH,
+			LOGIN_FAIL_CNT,
+			LOGIN_DTM
+		)
+		VALUES(
+			NEXT VALUE FOR SQ_LOGIN_EMPL
+			, #{agenSeq}
+			, #{emplSeq}
+			, #{emplIp}
+			, #{emplMch}
+			, #{failCnt}
+			, CURRENT_TIMESTAMP
+		);
+    </insert>
+</mapper>

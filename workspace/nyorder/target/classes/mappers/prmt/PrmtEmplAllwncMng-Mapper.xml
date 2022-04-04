@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.prmt.dao.PrmtEmplAllwncMngMapper">
+	
+	<select id="selectPrmtEmplAllwncList" parameterType="com.namyang.nyorder.prmt.vo.PrmtEmplAllwncMngVO" resultType="com.namyang.nyorder.prmt.vo.PrmtEmplAllwncMngVO">
+		/* prmtEmplAllwncMng-Mapper selectPrmtEmplAllwncList */
+        EXEC P_OPEN_KEY
+        SELECT tpeh.PRMT_EMPL_SEQ
+             , tpeh.PRMT_EMPL_HIS_SEQ
+             , tpeh.BHFC_SEQ
+             , tpe.PRMT_EMPL_CD
+             , CONVERT( varchar , DecryptByKey(tpe.EMPL_NM) ) AS EMPL_NM
+             , tpeh.NEW_HOFF_HOP
+             , tpeh.RECNTR_HOFF_HOP
+             , tpeh.NEW_AGEN_HOP
+             , tpeh.RECNTR_AGEN_HOP
+             , tpeh.CHPDY_CT
+             , tpeh.CHPDY_AGEN_CT 
+             , tpeh.SPECL_ALLWNC
+             , A.NEW_PRD_CNT
+             , A.NEW_HOP
+             , B.RE_CNTR_PRD_CNT
+             , B.RE_CNTR_HOP
+          FROM T_PRMT_EMPL tpe
+         INNER JOIN T_PRMT_EMPL_HIS tpeh
+            ON tpe.PRMT_EMPL_SEQ = tpeh.PRMT_EMPL_SEQ
+          LEFT JOIN (
+                     SELECT tcp.PRMT_EMPL_SEQ
+                          , COUNT( tcp.CST_PRD_SEQ ) AS NEW_PRD_CNT
+                          , SUM(tcp.HOP) AS NEW_HOP
+                       FROM T_CST_MST tcm 
+                      INNER JOIN T_CST_PRD tcp
+                         ON tcm.CST_SEQ = tcp.CST_SEQ
+                        AND tcm.AGEN_SEQ = tcp.AGEN_SEQ
+                        AND tcm.AREA_SEQ = tcp.AREA_SEQ
+                      WHERE tcp.AGEN_SEQ = #{agenSeq}
+                        AND tcp.LAST_YN = 'Y'
+                        AND LEFT(tcp.REG_DTM,7) = #{searchMon}
+                        AND tcp.CNTR_SEC_CD = 'NEW'
+                        AND tcp.PRMT_EMPL_SEQ IS NOT NULL
+                      GROUP BY tcp.PRMT_EMPL_SEQ
+                     ) A
+            ON tpe.PRMT_EMPL_SEQ = A.PRMT_EMPL_SEQ
+          LEFT JOIN (
+                     SELECT tcp.PRMT_EMPL_SEQ
+                          , COUNT( tcp.CST_PRD_SEQ ) AS RE_CNTR_PRD_CNT
+                          , SUM(tcp.HOP) AS RE_CNTR_HOP
+                       FROM T_CST_MST tcm 
+                      INNER JOIN T_CST_PRD tcp
+                         ON tcm.CST_SEQ = tcp.CST_SEQ
+                        AND tcm.AGEN_SEQ = tcp.AGEN_SEQ
+                        AND tcm.AREA_SEQ = tcp.AREA_SEQ
+                      WHERE tcp.AGEN_SEQ = #{agenSeq}
+                        AND tcp.LAST_YN = 'Y'
+                        AND LEFT(tcp.REG_DTM,7) = #{searchMon}
+                        AND tcp.CNTR_SEC_CD = 'RE_CNTR'
+                        AND tcp.PRMT_EMPL_SEQ IS NOT NULL
+                      GROUP BY tcp.PRMT_EMPL_SEQ
+                     ) B
+            ON tpe.PRMT_EMPL_SEQ = B.PRMT_EMPL_SEQ
+         WHERE 1=1
+           AND tpe.CNTR_YN = 'Y'
+       <if test="emplSecCd != null and emplSecCd != '' ">
+           AND tpeh.EMPL_SEC_CD = #{emplSecCd}
+       </if>
+           AND tpeh.BHFC_SEQ = (
+   		                        SELECT A.BHFC_SEQ
+                                  FROM T_BHFC_MST A 
+                                 INNER JOIN T_BHFC_AGEN B
+                                    ON A.BHFC_SEQ = B.BHFC_SEQ
+                                   AND B.AGEN_SEQ = #{agenSeq}
+                                )
+	</select>
+	
+	<update id="updatePrmtEmplAllwnc" parameterType="com.namyang.nyorder.prmt.vo.PrmtEmplAllwncMngVO" >
+		/* prmtEmplAllwncMng-Mapper updatePrmtEmplAllwnc */
+        UPDATE T_PRMT_EMPL_HIS
+           SET SPECL_ALLWNC = #{speclAllwnc}
+             , UPD_DTM = CURRENT_TIMESTAMP
+             , UPD_SEQ = #{emplSeq}
+         WHERE 1=1
+           AND PRMT_EMPL_HIS_SEQ = #{prmtEmplHisSeq}
+           AND PRMT_EMPL_SEQ = #{prmtEmplSeq}
+           AND BHFC_SEQ = #{bhfcSeq}
+	</update>
+</mapper>

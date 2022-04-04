@@ -1,0 +1,103 @@
+USE [NY_ORDER]
+GO
+/****** Object:  StoredProcedure [dbo].[P_PRD_BND_CHG]    Script Date: 2022-03-15 오후 12:53:41 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- Author: 박예솔
+-- Create date: 2022-01-26
+-- Description:	표준제품 일괄 변경
+-- =============================================
+ALTER PROCEDURE [dbo].[P_PRD_BND_CHG]
+AS
+
+DECLARE @TODAY VARCHAR(8);
+
+BEGIN
+	BEGIN TRY
+      
+	SELECT @TODAY = CONVERT(VARCHAR(10),GETDATE(), 112);
+
+
+	INSERT INTO NY_ORDER.dbo.T_PRD_DTL
+	(	PRD_DTL_SEQ,
+		AGEN_SEQ,
+		PUCH_SEQ,
+		PRD_SEQ,
+		PRD_DTL_CD,
+		STD_PRD_NM,
+		SHTN_NM,
+		ABRV_NM,
+		SALE_ORD_USE_CD,
+		PRD_ORDR,
+		ORD_ORDR,
+		STD_PRD_YN,
+		BRCD,
+		IDDY_BRCD,
+		ETC_BRCD,
+		SUITE_NM,
+		USE_YN,
+		REG_DTM,
+		REG_SEQ,
+		UPD_DTM,
+		UPD_SEQ
+	)
+	SELECT 
+			NEXT VALUE FOR SQ_PRD_DTL,
+			P.AGEN_SEQ,
+			M1.PUCH_SEQ,
+			M1.PRD_SEQ,
+			M1.PRD_SAP_CD,
+			M1.PRD_NM,
+			M1.SHTN_NM,
+			'', --ABRV_NM
+			'Y', --판매주문사용(방판노출여부)
+			NULL,	--PRD_ORDR
+			NULL,	--ORD_ORDR
+			'Y',	--STD_PRD_YN
+			M1.BRCD,
+			M1.IDDY_BRCD,
+			M1.ETC_BRCD,
+			NULL,
+			'Y', -- USE_YN
+			CURRENT_TIMESTAMP,
+			P.REG_SEQ,
+			CURRENT_TIMESTAMP,
+			P.REG_SEQ
+	FROM	T_PRD_BND_CHG	P 
+	INNER 
+	JOIN	T_PRD_MST		M1
+	ON		P.CHG_PRD_SEQ = M1.PRD_SEQ
+	WHERE	P.APPL_DT	= @TODAY
+	AND		P.APPL_YN	= 'N'
+	AND		P.USE_YN	= 'Y';
+
+
+	UPDATE NY_ORDER.dbo.T_PRD_DTL
+	SET	STD_PRD_YN	='N',
+		UPD_DTM		= CURRENT_TIMESTAMP,
+		UPD_SEQ		= P.REG_SEQ
+	FROM T_PRD_DTL A 
+	JOIN T_PRD_BND_CHG P
+	ON P.PRD_DTL_SEQ = A.PRD_DTL_SEQ
+	WHERE	P.APPL_DT = @TODAY
+	AND		P.APPL_YN	= 'N'
+	AND		P.USE_YN	= 'Y' ;
+
+	UPDATE NY_ORDER.dbo.T_PRD_BND_CHG
+	SET	APPL_YN		= 'Y',
+		UPD_DTM		= CURRENT_TIMESTAMP,
+		UPD_SEQ		= 0
+	WHERE	APPL_DT = @TODAY
+	AND		APPL_YN	= 'N'
+	AND		USE_YN	= 'Y' ;
+
+
+
+    END TRY
+    BEGIN CATCH
+        -- Handle non-existant key here
+    END CATCH
+END

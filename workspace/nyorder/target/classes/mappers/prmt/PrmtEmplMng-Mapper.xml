@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.prmt.dao.PrmtEmplMngMapper">
+
+	<select id="selectPrmtEmplMngList" parameterType="com.namyang.nyorder.prmt.vo.PrmtEmplMngVO" resultType="com.namyang.nyorder.prmt.vo.PrmtEmplMngVO">
+		/* prmtEmplMng-Mapper selectPrmtEmplMngList */
+		EXEC P_OPEN_KEY
+        SELECT tpe.PRMT_EMPL_CD
+             , tpeh.PRMT_EMPL_HIS_SEQ
+             , tpeh.PRMT_EMPL_SEQ
+             , tpeh.BHFC_SEQ
+             , CONVERT(varchar, DecryptByKey(tpe.EMPL_NM)) AS EMPL_NM
+             , ( SELECT COMM_DESC4 
+                 FROM T_COMM WHERE COMM_GRP_CD = 'EMPL_SEC_CD'
+                  AND COMM_CD = tpeh.EMPL_SEC_CD
+               ) AS EMPL_SEC_NM
+             , tpeh.EMPL_SEC_CD
+             , CONVERT(varchar, DecryptByKey(tpe.BRTHDY)) AS BRTHDY
+             , IIF(tpe.CNTR_YN = 'Y', '계약중', '계약종료') AS CNTR_YN_NM
+             , dbo.F_GET_TEL_NO( CONVERT(varchar, DecryptByKey(tpe.TEL_NO)) ) AS TEL_NO
+             , tpeh.NEW_AGEN_HOP
+             , tpeh.RECNTR_AGEN_HOP
+             , tpeh.CHPDY_AGEN_CT
+             , CONVERT(CHAR(10), CONVERT(DATETIME, tpeh.CNTR_DT), 23) AS CNTR_DT
+             , CONVERT(CHAR(10), CONVERT(DATETIME, tpeh.CNTR_END_DT), 23) AS CNTR_END_DT
+             , tbm.BHFC_NM
+          FROM T_PRMT_EMPL tpe
+         INNER JOIN T_PRMT_EMPL_HIS tpeh
+            ON tpe.PRMT_EMPL_SEQ = tpeh.PRMT_EMPL_SEQ
+         INNER JOIN T_BHFC_MST tbm
+            ON tpeh.BHFC_SEQ = tbm.BHFC_SEQ
+         WHERE 1=1
+           AND tpeh.BHFC_SEQ = (
+                                SELECT A.BHFC_SEQ
+                                  FROM T_BHFC_MST A
+                                 INNER JOIN T_BHFC_AGEN B
+                                    ON A.BHFC_SEQ = B.BHFC_SEQ
+                                   AND B.AGEN_SEQ = #{agenSeq}
+                                )
+       <![CDATA[
+           AND LEFT(tpeh.CNTR_DT,6) >= replace(#{startMon},'-','') AND LEFT(tpeh.CNTR_DT,6) <= replace(#{endMon},'-','')
+       ]]>
+       <if test="emplSecCd != null and emplSecCd != '' ">
+           AND tpeh.EMPL_SEC_CD = #{emplSecCd}
+       </if>
+       <if test="cntrYn != null and cntrYn != '' ">
+           AND tpe.CNTR_YN = #{cntrYn}
+       </if>
+	</select>
+	
+	<update id="updatePrmtEmplHis" parameterType="com.namyang.nyorder.prmt.vo.PrmtEmplMngVO" >
+		/* prmtEmplMng-Mapper updatePrmtEmplHis */
+        UPDATE T_PRMT_EMPL_HIS
+           SET NEW_AGEN_HOP = #{newAgenHop}
+             , RECNTR_AGEN_HOP = #{recntrAgenHop}
+             , CHPDY_AGEN_CT = #{chpdyAgenCt}
+             , UPD_DTM = CURRENT_TIMESTAMP
+             , UPD_SEQ = #{emplSeq}
+         WHERE 1=1
+           AND PRMT_EMPL_HIS_SEQ = #{prmtEmplHisSeq}
+           AND PRMT_EMPL_SEQ = #{prmtEmplSeq}
+           AND CNTR_DT = #{cntrDt}
+           AND BHFC_SEQ = #{bhfcSeq}
+	</update>
+	
+</mapper>

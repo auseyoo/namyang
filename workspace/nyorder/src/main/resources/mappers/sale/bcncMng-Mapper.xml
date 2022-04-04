@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.sale.dao.BcncMngMapper">
+
+	<sql id="selectBcncMngWhere">
+		<where>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(agenSeq)">
+				AND A.AGEN_SEQ  = #{agenSeq}
+			</if>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(vendSecCd)">
+				AND A.VEND_SEC_CD = #{vendSecCd}
+			</if>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(vendStusSec)">
+				AND A.VEND_STUS_SEC = #{vendStusSec}
+			</if>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(vendNm)">
+				AND A.VEND_NM like '%'+#{vendNm}+'%'
+			</if>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(targetEmplSeq)">
+				AND B.EMPL_SEQ =#{targetEmplSeq}
+			</if>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(schTxt)">
+				<choose>
+					<when test ="schType == 'vendCd'">
+						AND A.VEND_CD like '%'+#{schTxt}+'%'
+					</when>
+					<when test ="schType == 'vendNm'">
+						AND A.VEND_NM like '%'+#{schTxt}+'%'
+					</when>
+					<otherwise>
+						AND (A.VEND_CD like '%'+#{schTxt}+'%' OR  A.VEND_NM like '%'+#{schTxt}+'%')
+					</otherwise>
+				</choose>
+			</if>
+		</where>
+	</sql>
+	<select id="selectAgentEmplList" parameterType="com.namyang.nyorder.sale.vo.AgenVendVO" resultType="com.namyang.nyorder.sale.vo.AgenVendVO">
+    	EXEC P_OPEN_KEY;
+
+    	SELECT EMPL_SEQ, AGEN_SEQ, EMPL_CD
+    		, ny_order.dbo.F_GET_DECRYT(EMPL_NM) EMPL_NM
+		FROM dbo.T_AGEN_EMPL tae
+		WHERE AGEN_SEQ = #{agenSeq}
+			AND RETE_YN = 'N'
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(emplNm)">
+			AND EMPL_NM LIKE '%' + #{emplNm} + '%'
+		</if>
+    </select>
+	<select id="selectBcncMngList" parameterType="com.namyang.nyorder.sale.vo.AgenVendVO" resultType="com.namyang.nyorder.sale.vo.AgenVendVO">
+		/* bcncMng-Mapper - selectBcncMngList */
+		EXEC P_OPEN_KEY;
+
+		SELECT * , CONCAT(ADDR1, ' ', ADDR2) AS FULL_ADDR
+		FROM (
+			SELECT
+				A.VEND_SEQ,
+				A.AGEN_SEQ,
+				A.VEND_CD,
+				A.VEND_SEC_CD,
+				(SELECT COMM_NM FROM T_COMM WHERE T_COMM.COMM_GRP_CD='VEND_SEC_CD' AND T_COMM.COMM_CD = A.VEND_SEC_CD ) AS VEND_SEC_NM,
+				A.VEND_NM,
+				A.INDT_CL,
+				CASE  A.VEND_PRST	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_DECRYT(A.VEND_PRST)	END VEND_PRST,
+				ny_order.dbo.F_GET_BIZ_NO(A.BIZ_NO) BIZ_NO,
+				A.JUR_NO,
+				A.BIZ_CON,
+				A.BIZ_INDU,
+				A.VEND_CHAG AS VEND_CHAG_NM,
+				CASE  A.TEL_NO	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_TEL_NO(ny_order.dbo.F_GET_DECRYT(A.TEL_NO))	END TEL_NO,
+				CASE  A.MOB_NO	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_TEL_NO(ny_order.dbo.F_GET_DECRYT(A.MOB_NO))	END MOB_NO,
+				CASE  A.FAX_NO	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_TEL_NO(ny_order.dbo.F_GET_DECRYT(A.FAX_NO))	END FAX_NO,
+				A.ZIP_CD,
+				A.ADDR1,
+				CASE  A.ADDR2	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_DECRYT(A.ADDR2)	END ADDR2,
+				A.CLS_DT,
+				A.CNTR_CD,
+				A.VEND_GTN,
+				A.BANK_CD,
+				CASE  A.STM_ACCT_NO	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_TEL_NO(ny_order.dbo.F_GET_DECRYT(A.STM_ACCT_NO))	END STM_ACCT_NO,
+				A.STM_DT_CD,
+				A.PYM_MTH,
+				A.SALE_UNTPC,
+				A.HOFF_CNSG_YN,
+				A.CNSG_VEND_CD,
+				A.TXBL_PBCT_YN,
+				A.MRGN_YN,
+				A.BRCD_PRT_YN,
+				A.VEND_STUS_SEC,
+				(SELECT COMM_NM FROM T_COMM WHERE T_COMM.COMM_GRP_CD='VEND_STUS_SEC' AND T_COMM.COMM_CD = A.VEND_STUS_SEC ) AS VEND_STUS_SEC_NM,
+				convert(varchar, A.REG_DTM, 120) REG_DTM,
+				convert(varchar, A.UPD_DTM, 120) UPD_DTM,
+				A.REG_SEQ,
+				A.UPD_SEQ,
+				A.VEND_EML,
+				CASE  A.PRST_MOB_NO	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_TEL_NO(ny_order.dbo.F_GET_DECRYT(A.PRST_MOB_NO))	END PRST_MOB_NO,
+				B.EMPL_SEQ,
+				(SELECT ny_order.dbo.F_GET_DECRYT(EMPL_NM) FROM T_AGEN_EMPL AS C  WHERE C.EMPL_SEQ =  B.EMPL_SEQ) EMPL_NM,
+				(SELECT ny_order.dbo.F_GET_DECRYT(EMPL_NM) FROM T_AGEN_EMPL AS C  WHERE C.EMPL_SEQ =  A.UPD_SEQ) UPD_NM,
+				(SELECT ny_order.dbo.F_GET_DECRYT(EMPL_NM) FROM T_AGEN_EMPL AS C  WHERE C.EMPL_SEQ =  A.REG_SEQ) REG_NM
+			FROM
+				T_AGEN_VEND AS A
+				LEFT JOIN T_AGEN_VEND_EMPL AS B ON A.VEND_SEQ = B.VEND_SEQ
+			<include refid="selectBcncMngWhere" />
+		) T1
+		ORDER BY VEND_CD ASC
+	</select>
+
+	<select id="selectBcncMngDtl" parameterType="com.namyang.nyorder.sale.vo.AgenVendVO" resultType="com.namyang.nyorder.sale.vo.AgenVendVO">
+		/* bcncMng-Mapper - selectBcncMngDtl */
+		EXEC P_OPEN_KEY;
+
+		SELECT
+			A.VEND_SEQ,
+			A.AGEN_SEQ,
+			A.VEND_CD,
+			A.VEND_SEC_CD,
+			(SELECT COMM_NM FROM T_COMM WHERE T_COMM.COMM_GRP_CD='VEND_SEC_CD' AND T_COMM.COMM_CD = A.VEND_SEC_CD ) AS VEND_SEC_NM,
+			A.VEND_NM,
+			A.INDT_CL,
+			CASE  A.VEND_PRST	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_DECRYT(A.VEND_PRST)	END VEND_PRST,
+			ny_order.dbo.F_GET_BIZ_NO(A.BIZ_NO) BIZ_NO,
+			A.JUR_NO,
+			A.BIZ_CON,
+			A.BIZ_INDU,
+			A.VEND_CHAG AS VEND_CHAG_NM,
+			CASE  A.TEL_NO	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_TEL_NO(ny_order.dbo.F_GET_DECRYT(A.TEL_NO))	END TEL_NO,
+			CASE  A.MOB_NO	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_TEL_NO(ny_order.dbo.F_GET_DECRYT(A.MOB_NO))	END MOB_NO,
+			CASE  A.FAX_NO	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_TEL_NO(ny_order.dbo.F_GET_DECRYT(A.FAX_NO))	END FAX_NO,
+			A.ZIP_CD,
+			A.ADDR1,
+			CASE  A.ADDR2	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_DECRYT(A.ADDR2)	END ADDR2,
+			A.STR_SEC_CD,
+			A.VEND_DLV_CYCLE,
+			CONVERT(DATE, A.STAT_DT, 120) STAT_DT,
+			CONVERT(DATE, A.CLS_DT, 120) CLS_DT,
+			A.CNTR_CD,
+			A.VEND_GTN,
+			A.BANK_CD,
+			CASE  A.STM_ACCT_NO	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_TEL_NO(ny_order.dbo.F_GET_DECRYT(A.STM_ACCT_NO))	END STM_ACCT_NO,
+			A.STM_DT_CD,
+			A.PYM_MTH,
+			A.SALE_UNTPC,
+			A.HOFF_CNSG_YN,
+			A.CNSG_VEND_CD,
+			A.TXBL_PBCT_YN,
+			A.MRGN_YN,
+			A.BRCD_PRT_YN,
+			A.VEND_STUS_SEC,
+			(SELECT COMM_NM FROM T_COMM WHERE T_COMM.COMM_GRP_CD='VEND_STUS_SEC' AND T_COMM.COMM_CD = A.VEND_STUS_SEC ) AS VEND_STUS_SEC_NM,
+			A.BANK_CD,
+			CASE  A.STM_ACCT_NO	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_TEL_NO(ny_order.dbo.F_GET_DECRYT(A.STM_ACCT_NO))	END STM_ACCT_NO,
+			CASE  A.ACCT_DPSR	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_TEL_NO(ny_order.dbo.F_GET_DECRYT(A.ACCT_DPSR))	END ACCT_DPSR,
+			convert(varchar, A.REG_DTM, 120) REG_DTM,
+			convert(varchar, A.UPD_DTM, 120) UPD_DTM,
+			A.REG_SEQ,
+			A.UPD_SEQ,
+			A.VEND_EML,
+			CASE  A.PRST_MOB_NO	WHEN NULL THEN '' ELSE ny_order.dbo.F_GET_TEL_NO(ny_order.dbo.F_GET_DECRYT(A.PRST_MOB_NO))	END PRST_MOB_NO,
+			B.EMPL_SEQ,
+			(SELECT ny_order.dbo.F_GET_DECRYT(EMPL_NM) FROM T_AGEN_EMPL AS C  WHERE C.EMPL_SEQ =  B.EMPL_SEQ) EMPL_NM,
+			(SELECT ny_order.dbo.F_GET_DECRYT(EMPL_NM) FROM T_AGEN_EMPL AS C  WHERE C.EMPL_SEQ =  A.UPD_SEQ) UPD_NM,
+			(SELECT ny_order.dbo.F_GET_DECRYT(EMPL_NM) FROM T_AGEN_EMPL AS C  WHERE C.EMPL_SEQ =  A.REG_SEQ) REG_NM
+		FROM
+			T_AGEN_VEND AS A
+			LEFT JOIN T_AGEN_VEND_EMPL AS B ON A.VEND_SEQ = B.VEND_SEQ
+		WHERE
+			A.vend_seq = #{vendSeq}
+	</select>
+
+	<select id="selectBcncSprtList" parameterType="com.namyang.nyorder.sale.vo.AgenVendVO" resultType="com.namyang.nyorder.sale.vo.AgenVendVO">
+		/* bcncMng-Mapper - selectBcncSprt */
+		EXEC P_OPEN_KEY;
+
+		SELECT
+			'수정' UPDBTN,
+			VS.VEND_SPRT_SEQ,
+			VS.AGEN_SEQ,
+			VS.VEND_SEQ,
+			V.VEND_NM,
+			V.VEND_CD,
+			VS.VEND_SPRT_SEC,
+			VS.USE_YN,
+			VS.HOFF_ALOTM,
+			VS.AGEN_ALOTM,
+			CONVERT(VARCHAR(10), CONVERT(DATE, VS.CT_STAT_DT), 120) AS CT_STAT_DT,
+			VS.CT_MEMO,
+			VS.SUBSID_SEC,
+			VS.SUBSID_RATE,
+			VS.SUBSID_CT,
+			V.VEND_DLV_CYCLE,
+			CONVERT(VARCHAR(10), CONVERT(DATE, VS.SUBSID_STAT_DT), 120) AS SUBSID_STAT_DT,
+			CONVERT(VARCHAR(10), CONVERT(DATE, VS.SUBSID_CLS_DT), 120) AS SUBSID_CLS_DT,
+			VS.SPRT_PRD_DTL_SEQ,
+			PDT.PRD_DTL_CD SPRT_PRD_CD,
+			PDT.PRD_NM SPRT_PRD_NM,
+			VS.PRD_QTY,
+			VS.PRD_CT,
+			CONVERT(VARCHAR(10), CONVERT(DATE, VS.PRD_STAT_DT), 120) AS PRD_STAT_DT,
+			VS.SPRT_EQPMN_CD,
+			(SELECT COMM_NM FROM T_COMM WHERE T_COMM.COMM_GRP_CD='SPRT_EQPMN_CD' AND T_COMM.COMM_CD = VS.SPRT_EQPMN_CD ) AS SPRT_EQPMN_NM,
+			VS.EQPMN_QTY,
+			CONVERT(VARCHAR(10), CONVERT(DATE, VS.EQPMN_STAT_DT), 120) AS EQPMN_STAT_DT,
+			CONVERT(VARCHAR(10), CONVERT(DATE, VS.EQPMN_CLS_DT), 120) AS EQPMN_CLS_DT,
+			VS.EQPMN_CT,
+			VS.ETC_CT,
+			CONVERT(VARCHAR(10), CONVERT(DATE, VS.ETC_STAT_DT), 120) AS ETC_STAT_DT,
+			VS.ETC_MEMO,
+			convert(varchar, VS.REG_DTM, 120) REG_DTM,
+			convert(varchar, VS.UPD_DTM, 120) UPD_DTM,
+			(SELECT ny_order.dbo.F_GET_DECRYT(EMPL_NM) FROM T_AGEN_EMPL   WHERE EMPL_SEQ = AVE.EMPL_SEQ) EMPL_NM,
+			(SELECT ny_order.dbo.F_GET_DECRYT(EMPL_NM) FROM T_AGEN_EMPL   WHERE EMPL_SEQ = VS.UPD_SEQ) UPD_NM,
+			(SELECT ny_order.dbo.F_GET_DECRYT(EMPL_NM) FROM T_AGEN_EMPL   WHERE EMPL_SEQ = VS.REG_SEQ) REG_NM
+		FROM T_AGEN_VEND_SPRT VS
+		INNER JOIN T_AGEN_VEND V ON V.VEND_SEQ = VS.VEND_SEQ
+		<if test ="schTxt != null and schTxt != ''">
+		 	AND	V.VEND_NM  like '%'+#{schTxt}+'%'
+		</if>
+		INNER JOIN T_AGEN_VEND_EMPL AVE ON AVE.VEND_SEQ = VS.VEND_SEQ
+		<if test ="schEmplSeq != null and schEmplSeq != ''">
+		 	AND	AVE.EMPL_SEQ = #{schEmplSeq}
+		</if>
+
+		LEFT JOIN
+		(
+			SELECT
+				PD.PRD_DTL_SEQ,
+				PD.PRD_DTL_CD,
+				PD.SHTN_NM PRD_NM
+			FROM  T_PRD_DTL PD
+			WHERE PD.AGEN_SEQ =#{agenSeq}
+		) PDT ON PDT.PRD_DTL_SEQ = VS.SPRT_PRD_DTL_SEQ
+		WHERE VS.AGEN_SEQ = #{agenSeq}
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(vendSeq)">
+			AND VS.VEND_SEQ = #{vendSeq}
+		</if>
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(schUseYn)">
+			AND VS.USE_YN = #{schUseYn}
+		</if>
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(schStatDt)">
+		AND
+		(
+				(VS.CT_STAT_DT BETWEEN #{schStatDt} AND #{schEndDt})
+			OR
+				(VS.PRD_STAT_DT BETWEEN #{schStatDt} AND #{schEndDt})
+			OR
+				(VS.ETC_STAT_DT BETWEEN #{schStatDt} AND #{schEndDt})
+			OR
+			<![CDATA[
+				(VS.SUBSID_CLS_DT >= #{schStatDt} AND VS.SUBSID_STAT_DT <= #{schEndDt})
+			OR
+				(VS.EQPMN_CLS_DT >= #{schStatDt} AND VS.EQPMN_STAT_DT <= #{schEndDt})
+			]]>
+		)
+		</if>
+	</select>
+
+	<select id="selectBncSprtDtl" parameterType="com.namyang.nyorder.sale.vo.AgenVendVO" resultType="com.namyang.nyorder.sale.vo.AgenVendVO">
+		/* bcncMng-Mapper - selectBncSprtDtl */
+		EXEC P_OPEN_KEY;
+
+		SELECT
+			VEND_SPRT_SEQ,
+			AGEN_SEQ,
+			VEND_SEQ,
+			VEND_SPRT_SEC,
+			USE_YN,
+			HOFF_ALOTM,
+			AGEN_ALOTM,
+			CONVERT(VARCHAR(10), CONVERT(DATE, CT_STAT_DT), 120) AS CT_STAT_DT,
+			CT_MEMO,
+			SUBSID_SEC,
+			SUBSID_RATE,
+			SUBSID_CT,
+			CONVERT(VARCHAR(10), CONVERT(DATE, SUBSID_STAT_DT), 120) AS SUBSID_STAT_DT,
+			CONVERT(VARCHAR(10), CONVERT(DATE, SUBSID_CLS_DT), 120) AS SUBSID_CLS_DT,
+			SPRT_PRD_DTL_SEQ,
+			PDT.PRD_DTL_CD SPRT_PRD_CD,
+			PDT.PRD_NM SPRT_PRD_NM,
+			PRD_QTY,
+			PRD_CT,
+			CONVERT(VARCHAR(10), CONVERT(DATE, PRD_STAT_DT), 120) AS PRD_STAT_DT,
+			SPRT_EQPMN_CD,
+			(SELECT COMM_NM FROM T_COMM WHERE T_COMM.COMM_GRP_CD='SPRT_EQPMN_CD' AND T_COMM.COMM_CD = SPRT_EQPMN_CD ) AS SPRT_EQPMN_NM,
+			EQPMN_QTY,
+			CONVERT(VARCHAR(10), CONVERT(DATE, EQPMN_STAT_DT), 120) AS EQPMN_STAT_DT,
+			CONVERT(VARCHAR(10), CONVERT(DATE, EQPMN_CLS_DT), 120) AS EQPMN_CLS_DT,
+			EQPMN_CT,
+			ETC_CT,
+			CONVERT(VARCHAR(10), CONVERT(DATE, ETC_STAT_DT), 120) AS ETC_STAT_DT,
+			ETC_MEMO,
+			convert(varchar, REG_DTM, 120) REG_DTM,
+			convert(varchar, UPD_DTM, 120) UPD_DTM,
+			(SELECT ny_order.dbo.F_GET_DECRYT(EMPL_NM) FROM T_AGEN_EMPL   WHERE EMPL_SEQ =  TAVS.UPD_SEQ) UPD_NM,
+			(SELECT ny_order.dbo.F_GET_DECRYT(EMPL_NM) FROM T_AGEN_EMPL   WHERE EMPL_SEQ =  TAVS.REG_SEQ) REG_NM
+		FROM T_AGEN_VEND_SPRT TAVS
+		LEFT JOIN
+		(
+			SELECT
+				PD.PRD_DTL_SEQ,
+				PD.PRD_DTL_CD,
+				PD.SHTN_NM PRD_NM
+			FROM T_PRD_DTL PD
+			WHERE PD.AGEN_SEQ =#{agenSeq}
+		) AS PDT ON PDT.PRD_DTL_SEQ = TAVS.SPRT_PRD_DTL_SEQ
+
+		WHERE AGEN_SEQ = #{agenSeq}
+			AND VEND_SEQ = #{vendSeq}
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(vendSprtSeq)">
+			AND VEND_SPRT_SEQ = #{vendSprtSeq}
+		</if>
+	</select>
+
+	<update id="megBncn" parameterType="com.namyang.nyorder.sale.vo.AgenVendVO">
+		/* bcncMng-Mapper - megBncn */
+		EXEC P_OPEN_KEY;
+		<selectKey resultType="String" keyProperty="vendSeq" order="BEFORE">
+			DECLARE @VEND_SEQ     numeric(13)
+			DECLARE @T_VEND_SEQ     numeric(13)
+			SET @VEND_SEQ = NEXT VALUE FOR SQ_VEND
+			SET @T_VEND_SEQ =  (SELECT VEND_SEQ FROM T_AGEN_VEND WHERE VEND_SEQ =  #{vendSeq})
+			SELECT
+				CASE @T_VEND_SEQ
+					WHEN #{vendSeq} THEN @T_VEND_SEQ
+					ELSE @VEND_SEQ
+					END VEND_SEQ
+		</selectKey>
+
+		MERGE INTO T_AGEN_VEND A
+		USING(
+			SELECT 	#{vendSeq} as VEND_SEQ
+		) B
+		ON (
+				A.VEND_SEQ = B.VEND_SEQ
+		)
+		WHEN	MATCHED THEN
+				UPDATE	SET
+					A.VEND_NM = #{vendNm},
+					A.INDT_CL = #{indtCl},
+					A.VEND_PRST = ny_order.dbo.F_GET_ENCRYT(#{vendPrst}),
+					A.BIZ_NO = #{bizNo},
+					A.BIZ_CON = #{bizCon},
+					A.BIZ_INDU = #{bizIndu},
+					A.VEND_CHAG = ny_order.dbo.F_GET_ENCRYT(#{vendChag}),
+					A.PRST_MOB_NO = ny_order.dbo.F_GET_ENCRYT(#{prstMobNo}),
+					A.TEL_NO = ny_order.dbo.F_GET_ENCRYT(#{telNo}),
+					A.MOB_NO = ny_order.dbo.F_GET_ENCRYT(#{mobNo}),
+					A.FAX_NO = ny_order.dbo.F_GET_ENCRYT(#{faxNo}),
+					A.ZIP_CD = #{zipCd},
+					A.ADDR1 = #{addr1},
+					A.ADDR2 = ny_order.dbo.F_GET_ENCRYT(#{addr2}),
+					A.STR_SEC_CD = #{strSecCd},
+					A.VEND_DLV_CYCLE = #{vendDlvCycle},
+					A.STAT_DT = #{statDt},
+					A.CLS_DT = #{clsDt},
+					A.PYM_MTH =#{pymMth},
+					A.STM_DT_CD =#{stmDtCd},
+					A.BANK_CD = #{bankCd},
+					A.STM_ACCT_NO = ny_order.dbo.F_GET_ENCRYT(#{stmAcctNo}),
+					A.ACCT_DPSR = ny_order.dbo.F_GET_ENCRYT(#{acctDpsr}),
+					A.UPD_DTM=CURRENT_TIMESTAMP,
+					A.UPD_SEQ = #{emplSeq}
+		WHEN	NOT MATCHED THEN
+				INSERT(VEND_SEQ, AGEN_SEQ, VEND_CD, VEND_SEC_CD, VEND_NM, INDT_CL,
+				 VEND_PRST, BIZ_NO, BIZ_INDU, VEND_CHAG, PRST_MOB_NO, TEL_NO, MOB_NO,
+				 FAX_NO, ZIP_CD, ADDR1, ADDR2,STR_SEC_CD,VEND_DLV_CYCLE,STAT_DT,CLS_DT,PYM_MTH,STM_DT_CD,BANK_CD,STM_ACCT_NO,ACCT_DPSR,REG_DTM,REG_SEQ,UPD_DTM,UPD_SEQ)
+				VALUES(
+					#{vendSeq},
+					#{agenSeq},
+					ny_order.dbo.F_GET_VEND_CD(#{agenSeq},'0') ,
+					'GNRL',
+					#{vendNm},
+					#{indtCl},
+					ny_order.dbo.F_GET_ENCRYT(#{vendPrst}),
+					#{bizNo},
+					#{bizIndu},
+					ny_order.dbo.F_GET_ENCRYT(#{vendChag}),
+					ny_order.dbo.F_GET_ENCRYT(#{prstMobNo}),
+					ny_order.dbo.F_GET_ENCRYT(#{telNo}),
+					ny_order.dbo.F_GET_ENCRYT(#{mobNo}),
+					ny_order.dbo.F_GET_ENCRYT(#{faxNo}),
+					#{zipCd},
+					#{addr1},
+					ny_order.dbo.F_GET_ENCRYT(#{addr2}),
+					#{strSecCd},
+					#{vendDlvCycle},
+					#{statDt},
+					#{clsDt},
+					#{pymMth},
+					#{stmDtCd},
+					#{bankCd},
+					ny_order.dbo.F_GET_ENCRYT(#{stmAcctNo}),
+					ny_order.dbo.F_GET_ENCRYT(#{acctDpsr}),
+					CURRENT_TIMESTAMP,
+					#{emplSeq},
+					CURRENT_TIMESTAMP,
+					#{emplSeq}
+				);
+	</update>
+
+	<update id="megVendEmpl" parameterType="com.namyang.nyorder.sale.vo.AgenVendVO">
+		/* bcncMng-Mapper - megBncn */
+
+		DECLARE @VEND_EMPL_SEQ     numeric(13)
+		SET @VEND_EMPL_SEQ = NEXT VALUE FOR SQ_AGEN_VEND_EMPL
+		MERGE INTO T_AGEN_VEND_EMPL A
+		USING(
+			SELECT 	#{vendSeq} as VEND_SEQ,
+					#{agenSeq} as AGEN_SEQ
+		) B
+		ON (
+				A.VEND_SEQ = B.VEND_SEQ
+			AND	A.AGEN_SEQ = B.AGEN_SEQ
+		)
+		WHEN	MATCHED THEN
+			UPDATE	SET
+				A.EMPL_SEQ = #{targetEmplSeq},
+				A.UPD_DTM=CURRENT_TIMESTAMP,
+				A.UPD_SEQ = #{emplSeq}
+		WHEN	NOT MATCHED THEN
+			INSERT (VEND_EMPL_SEQ, AGEN_SEQ, EMPL_SEQ, VEND_SEQ,  USE_YN, REG_DTM, REG_SEQ)
+			VALUES(
+				@VEND_EMPL_SEQ,
+				#{agenSeq},
+				#{targetEmplSeq},
+				#{vendSeq},
+				'Y',
+				CURRENT_TIMESTAMP,
+				#{emplSeq}
+			);
+
+	</update>
+	<update id="megBcncSprt" parameterType="com.namyang.nyorder.sale.vo.AgenVendVO">
+		/* bcncMng-Mapper - megBncn */
+
+		DECLARE @VEND_SPRT_SEQ     numeric(13)
+		SET @VEND_SPRT_SEQ = NEXT VALUE FOR SQ_AGEN_VEND_SPRT
+
+		MERGE INTO T_AGEN_VEND_SPRT A
+		USING(
+			SELECT CASE #{vendSprtSeq}
+				WHEN ''  THEN NULL
+				ELSE #{vendSprtSeq}
+				END VEND_SPRT_SEQ
+		) B
+		ON (
+				A.VEND_SPRT_SEQ = B.VEND_SPRT_SEQ
+		)
+		WHEN	MATCHED THEN
+			UPDATE	SET
+				A.VEND_SPRT_SEC = #{vendSprtSec},
+				A.USE_YN = #{useYn},
+				<choose>
+					<when test="vendSprtSec =='SPR_CT'">
+						A.HOFF_ALOTM = #{hoffAlotm},
+						A.AGEN_ALOTM = #{agenAlotm},
+						A.CT_STAT_DT = #{ctStatDt},
+						A.CT_MEMO = #{ctMemo},
+					</when>
+					<otherwise>
+						A.HOFF_ALOTM = NULL, A.AGEN_ALOTM = NULL, A.CT_STAT_DT = NULL, A.CT_MEMO = NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="vendSprtSec =='SUBSID'">
+						A.SUBSID_SEC = #{subsidSec},
+						A.SUBSID_RATE = #{subsidRate},
+						A.SUBSID_CT = #{subsidCt},
+						A.SUBSID_STAT_DT = #{subsidStatDt},
+						A.SUBSID_CLS_DT = #{subsidClsDt},
+					</when>
+					<otherwise>
+						A.SUBSID_SEC = NULL, A.SUBSID_RATE = NULL, A.SUBSID_CT = NULL, A.SUBSID_STAT_DT = NULL, A.SUBSID_CLS_DT = NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="vendSprtSec =='VOL'">
+						A.SPRT_PRD_DTL_SEQ = #{sprtPrdDtlSeq},
+						A.PRD_QTY = #{prdQty},
+						A.PRD_CT = #{prdCt},
+						A.PRD_STAT_DT = #{prdStatDt},
+					</when>
+					<otherwise>
+						A.SPRT_PRD_DTL_SEQ = NULL, A.PRD_QTY = NULL, A.PRD_CT = NULL, A.PRD_STAT_DT = NULL,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="vendSprtSec =='EQPMN'">
+						A.SPRT_EQPMN_CD = #{sprtEqpmnCd},
+						A.EQPMN_QTY = #{eqpmnQty},
+						A.EQPMN_STAT_DT = #{eqpmnStatDt},
+						A.EQPMN_CLS_DT = #{eqpmnClsDt},
+						A.EQPMN_CT = #{eqpmnCt},
+					</when>
+					<otherwise>
+						A.SPRT_EQPMN_CD = NULL, A.EQPMN_QTY = NULL, EQPMN_STAT_DT = NULL, A.EQPMN_CLS_DT = NULL, A.EQPMN_CT = NULL ,
+					</otherwise>
+				</choose>
+				<choose>
+					<when test="vendSprtSec =='ETC'">
+						A.ETC_CT = #{etcCt},
+						A.ETC_STAT_DT = #{etcStatDt},
+						A.ETC_MEMO = #{etcMemo},
+					</when>
+					<otherwise>
+						A.ETC_CT = NULL, A.ETC_STAT_DT = NULL, A.ETC_MEMO = NULL,
+					</otherwise>
+				</choose>
+				A.UPD_DTM = CURRENT_TIMESTAMP,
+				A.UPD_SEQ = #{emplSeq}
+			WHEN	NOT MATCHED THEN
+				INSERT(
+					VEND_SPRT_SEQ, AGEN_SEQ, VEND_SEQ, VEND_SPRT_SEC, USE_YN,
+					<if test ="vendSprtSec =='SPR_CT'">
+						HOFF_ALOTM, AGEN_ALOTM, CT_STAT_DT, CT_MEMO,
+					</if>
+					<if test ="vendSprtSec =='SUBSID'">
+						SUBSID_SEC,
+						<choose>
+							<when test ="subsidSec =='subsidRate'">
+								SUBSID_RATE,
+							</when>
+							<otherwise>
+								SUBSID_CT,
+							</otherwise>
+						</choose>
+						SUBSID_STAT_DT, SUBSID_CLS_DT,
+					</if>
+					<if test ="vendSprtSec =='VOL'">
+						SPRT_PRD_DTL_SEQ, PRD_QTY, PRD_CT, PRD_STAT_DT,
+					</if>
+					<if test ="vendSprtSec =='EQPMN'">
+						SPRT_EQPMN_CD, EQPMN_QTY, EQPMN_STAT_DT, EQPMN_CLS_DT, EQPMN_CT,
+					</if>
+					<if test ="vendSprtSec =='ETC'">
+						ETC_CT, ETC_STAT_DT, ETC_MEMO,
+					</if>
+					REG_DTM, REG_SEQ
+				)
+				VALUES(
+					@VEND_SPRT_SEQ, #{agenSeq}, #{vendSeq}, #{vendSprtSec}, #{useYn},
+					<if test ="vendSprtSec =='SPR_CT'">
+						#{hoffAlotm}, #{agenAlotm}, #{ctStatDt}, #{ctMemo},
+					</if>
+					<if test ="vendSprtSec =='SUBSID'">
+						#{subsidSec},
+						<choose>
+							<when test ="subsidSec =='subsidRate'">
+								#{subsidRate},
+							</when>
+							<otherwise>
+								#{subsidCt},
+							</otherwise>
+						</choose>
+						#{subsidStatDt}, #{subsidClsDt},
+					</if>
+					<if test ="vendSprtSec =='VOL'">
+						#{sprtPrdDtlSeq}, #{prdQty}, #{prdCt}, #{prdStatDt},
+					</if>
+					<if test ="vendSprtSec =='EQPMN'">
+						#{sprtEqpmnCd}, #{eqpmnQty}, #{eqpmnStatDt}, #{eqpmnClsDt}, #{eqpmnCt},
+					</if>
+					<if test ="vendSprtSec =='ETC'">
+						#{etcCt}, #{etcStatDt}, #{etcMemo},
+					</if>
+					CURRENT_TIMESTAMP, #{emplSeq}
+				);
+	</update>
+</mapper>

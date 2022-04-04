@@ -1,0 +1,941 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템 - 애음자관리: 신규 제품추가 팝업</title>
+<link rel="stylesheet" type="text/css" href="../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<script type="text/javascript">
+    var myGridID;
+    var myGridID2;
+    var myGridID3;
+    var myGridID4;
+
+    var gridData = [
+        {"id":"#Cust01","prdCd":"007201","prdNm":"자연불가리스사과150ml","pttnUntpc":"500888"},
+		{"id":"#Cust02","prdCd":"007201","prdNm":"깜유홈900ml","pttnUntpc":"500"},
+        {"id":"#Cust03","prdCd":"007201","prdNm":"자연불가리스사과150ml","pttnUntpc":"500888"},
+		{"id":"#Cust04","prdCd":"007201","prdNm":"자연불가리스사과150ml","pttnUntpc":"500"},
+        {"id":"#Cust05","prdCd":"007201","prdNm":"자연불가리스사과150ml","pttnUntpc":"500888"}
+    ];
+    var gridData2 = [
+        {"id":"#Cust01","cstSecCd":"1주","month":"1","tuesday":"","Wed":"2","Thursday":"","Friday":"1","Saturday":"","Sunday":"","totalQuant":"3"},
+		{"id":"#Cust02","cstSecCd":"2주","month":"1","tuesday":"","Wed":"2","Thursday":"","Friday":"1","Saturday":"","Sunday":"","totalQuant":"3"},
+		{"id":"#Cust03","cstSecCd":"3주","month":"1","tuesday":"","Wed":"2","Thursday":"","Friday":"1","Saturday":"","Sunday":"","totalQuant":"3"},
+		{"id":"#Cust04","cstSecCd":"4주","month":"1","tuesday":"","Wed":"2","Thursday":"","Friday":"1","Saturday":"","Sunday":"","totalQuant":"3"},
+		{"id":"#Cust05","cstSecCd":"5주","month":"1","tuesday":"","Wed":"2","Thursday":"","Friday":"1","Saturday":"","Sunday":"","totalQuant":"3"},
+		{"id":"#Cust05","cstSecCd":"6주","month":"1","tuesday":"","Wed":"2","Thursday":"","Friday":"1","Saturday":"","Sunday":"","totalQuant":"3"}
+    ];
+    var gridData3 = [
+        {"id":"#Cust01","prdCd":"007202","prdNm":"자연불가리스사과150ml"},
+		{"id":"#Cust02","prdCd":"007202","prdNm":"자연불가리스사과150ml"},
+        {"id":"#Cust03","prdCd":"007202","prdNm":"자연불가리스사과150ml"},
+		{"id":"#Cust04","prdCd":"007202","prdNm":"자연불가리스사과150ml"},
+        {"id":"#Cust05","prdCd":"007202","prdNm":"자연불가리스사과150ml"},
+		{"id":"#Cust06","prdCd":"007202","prdNm":"자연불가리스사과150ml"}
+    ];
+    var gridData4 = [
+        {"id":"#Cust01","cstSecCd":"무료","dtl":"1개월","unitPrice":"0","startDate":"2021-12-31","endDate":"2021-01-03","conLevy":"00","promoPrice":"1"},
+		{"id":"#Cust02","cstSecCd":"할인","dtl":"10%","unitPrice":"500","startDate":"2021-12-31","endDate":"2021-01-03","conLevy":"00","promoPrice":"1"},
+        {"id":"#Cust03","cstSecCd":"상품","dtl":"뽀로로식기세트","unitPrice":"0","startDate":"2021-12-31","endDate":"2021-01-03","conLevy":"00","promoPrice":"1"},
+		{"id":"#Cust04","cstSecCd":"무료","dtl":"1개월","unitPrice":"0","startDate":"2021-12-31","endDate":"2021-01-03","conLevy":"00","promoPrice":"1"},
+        {"id":"#Cust05","cstSecCd":"무료","dtl":"1개월","unitPrice":"0","startDate":"2021-12-31","endDate":"2021-01-03","conLevy":"00","promoPrice":"1"}
+    ];
+    
+   
+   $(document).ready(function(){
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid();
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.        
+        
+        AUIGrid.setGridData(myGridID, gridData);
+        AUIGrid.setGridData(myGridID2, gridData2);
+        AUIGrid.setGridData(myGridID3, gridData3);
+        AUIGrid.setGridData(myGridID4, gridData4);
+        // AUIGrid.setGridData(myGridID5, gridData5);
+	    //AUIGrid.setFooter(myGridID, footerLayout);
+    });
+    
+   
+    // AUIGrid 를 생성합니다.
+    function createAUIGrid() {
+        // 그리드 속성 설정
+        var gridPros = {
+                headerHeight : 30,
+                rowHeight : 29,
+                // 편집 가능 여부 (기본값 : false)
+                editable : false,
+                
+                // 엔터키가 다음 행이 아닌 다음 칼럼으로 이동할지 여부 (기본값 : false)
+                enterKeyColumnBase : true,
+                
+                // 셀 선택모드 (기본값: singleCell)
+                selectionMode : "singleRow",
+                //showFooter : true,
+                
+                // 컨텍스트 메뉴 사용 여부 (기본값 : false)
+                useContextMenu : true,
+                
+                // 필터 사용 여부 (기본값 : false)
+                enableFilter : true,
+            
+                // 그룹핑 패널 사용
+                useGroupingPanel : false,
+
+                // 체크박스 사용 
+	            showRowCheckColumn : true,
+                
+                
+                // 그룹핑 또는 트리로 만들었을 때 펼쳐지게 할지 여부 (기본값 : false)
+                displayTreeOpen : true,
+                
+                noDataMessage : "출력할 데이터가 없습니다.",
+                
+                groupingMessage : "여기에 칼럼을 드래그하면 그룹핑이 됩니다.",
+
+                showRowNumColumn : false,
+                width: `100%`,
+                rowCheckToRadio : true,             
+        };
+        var gridPros2 = {
+            headerHeight : 29,
+			rowHeight : 29,
+            showRowNumColumn : false,
+            rowCheckColumnWidth : 30,
+            enterKeyColumnBase : true,
+            headerRowCheck: true,
+            editingOnKeyDown : true,
+            editable : true,
+            selectionMode : "singleRow",
+		}
+        var gridPros3 = {
+            headerHeight : 30,
+			rowHeight : 30,
+			showRowCheckColumn : true, // 체크박스 사용
+            showRowNumColumn : false,
+            rowCheckToRadio : true,
+            rowCheckColumnWidth : 30,
+            enterKeyColumnBase : true,
+            editingOnKeyDown : true,
+            selectionMode : "singleRow",
+		}
+        var gridPros4 = {
+            headerHeight : 30,
+			rowHeight : 30,
+            showRowNumColumn : true,
+            rowNumColumnWidth : 40,
+            enterKeyColumnBase : true,
+            editingOnKeyDown : true,
+            editable : true,
+            selectionMode : "singleRow",
+		} 
+        
+        // 실제로 #grid_wrap 에 그리드 생성
+        myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+        myGridID2 = AUIGrid.create("#grid_wrap2", columnLayout2, gridPros2);
+        myGridID3 = AUIGrid.create("#grid_wrap3", columnLayout3, gridPros3);
+        myGridID4 = AUIGrid.create("#grid_wrap4", columnLayout4, gridPros4);
+    }
+
+    var columnLayout = [{
+			dataField : "prdCd",
+			headerText : "제품코드",
+            width : "30%",
+            style: "auiCenter",
+            headerStyle : "auiCenter"
+        },{
+			dataField : "prdNm",
+			headerText : "제품명",
+            style: "auiLeft",
+            headerStyle : "auiCenter"
+        },{
+			dataField : "pttnUntpc",
+			headerText : "지역 애음자단가",
+            width : "25%",
+            dataType : "numeric",
+			formatString : "#,##0",
+            style: "auiRight",
+            headerStyle : "auiCenter"
+            
+        }
+	];
+    var columnLayout2 = [{
+        dataField : "cstSecCd",
+        headerText : "구분",
+        width : "9%",
+        style: "auiCenter",
+        headerStyle : "auiCenter",
+        editable: "false"
+        },{
+        dataField : "quantity",
+        headerText : "수량",
+        width : "9%",
+        style: "auiCenter",
+        headerStyle : "auiCenter",
+        editable: "true",
+            renderer : {
+                    type : "TemplateRenderer"
+            },
+            labelFunction : function (rowIndex, columnIndex, value, headerText, item ) {
+                var template = '<div class="my_div">';
+                template += '<span class="my_div_text_box center">' + value + '</span>';
+                template += '</div>';
+                return template;
+            }
+        },{
+            dataField : "month",
+            headerText : "월",
+            width : "9%",
+            style: "auiCenter",
+            headerStyle : "auiCenter",
+            editable: "true",
+            headerRenderer : {
+                type : "CheckBoxHeaderRenderer",
+                dependentMode : true, 			
+                position : "left", // 기본값 "bottom",
+                checked : true,
+            },
+            renderer : {
+                    type : "TemplateRenderer"
+            },
+            labelFunction : function (rowIndex, columnIndex, value, headerText, item ) {
+                var template = '<div class="my_div">';
+                template += '<span class="my_div_text_box center">' + value + '</span>';
+                template += '</div>';
+                return template;
+            }
+        },{
+            dataField : "tuesday",
+            headerText : "화",
+            width : "9%",
+            style: "auiCenter",
+            headerStyle : "auiCenter",
+            headerRenderer : {
+                type : "CheckBoxHeaderRenderer",
+                dependentMode : true, 			
+                position : "left", // 기본값 "bottom",
+            },
+            renderer : {
+                    type : "TemplateRenderer"
+            },
+            labelFunction : function (rowIndex, columnIndex, value, headerText, item ) {
+                var template = '<div class="my_div">';
+                template += '<span class="my_div_text_box center">' + value + '</span>';
+                template += '</div>';
+                return template;
+            },
+        },{
+            dataField : "Wed",
+            headerText : "수",
+            width : "9%",
+            style: "auiCenter",
+            headerStyle : "auiCenter",
+            headerRenderer : {
+                type : "CheckBoxHeaderRenderer",
+                dependentMode : true, 			
+                position : "left", // 기본값 "bottom",
+                checked : true,
+            },
+            renderer : {
+                    type : "TemplateRenderer"
+            },
+            labelFunction : function (rowIndex, columnIndex, value, headerText, item ) {
+                var template = '<div class="my_div">';
+                template += '<span class="my_div_text_box center">' + value + '</span>';
+                template += '</div>';
+                return template;
+            },
+        },{
+            dataField : "Thursday",
+            headerText : "목",
+            width : "9%",
+            style: "auiCenter",
+            headerStyle : "auiCenter",
+            headerRenderer : {
+                type : "CheckBoxHeaderRenderer",
+                dependentMode : true, 			
+                position : "left", // 기본값 "bottom",
+            },
+            renderer : {
+                    type : "TemplateRenderer"
+            },
+            labelFunction : function (rowIndex, columnIndex, value, headerText, item ) {
+                var template = '<div class="my_div">';
+                template += '<span class="my_div_text_box center">' + value + '</span>';
+                template += '</div>';
+                return template;
+            },
+        },{
+            dataField : "Friday",
+            headerText : "금",
+            width : "9%",
+            style: "auiCenter",
+            editable : true, 
+            headerStyle : "auiCenter",
+            headerRenderer : {
+                type : "CheckBoxHeaderRenderer",
+                dependentMode : true, 			
+                position : "left", // 기본값 "bottom",
+                checked : true,
+            },
+            renderer : {
+                    type : "TemplateRenderer"
+            },
+            labelFunction : function (rowIndex, columnIndex, value, headerText, item ) {
+                var template = '<div class="my_div">';
+                template += '<span class="my_div_text_box center">' + value + '</span>';
+                template += '</div>';
+                return template;
+            },
+        },{
+            dataField : "Saturday",
+            headerText : "토",
+            width : "9%",
+            style: "auiCenter",
+            headerStyle : "auiCenter, hColor01",
+            headerRenderer : {
+                type : "CheckBoxHeaderRenderer",
+                dependentMode : true, 			
+                position : "left", // 기본값 "bottom",
+            },
+            renderer : {
+                    type : "TemplateRenderer"
+            },
+            labelFunction : function (rowIndex, columnIndex, value, headerText, item ) {
+                var template = '<div class="my_div">';
+                template += '<span class="my_div_text_box center">' + value + '</span>';
+                template += '</div>';
+                return template;
+            },
+        },{
+            dataField : "Sunday",
+            headerText : "일",
+            width : "9%",
+            style: "auiCenter",
+            headerStyle : "auiCenter hColor02",
+            headerRenderer : {
+                type : "CheckBoxHeaderRenderer",
+                dependentMode : true, 			
+                position : "left", // 기본값 "bottom",
+            },
+            renderer : {
+                    type : "TemplateRenderer"
+            },
+            labelFunction : function (rowIndex, columnIndex, value, headerText, item ) {
+                var template = '<div class="my_div">';
+                template += '<span class="my_div_text_box center">' + value + '</span>';
+                template += '</div>';
+                return template;
+            },
+        },{
+            dataField : "totalQuant",
+            headerText : "총수량",
+            style: "auiCenter",
+            headerStyle : "auiCenter",
+            editable: false,
+        }
+    ];
+    var columnLayout3 = [{
+			dataField : "prdCd",
+			headerText : "제품코드",
+            width : "40%",
+            style: "auiCenter",
+            headerStyle : "auiCenter"
+        },{
+			dataField : "prdNm",
+			headerText : "제품명",
+            style: "auiLeft",
+            headerStyle : "auiCenter"
+        }
+	];
+    var columnLayout4 = [{
+			dataField : "cstSecCd",
+			headerText : "구분",
+            width : "10%",
+            style: "auiCenter",
+            headerStyle : "auiCenter",
+            editable: false,
+        },{
+            dataField : "dtl",
+			headerText : "상세",
+            style: "auiLeft",
+            headerStyle : "auiCenter",
+            editable: false,
+        },{
+			dataField : "unitPrice",
+			headerText : "단가",
+            width : "15%",
+            style: "auiRight",
+            headerStyle : "auiCenter",
+            editable: false,
+        },{
+			dataField : "startDate",
+			headerText : "적용시작일",
+            style: "auiCenter",
+            headerStyle : "auiCenter",
+            width : "18%",
+            editable: false,
+        },{
+			dataField : "endDate",
+			headerText : "적용종료일",
+            style: "auiCenter",
+            headerStyle : "auiCenter",
+            width : "18%",
+            editable: false,
+        },{
+			dataField : "conLevy",
+			headerText : "소비자부담금",
+            headerStyle : "auiCenter",
+            style: "auiCenter",
+            width : "13%",
+            editable: true,
+            renderer : {
+                    type : "TemplateRenderer"
+            },
+            labelFunction : function (rowIndex, columnIndex, value, headerText, item ) {
+                var template = '<div class="my_div">';
+                template += '<span class="my_div_text_box center">' + value + '</span>';
+                template += '</div>';
+                return template;
+            }
+        },{
+			dataField : "promoPrice",
+			headerText : "판촉사원부담금",
+            headerStyle : "auiCenter",
+            style: "auiCenter",
+            width : "13%",
+            editable: true,
+            renderer : {
+                    type : "TemplateRenderer"
+            },
+            labelFunction : function (rowIndex, columnIndex, value, headerText, item ) {
+                var template = '<div class="my_div">';
+                template += '<span class="my_div_text_box center">' + value + '</span>';
+                template += '</div>';
+                return template;
+            }
+        }
+	];
+    
+
+    // 전체 체크 설정/ 해제
+    function checkAll(checked) {
+        var rowCount = AUIGrid.getRowCount(myGridID);
+        if(checked) {
+            // 전체 데이터를 대상으로 isActive 필드를 "Active" 값으로 변경
+            AUIGrid.updateRowBlockToValue(myGridID, 0, rowCount-1, "isActive", "Active");
+        } else {
+            // 전체 데이터를 대상으로 isActive 필드를 "Inactive" 값으로 변경
+            AUIGrid.updateRowBlockToValue(myGridID, 0, rowCount-1, "isActive", "Inactive");
+        }
+    };
+
+    // 헤더렌더러 체크박스 클릭 핸들러
+    function myHeaderCheckClick(event) {
+        alert("columnIndex : " + event.columnIndex + ", checked : " + event.checked);
+    };
+
+</script>
+</head>
+<body>
+	<div class="allWrap">
+		<header>
+            <h1><a href="#" class="logo" title="남양유업"></a></h1>
+
+            <div class="logInfo">
+                <ul>
+                    <li><span class="user">김 남양</span> 님 을 환영합니다.</li>
+                    <li>최근접속일시 : <span class="date">2021.12.10 09:30:00</span></li>
+                    <li><a href="#" class="logOut"><span class="blind">로그아웃</span></a></li>
+                </ul>
+            </div>
+		</header>  
+
+		<div class="contentWrap">
+            <!-- lnb -->
+			<div class="lnb">
+                <!-- 검색영역 -->
+                <div class="leftSearBox">
+                    <input type="text" name="" value="" class="inp type02">
+                    <button type="button" class="searBtn" name="" title="검색하기"></button>
+                </div>
+                <!-- 검색영역 -->
+
+				<!-- 메뉴영역 -->
+                <div class="etcMenu">
+                    <a href="#" class="allMenu" title="전체메뉴"><span>전체메뉴</span></a>
+                    <a href="#" class="favSearch" title="즐겨찾기"><span>즐겨찾기</span></a>
+                </div>
+
+                <ul>
+                    <li class="depth1">
+                        <a href="#" title="기준정보 관리"><span>기준정보 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="대리점 관리"><span>대리점 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="애음자 관리"><span>애음자 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="판매 관리"><span>판매 관리</span></a>
+                        <ul class="depth2"> <!--style="display:block" -->
+                            <li>
+                                <h3>거래처 관리</h3>
+                            </li>
+                            <li><a href="#">거래처 관리</a></li>
+                            <li><a href="#">거래처별 단가 관리</a></li>
+                            <li>
+                                <h3>판매 관리</h3>
+                            </li>
+                            <li><a href="#">판매등록</a></li>
+                            <li><a href="#">거래명세표 발행</a></li>
+                            <li><a href="#">대리점 일보</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="매출 관리"><span>매출 분석</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="세무/회계 관리"><span>세무/회계 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="장비 관리"><span>장비 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="판촉 관리"><span>판촉 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="커뮤니케이션 관리"><span>커뮤니케이션 관리</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="마이페이지"><span>마이페이지</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                    <li class="depth1">
+                        <a href="#" title="로그인"><span>로그인</span></a>
+                        <ul class="depth2">
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                            <li><a href="#">text01</a></li>
+                        </ul>
+                    </li>
+                </ul>
+                <!-- 메뉴영역 -->
+
+                <a href="#" class="sideBtn"></a>
+			</div>
+            <!-- lnb -->
+			
+            <!-- content -->
+            <div class="rContentBox">
+                <div class="content">
+                </div>
+            </div>
+	</div>
+
+    <!-- 실제 개발시 style 모두 지워주세요 (style 퍼블용 preview 입니다.) - 가로사이즈 1500px -->
+
+    <div class="modal_bg" style="display:block; position:fixed;top:0;left:0;right:0;bottom:0;z-index:10; background:rgba(0, 0, 0, .43);"></div> <!-- modal 배경 -->
+
+    <div tabindex="-1" role="dialog" class="ui-dialog ui-corner-all ui-widget ui-widget-content ui-front" aria-describedby="readPop" aria-labelledby="ui-id-1" style="width:1500px; height:870px; top:10px; left:12%; visibility: visible;">
+        <div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix">
+            <span id="ui-id-1" class="ui-dialog-title">&nbsp;</span>
+            <button type="button" class="ui-button ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-close" title="Close">
+            <span class="ui-button-icon ui-icon ui-icon-closethick"></span>
+            <span class="ui-button-icon-space"> </span>Close</button>
+        </div>
+            
+        <div id="readPop" class="ajaxDialog ui-dialog-content ui-widget-content">
+
+        <!-- 신규 제품추가 --> 
+        <div class="popWrap largeLong modal_wrap h870" data-popup="modalAgencyViews">
+            <header>
+                <h3>신규 제품추가</h3>
+            </header>  
+
+            <!-- popCon -->
+            <div class="popCon">
+                <div class="popTitArea">
+                    <h3 class="pb10">신규 제품추가</h3>
+        
+                    <div class="popBtnArea">
+                        <button type="button" name="" class="comBtn" id="modalCloseBtn">닫기</button>
+                        <button type="button" name="" class="inquBtn">저장</button>
+                    </div>
+                </div>
+                <div class="conBox mt5">
+                    <!-- 계약 정보 -->
+                    <div class="tblWrap">
+                        <div class="titleArea right">
+                            <h3 class="tit01">계약 정보</h3>
+                            <p class="txt01"><i class="icoRequir"></i>필수 입력 항목입니다.</p>
+                        </div>
+                        
+                        <table class="tbl">
+                            <caption>계약 정보</caption>
+                            <colgroup>
+                                <col style="width:164px;">
+                                <col>
+                                <col style="width:164px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">
+                                        <label class="required" title="필수입력">가입경로</label>
+                                    </th>
+                                    <td colspan="3">
+                                        <!-- 대리점-전화 -->
+                                        <!-- <div class="formWrap jStart">
+                                            <select name="" class="sel w160 mr7" id="inp_prDt" value="대리점-전화">
+                                                <option selected>대리점-전화</option>
+                                                <option></option>
+                                                <option></option>
+                                                <option></option>
+                                            </select>
+                                        </div> -->
+                                        <!-- 대리점-전화 -->
+                                        
+                                        <!-- 대리점-방문 -->
+                                        <!-- <div class="formWrap jStart">
+                                            <select name="" class="sel w160 mr7" id="inp_prDt" value="대리점-방문">
+                                                <option selected>대리점-방문</option>
+                                                <option></option>
+                                                <option></option>
+                                                <option></option>
+                                            </select>
+                                        </div> -->
+                                        <!-- 대리점-방문 -->
+
+                                        <!-- 대리점-기타 -->
+                                        <!-- <div class="formWrap jStart">
+                                            <select name="" class="sel w160 mr7" id="inp_prDt" value="대리점">
+                                                <option selected>대리점-기타</option>
+                                                <option></option>
+                                                <option></option>
+                                                <option></option>
+                                            </select>
+                                        </div> -->
+                                        <!-- 대리점-기타 -->
+
+                                        <!-- 제품 추가 -->
+                                        <!-- <div class="formWrap jStart">
+                                            <select name="" class="sel w160 mr7" id="inp_prDt" value="제품 추가">
+                                                <option selected>제품 추가</option>
+                                                <option></option>
+                                                <option></option>
+                                                <option></option>
+                                            </select>
+                                        </div> -->
+                                        <!-- 제품 추가 -->
+
+                                        <!-- 재계약 -->
+                                        <!-- <div class="formWrap jStart">
+                                            <select name="" class="sel w160 mr7" id="inp_prDt" value="재계약">
+                                                <option selected>재계약</option>
+                                                <option></option>
+                                                <option></option>
+                                                <option></option>
+                                            </select>
+                                        </div> -->
+                                        <!-- 재계약 -->
+
+                                        <!-- 판촉일 경우 -->
+                                        <div class="formWrap jStart">
+                                            <select name="" class="sel w160 mr10" id="inp_prDt" value="판촉">
+                                                <option selected>판촉</option>
+                                                <option></option>
+                                                <option></option>
+                                                <option></option>
+                                            </select>
+                                            <select name="" class="sel w160" id="inp_prDt" value="판촉">
+                                                <option selected>판촉 사원</option>
+                                                <option>홍길금</option>
+                                                <option>홍길은</option>
+                                                <option>홍길동</option>
+                                            </select>
+                                        </div>
+                                        <!--// 판촉일 경우 -->
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="datepicker" class="datepicker required" title="필수입력">가입일자</label>
+                                    </th>
+                                    <td>
+                                        <div class="formWrap">
+                                            <div class="dateWrap">
+                                                <input type="text" name="date" value="10/24/1984" class="datepicker inp w160" id="datepicker" readonly="">
+                                                <button type="button" class="datepickerBtn" title="날짜입력" data-target-id="datepicker"></button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <th>
+                                        <label for="datepicker" class="datepicker required" title="필수입력">투입일자</label>
+                                    </th>
+                                    <td>
+                                        <div class="formWrap jStart alignCenter">
+                                            <div class="dateWrap">
+                                                <input type="text" name="date" value="10/24/1984" class="datepicker inp w160" id="datepicker02" readonly="">
+                                                <button type="button" class="datepickerBtn" title="날짜입력" data-target-id="datepicker02"></button>
+                                            </div>
+                                            <!-- <div class="checkGroup ml20">
+                                                <input type="checkbox" id="stdPrdNm01" class="type01"><label for="stdPrdNm01"><span>출고증 인쇄 안함</span></label>
+                                            </div> -->
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>
+                                        <label for="datepicker" class="required" title="필수입력">계약기간</label>
+                                    </th>
+                                    <td colspan="3">
+                                        <div class="formWrap" style="justify-content: flex-start; align-items: center;">
+                                            <div class="dateWrap">
+                                                <input type="text" name="date" value="10/24/1984" class="inp w160" id="datepicker03" readonly="">
+                                                <button type="button" class="datepickerBtn" title="날짜입력" data-target-id="datepicker03"></button>
+                                            </div>
+                                            <span class="divi02">~</span>                                        
+                                            <div class="dateWrap">
+                                                <input type="text" name="date" value="10/24/1984" class="inp w160" id="datepicker04" readonly="">
+                                                <button type="button" class="datepickerBtn" title="날짜입력" data-target-id="datepicker04"></button>
+                                            </div>
+                                            <div class="ml30">
+                                                <select name="" class="sel w160" id="sel_prDt" value="">
+                                                    <option selected="">선택</option>
+                                                    <option></option>
+                                                </select>
+                                                <span class="ml5 vaMd">개월(무료 0개월)</span>
+                                            </div>
+                                            
+                                            <div class="checkGroup ml20">
+                                                <input type="checkbox" id="stdPrdNm01" class="type01"><label for="stdPrdNm01"><span>무계약</span></label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="inp_prNm02" class="required" title="필수입력">제품명</label>
+                                    </th>
+                                    <td>
+                                        <div class="formWrap jStart alignCenter">
+                                            <div class="postWrap w160">
+                                                <input type="text" id="inp_prNm02" class="inp">
+                                                <button type="button" class="postBtn" title="찾기"></button>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- grid -->
+                                        <div class="girdBox mt14 mb20">
+                                            <div id="grid_wrap" style="width: 100%; height: 180px;"></div>
+                                        </div>
+                                        <!-- grid -->
+                                    </td>
+                                    <th scope="row" rowspan="2">
+                                        <label for="memo01" class="required" title="필수입력">투입패턴</label>
+                                    </th>
+                                    <td rowspan="2">
+                                        <!-- grid -->
+                                        <div class="girdBox">
+                                            <div id="grid_wrap2" style="width: 100%; height: 206px;"></div>
+                                        </div>
+                                        <!-- grid -->
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="inp_prNm">지역 애음자단가</label>
+                                    </th>
+                                    <td colspan="3">
+                                        <div class="formWrap jStart alignCenter">
+                                            <input type="text" id="inp_rgPrice" class="inp w160 bg_gray ar pColor01" value="" name="">
+                                            <span class="ml5 vaMd">원</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    <!--// 계약 정보 -->
+
+                    <!-- 판촉정보 -->
+                    <div class="tblWrap">
+                        <div class="titleArea right">
+                            <h3 class="tit01">판촉정보</h3>
+                            <p class="txt01"><i class="icoRequir"></i>필수 입력 항목입니다.</p>
+                        </div>
+                        <table class="tbl">
+                            <caption>판촉정보</caption>
+                            <colgroup>
+                                <col style="width:164px;">
+                                <col>
+                                <col style="width:164px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">
+                                        <label class="required" title="필수입력">무료/할인</label>
+                                    </th>
+                                    <td>
+                                        <!-- 판촉일 경우 -->
+                                        <div class="formWrap jStart alignCenter">
+                                            <select name="" class="sel w160 mr20" id="inp_prDt" value="할인">
+                                                <option>무료</option>
+                                                <option selected>할인</option>
+                                            </select>
+                                            <button type="button" name="" class="comBtn small" id="inp_name01">추가</button>
+                                        </div>
+                                        <!--// 판촉일 경우 -->
+                                    </td>
+                                    <th>
+                                        <label for="datepicker" class="datepicker">적용단가<br/>(애음자 개별단가)</label>
+                                    </th>
+                                    <td>
+                                        <div class="formWrap jStart alignCenter">
+                                            <input type="text" id="inp_rgPrice" class="inp w160 bg_gray ar pColor01" value="" name="">
+                                            <span class="ml5 vaMd">원</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="inp_prNm02" class="required" title="필수입력">판촉물</label>
+                                    </th>
+                                    <td colspan="3">
+                                        <div class="formWrap jStart alignCenter mb14">
+                                            <div class="postWrap w160 mr20">
+                                                <input type="text" id="inp_prNm02" class="inp">
+                                                <button type="button" class="postBtn" title="찾기"></button>
+                                            </div>
+                                            <button type="button" name="" class="comBtn small" id="inp_name01">추가</button>
+                                        </div>
+                                        <!-- 무료 -->
+                                        <!-- <div class="formWrap jStart alignCenter mb14">
+                                            <select name="" class="sel w160 mr7" id="inp_prDt" value="제품">
+                                                <option selected="">무료</option>
+                                                <option>투입패턴</option>
+                                                <option>수량</option>
+                                                <option>단가</option>
+                                            </select>
+                                            <div class="postWrap w160 mr10">
+                                                <input type="text" id="inp_prNm02" class="inp">
+                                            </div>
+                                            <span class="vaMd mr7">개월</span>
+                                            <div class="dateWrap ml5">
+                                                <input type="text" name="date" value="10/24/1984" class="datepicker inp w160" id="datepicker05" readonly="">
+                                                <button type="button" class="datepickerBtn" title="날짜입력" data-target-id="datepicker05"></button>
+                                            </div>
+                                        </div> -->
+                                        <!--// 무료 -->
+
+                                        <!-- 할인 -->
+                                        <!-- <div class="formWrap jStart alignCenter mb14">
+                                            <select name="" class="sel w160 mr7" id="inp_prDt" value="제품">
+                                                <option selected="">할인</option>
+                                                <option>투입패턴</option>
+                                                <option>수량</option>
+                                                <option>단가</option>
+                                            </select>
+                                            <div class="postWrap w160 mr10">
+                                                <input type="text" id="inp_prNm02" class="inp">
+                                            </div>
+                                            <span class="vaMd mr7">%</span>
+                                        </div> -->
+                                        <!--// 할인 -->
+
+                                        <!-- 상품 -->
+                                        <!-- <div class="formWrap jStart alignCenter mb14">
+                                            <div class="postWrap w160">
+                                                <input type="text" id="inp_prNm02" class="inp">
+                                                <button type="button" class="postBtn" title="찾기"></button>
+                                            </div>
+                                            <button type="button" name="" class="comBtn ml20" id="inp_name01">추가</button>
+                                        </div> -->
+                                        <!-- 상품 -->
+
+                                        <!-- grid -->
+                                        <div class="formWrap mb20 jBetween">
+                                            <div class="girdBox w50per mr20">
+                                                <div id="grid_wrap3" style="width: 100%; height:185px;"></div>
+                                            </div>
+                                            <div class="girdBox w50per">
+                                                <div id="grid_wrap4" style="width: 100%; height:185px;"></div>
+                                            </div>                                        
+                                        </div>
+                                        <!-- grid -->
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- 판촉정보 -->
+                </div>
+            </div>
+            <!-- popCon -->
+        </div>
+        <!--// 신규 제품추가 -->
+    </div>
+</div> 
+</body>
+</html>

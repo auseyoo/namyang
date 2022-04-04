@@ -1,0 +1,277 @@
+0.JSP 페이지 작업시 !! tiles 설정 중이니 <content> 부터 복사해서 넣으세요. (박예솔)  
+	<tiles:insertAttribute name="body.breadcrumb"/>  << 현재 위치 표시 필수 
+
+1.공통코드 taglib(박예솔)
+	<%@ taglib prefix="code" uri="/WEB-INF/tlds/getCommCode.tld"%>
+	공통코드 조회
+	<code:getCommCode commGrpCd="코드그룹(필수"   var="리턴변수명(필수"   />
+	셀렉트박스
+	<code:makeSelect commGrpCd="코드그룹(필수" var="리턴변수명(필수"   name="inpun name 동일"(필수)   all=" true ( true : 값중에 전체 ' ' 다른 명칭 사용시, false : '' 필요없을때 )"
+		  allNm=" all true 일때 라벨값 " classNm="퍼블클래스"  />
+	※ html 에서 ${리턴변수명}만 작성
+
+2.메세지 출력 예제(김정수) 
+	프로퍼티파일 위치
+	/nyorder/src/main/resources/message/messages.properties
+	메세지 작성
+	alert.test2={0}\uB2D8\uD658\uC601\uD569\uB2C8\uB2E4.{1}
+	
+	JSP상단에
+	<%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
+	메세지 출력
+	<spring:message code="alert.test2" arguments="${'me'}, ${'한글'}" />
+
+
+3.JSP JAVA 공통주석(김정수)
+	Preferences -> Web -> JSP Files -> Editor -> Templates
+	import
+	Z:\대리점 주문시스템 재구축\03. 개발\98.참고자료\templates.xml
+	Preferences -> JAVA -> code Style -> code Templates
+	Z:\대리점 주문시스템 재구축\03. 개발\98.참고자료\codetemplates.xml
+	단축키 alt+shift+j   JSP파일은 생성시 자동주석
+	
+
+4. 세션값(김정수)
+	현재 로그인해서 들어가면 세션에 저장되는값은 
+	AgenCd
+	AgenSeq
+	EmplCd
+	EmplSeq
+	입니다
+	
+	@Resource(name="userInfo")
+	   UserInfo userInfo;
+	userInfo.getAgenSeq()  
+
+
+5. 용어사전(김동주)
+	Z:\대리점 주문시스템 재구축\03. 개발\02.DB설계\용어
+	
+	
+6. 펑션/프로시져(김동주)
+	F_TRAN_NO(@varchar) -> 11자리 숫자 반환(11자리 이하만 사용)
+	F_TRAN_NO256(@varchar) -> 12자리 이상 숫자 반환(12~256 자리)
+	F_GET_EMPL_CD(@agen_seq, '1') -> 1 대표자의 empl_cd 리턴, 2 총무 ,7 배달사원
+	F_GET_HLD_DLV_OLD('01010101001') -> 방판 주차 배달요일 
+	F_GET_INPUT_DAY(PTTN_SEQ) -> 패턴의 요일을 알려줌
+	F_TRAN_STR_TO_YMD('YYYYMMDD') -> YYYY-MM-DD
+	P_BA_MIG -> 방판 cs 마이그레이션 프로시져
+	P_SI_MIG -> 시판 cs 마이그레이션 프로시져 
+	
+	SELECT DATEDIFF(MONTH, '20200101', '20240101')
+
+7. SAP 공통 코드
+	T_COMM  기준
+	SD0001	FER1/제품, HAW1/판촉, LEI1/크레이트
+	
+8. 우편번호(김정수)	
+	fnSetPostcode('#zipCd', '#addr1');  첫번째 파라미터는 우편번호INPUT 아이디 두번째는 주소INPUT ID입니다.	
+	
+	
+9. 세션정보 자동설정
+	Controller에서 CommVO를 상속받은 VO파일을 파라메터값으로 받으면 세션정보가 자동으로 들어갑니다.
+	서비스단에서 Method에 @SessionInfo 를 달고 CommVO를 상속받은 VO파일을 파라메터값으로 받으면 세션정보가 자동으로 들어갑니다.
+	
+10. 여신정보 RFC호출 I_KUNNR(판매처 코드) 만 변경해서 사용하면 됩니다.
+
+		HashMap<String, Object> ifParam = new HashMap<String, Object>();
+		
+		ifParam.put("IF_NAME", "ZFC_SD_IF_CREDIT_SEND");
+		ifParam.put("I_BSARK", "Z002");
+		ifParam.put("I_KUNNR", "1200295");
+		
+		SapRfcCall sapRfcCall = new SapRfcCall();		
+		HashMap<String, Object> ifResult = sapRfcCall.getCreditSend(ifParam);
+				
+		log.debug("selectAgentMngList   ifResult :: " + ifResult.toString());	
+	
+11. 경고창팝업 공통입니다.(김정수)
+ 
+        let popupObj = {};
+        
+        popupObj.title = "주문등록";
+        popupObj.message = '<spring:message code="alert.test2" arguments="${\'me\'}, ${\'한글\'}" />';        
+        //popupObj.showBtn1 = 'Y';
+        //popupObj.btn1Label = "확인";
+        //popupObj.btn1Func = 실행함수;        
+        //popupObj.showBtn2 = 'Y';
+        //popupObj.btn2Label = "취소";
+        //popupObj.btn2Func = 실행함수;        
+        
+        $("#btnStaffSearch").on("click", popupObj, layerAlert);	
+
+		
+	함수 안에서 사용시 (박예솔)
+		var popupParam = {};
+		popupParam.data = {
+			title : "표준 제품 일괄 변경",
+	 	 	message : "<spring:message code='alert.noPrdSelect' />",
+	 	 	showBtn2 : 'N'
+		};
+ 		layerAlert(popupParam);
+ 		
+ 		var popupParam = {};
+		popupParam.data = {
+			title : "표준 제품 일괄 변경",
+	 	 	message : "<spring:message code='alert.noPrdSelect' />",
+	 	 	showBtn1 : 'Y',
+	        btn1Label : "확인1",
+	        btn1Func : fnSrhCstArea,        
+	        showBtn2 : 'Y',
+	        btn2Label : "취소1",
+	        btn2Func : fnSrhCstArea
+		};
+ 		layerAlert(popupParam);
+
+12. DB 컬럼 암호화 샘플
+	
+	입력샘플 	P_OPEN_KEY 프로시저 실행후 F_GET_ENCRYT함수에 매개변수로 암호화될 값을 입력한다.
+	EXEC P_OPEN_KEY
+	UPDATE T_AGEN_EMPL SET ADDR2 = dbo.F_GET_ENCRYT('101동 101호') WHERE EMPL_SEQ='0' AND AGEN_SEQ = '0'	
+	
+	출력샘플
+	EXEC P_OPEN_KEY
+	SELECT	
+		CONVERT(varchar, DecryptByKey(TEL_NO)) as 'decryptPhone'
+	FROM T_SERT_TEST
+	WHERE  1=1
+	
+	--
+	
+13. 동적 팝업
+	오픈 
+		openPopup('div data-popup 값")
+		
+		예 )
+		<div class="popWrap mideum modal_wrap" data-popup="srcAgenStdPrdPop">
+		openPopup('srcAgenStdPrdPop'); 
+	닫기
+		closePopup('srcAgenStdPrdPop');
+	
+	
+14. 공통 서비스 (리스트조회, 단일로우, 인서트, 업데이트)
+
+	//공통 리스트 조회
+	basicVO.setQueryId("com.namyang.nyorder.myp.dao.CdtlSearchMapper.selectAgentMngList");		
+	basicVO.setParamClass(mrtgInfoVO);	
+	
+	List<MrtgInfoVO> list = basicService.basicSelectList(basicVO);
+	
+	//공통 단일로우 조회
+	basicVO.setQueryId("com.namyang.nyorder.myp.dao.CdtlSearchMapper.selectAgentMngOne");		
+	basicVO.setParamClass(mrtgInfoVO);	
+	
+	MrtgInfoVO resultVO = (MrtgInfoVO) basicService.basicSelectOne(basicVO);
+	
+	log.debug("selectMrtgList map :: " + resultVO );
+	
+	
+	mrtgInfoVO.setAgenSeq("251");
+	mrtgInfoVO.setEmplSeq("0");
+	
+	
+	//공통 인서트 
+	basicVO.setQueryId("com.namyang.nyorder.myp.dao.CdtlSearchMapper.basicInsert");		
+	basicVO.setParamClass(mrtgInfoVO);	
+	
+	int iCnt = basicService.basicInsert(basicVO);
+	
+	log.debug("selectMrtgList iCnt :: " + iCnt );
+	
+	//공통 update 
+	basicVO.setQueryId("com.namyang.nyorder.myp.dao.CdtlSearchMapper.basicUpdate");		
+	basicVO.setParamClass(mrtgInfoVO);	
+	
+	int uCnt = basicService.basicUpdate(basicVO);
+	
+	log.debug("selectMrtgList uCnt :: " + uCnt );	
+
+15. 단가 관련 
+	방판 애음자
+	매입단가 : 본사가 대리점주한테 파는 단가(공장도 단가) 1660
+	지역표준단가(지역별 판매원 단가) : 대리점주가 판매원(배달사원) 한테 파는 단가 2400
+	애음자표준단가(지역별 애음자(소비자) 단가) : 판매원이 애음자한테 파는 단가 2800
+	개별 애음자 단가
+	
+	시방판 거래처
+	매입단가
+	판매단가
+	특별단가(하루만 적용함)
+	
+	******펑션으로 만들것.
+	1. T_CST_PRD_UNTPC(애음자 제품별 계약 단가)->UNTPC(판매가)
+	2. T_CST_PRD_SPPRC(애음자 표준단가)->UNTPC(판매가)
+	3. T_AGEN_PRD_UNTPC(대리점 지역별 제품 단가)->UNTPC(지역 표준 단가(지역별 판매가))
+	4. T_STDR_PRD_SPPRC(제품 기준 단가)->CST_UNTPC(애음자 판매가)
+	5. T_STDR_PRD_SPPRC(제품 기준 단가)->EMPL_UNTPC(판매원 판매가)
+	6. T_STDR_PRD_SPPRC(제품 기준 단가)->UNTPC(매입가)
+	7. T_PRD_MST(제품 마스터)->UNTPC(매입가(SPPRC+VAT_SPPRC))
+	
+	매입가(매입가(공급)+매입가(VAT)), 매입가(공급), 매입가(VAT), 판매가
+
+	
+16. 공통 에러처리 사용법
+	혹시 자바 쪽에서 로직 중간에 throw Exception 해서 롤백 처리 필요시 사용 하시면 됩니다.
+	단 *ServiceImpl.java 에서 사용 해야됨
+	
+	예제 페이지)
+	CommCodeMngServiceImpl.java
+	commCodeMng.jsp
+	
+	사용 예) 
+	throw new BusinessException("Warn.W003");
+	에러 메세지 messages.properties 에 추가해서
+	인자 값은 messages.properties 에 정의된 key 값 을 던지면 됩니다.
+	
+	- ajax json type 선언 필수
+	contentType : "application/json; charset=utf-8",
+	
+	- ajax json type 선언 필수 (multipart 일경우)
+	processData:false, 
+	contentType:false,
+	dataType:'json',
+	enctype : 'multipart/form-data',
+	
+	- ajax 통신 error 구간에 메세지 처리
+	예) 
+	error : function(xhr, status, errorThrown) {
+		if ( Common.IsJsonString(xhr.responseText) )
+		{
+			var message = JSON.parse(xhr.responseText).message;
+			alert(message);
+		}
+		else
+		{
+			alert("처리중 오류가 발생 하였습니다.");
+		}
+	},
+			
+17. 판매가, 판매가적용일 가져오는 펑션 (김지훈 대리한테 문의)
+DECLARE 	
+	@I_AGEN_SEQ	NUMERIC(13)
+	, @I_AREA_SEQ NUMERIC(13)
+	, @I_CST_SEQ NUMERIC(13)
+	, @I_PRD_SEQ NUMERIC(13)
+	, @I_PRD_DTL_SEQ NUMERIC(13)
+	, @I_CST_PRD_SEQ NUMERIC(13)
+	, @I_PTTN_SEQ NUMERIC(13)
+	SET @I_AGEN_SEQ	= 24
+	SET @I_AREA_SEQ = 932
+	SET @I_CST_SEQ = 296697
+	SET @I_PRD_SEQ = NULL
+	SET @I_PRD_DTL_SEQ = NULL
+	SET @I_CST_PRD_SEQ = 390431
+	SET @I_PTTN_SEQ = 126354
+SELECT
+DBO.F_GET_UNTPC(@I_AGEN_SEQ	,@I_AREA_SEQ,@I_CST_SEQ, @I_PRD_SEQ, @I_PRD_DTL_SEQ, @I_CST_PRD_SEQ, @I_PTTN_SEQ)
+
+DBO.F_GET_UNTPC_DT(@I_AGEN_SEQ	,@I_AREA_SEQ,@I_CST_SEQ, @I_PRD_SEQ, @I_PRD_DTL_SEQ, @I_CST_PRD_SEQ, @I_PTTN_SEQ)
+	
+	
+	
+	
+	
+18. 팝업 setViewName 설정
+	그리드 같은 공통 스크립트 사용경우 => *.pop
+	빈페이지 (출력물) => *.popBlank 
+	

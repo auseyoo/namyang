@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템 - 애음자관리: 기간보류 팝업</title>
+<link rel="stylesheet" type="text/css" href="../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<script type="text/javascript">
+    var myGridID;
+    var gridData = [
+        {"id":"#Cust01","prdNm":"GT프리미엄930","joinDt":"2021-01-03","unitPrice":"1000","quantity":"1,000","pattern":"월수금","month":"1","tuesday":"1","Wed":"2","Thursday":"2","Friday":"1","Saturday":"1","Sunday":"1"},
+		{"id":"#Cust02","prdNm":"GT프리미엄930","joinDt":"2021-01-03","unitPrice":"1000","quantity":"1,000","pattern":"화수목금일","month":"1","tuesday":"1","Wed":"2","Thursday":"2","Friday":"1","Saturday":"1","Sunday":"1"},
+		{"id":"#Cust03","prdNm":"GT프리미엄930","joinDt":"2021-01-03","unitPrice":"1000","quantity":"1,000","pattern":"화수목금일","month":"1","tuesday":"1","Wed":"2","Thursday":"2","Friday":"1","Saturday":"1","Sunday":"1"},
+		{"id":"#Cust04","prdNm":"GT프리미엄930","joinDt":"2021-01-03","unitPrice":"1000","quantity":"1,000","pattern":"화수목금일","month":"1","tuesday":"1","Wed":"2","Thursday":"2","Friday":"1","Saturday":"1","Sunday":"1"},
+		{"id":"#Cust05","prdNm":"GT프리미엄930","joinDt":"2021-01-03","unitPrice":"1000","quantity":"1,000","pattern":"화수목금일","month":"1","tuesday":"1","Wed":"2","Thursday":"2","Friday":"1","Saturday":"1","Sunday":"1"},
+        {"id":"#Cust06","prdNm":"GT프리미엄930","joinDt":"2021-01-03","unitPrice":"1000","quantity":"1,000","pattern":"월수금","month":"1","tuesday":"1","Wed":"2","Thursday":"2","Friday":"1","Saturday":"1","Sunday":"1"},
+		{"id":"#Cust07","prdNm":"GT프리미엄930","joinDt":"2021-01-03","unitPrice":"1000","quantity":"1,000","pattern":"화수목금일","month":"1","tuesday":"1","Wed":"2","Thursday":"2","Friday":"1","Saturday":"1","Sunday":"1"},
+		{"id":"#Cust08","prdNm":"GT프리미엄930","joinDt":"2021-01-03","unitPrice":"1000","quantity":"1,000","pattern":"화수목금일","month":"1","tuesday":"1","Wed":"2","Thursday":"2","Friday":"1","Saturday":"1","Sunday":"1"},
+		{"id":"#Cust09","prdNm":"GT프리미엄930","joinDt":"2021-01-03","unitPrice":"1000","quantity":"1,000","pattern":"화수목금일","month":"1","tuesday":"1","Wed":"2","Thursday":"2","Friday":"1","Saturday":"1","Sunday":"1"},
+		{"id":"#Cust10","prdNm":"GT프리미엄930","joinDt":"2021-01-03","unitPrice":"1000","quantity":"1,000","pattern":"화수목금일","month":"1","tuesday":"1","Wed":"2","Thursday":"2","Friday":"1","Saturday":"1","Sunday":"1"}
+    ];
+   
+    $(document).ready(function(){
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid();
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.        
+        
+        AUIGrid.setGridData(myGridID, gridData);
+    });
+    
+   
+    // AUIGrid 를 생성합니다.
+    function createAUIGrid(){
+        // 그리드 속성 설정
+        var gridPros = {
+                //headerHeight : 29,
+                headerHeights : 30,
+                rowHeight : 29,
+                // 편집 가능 여부 (기본값 : false)
+                editable : true,
+                autoGridHeight : false,
+
+                // 체크박스 사용 
+	            showRowCheckColumn : true,
+                showRowNumColumn : false,
+                
+                // 엔터키가 다음 행이 아닌 다음 칼럼으로 이동할지 여부 (기본값 : false)
+                enterKeyColumnBase : true,
+                editingOnKeyDown : true, // 키보드 입력으로 편집 모드 진입 (기본값:true임;)
+
+                wrapSelectionMove : true,
+                
+                // 셀 선택모드 (기본값: singleCell)
+                selectionMode : "singleRow",
+                showFooter :  false,
+                
+                // 컨텍스트 메뉴 사용 여부 (기본값 : false)
+                useContextMenu : true,
+                
+                // 필터 사용 여부 (기본값 : false)
+                enableFilter : true,
+            
+                // 그룹핑 패널 사용
+                useGroupingPanel : false,
+                
+               
+                // 그룹핑 또는 트리로 만들었을 때 펼쳐지게 할지 여부 (기본값 : false)
+                displayTreeOpen : true,
+                
+                noDataMessage : "출력할 데이터가 없습니다.",
+                
+                groupingMessage : "여기에 칼럼을 드래그하면 그룹핑이 됩니다.",
+                rowCheckColumnWidth : 60,
+                
+        };
+    
+        // 실제로 #grid_wrap 에 그리드 생성
+        myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+    }
+
+    var columnLayout = [{
+			dataField : "prdNm",
+			headerText : "제품명",
+            style : "auiLeft"
+        },{
+			dataField : "joinDt",
+			headerText : "투입일",
+            width : "12%",
+        },{
+			dataField : "unitPrice",
+			headerText : "단가",
+            dataType : "numeric",
+			width : "8%",
+            style : "auiRight"
+		},{
+			dataField : "pattern",
+			headerText : "패턴",
+            width : "12%"
+		},{
+			dataField : "month",
+			headerText : "월",
+            width : "6.5%"
+		},{
+			dataField : "tuesday",
+			headerText : "화",
+            width : "6.5%"
+		},{
+			dataField : "Wed",
+			headerText : "수",
+            width : "6.5%"
+		},{
+			dataField : "Thursday",
+			headerText : "목",
+            width : "6.5%"
+		},{
+			dataField : "Friday",
+			headerText : "금",
+            width : "6.5%"
+		},{
+			dataField : "Saturday",
+			headerText : "토",
+            width : "6.5%",
+            headerStyle : "hColor01",
+		},{
+			dataField : "Sunday",
+			headerText : "일",
+            width : "6.5%",
+            headerStyle : "hColor02",         
+		}
+	];
+</script>
+</head>
+<body>
+	<div class="allWrap">
+		<header>
+            <h1><a href="#" class="logo" title="남양유업"></a></h1>
+
+            <div class="logInfo">
+                <ul>
+                    <li><span class="user">김 남양</span> 님 을 환영합니다.</li>
+                    <li>최근접속일시 : <span class="date">2021.12.10 09:30:00</span></li>
+                    <li><a href="#" class="logOut"><span class="blind">로그아웃</span></a></li>
+                </ul>
+            </div>
+		</header>  
+
+		<div class="contentWrap">           
+			
+            <!-- content -->
+            <div class="rContentBox">
+                <div class="content">
+                </div>
+
+                <footer>
+                    COPYRIGHT-NAMYANG-DAIRY-PRODUCTS-COLTD-ALL-RIGHT-RESERVED
+                </footer>
+            </div>
+            <!-- content -->
+		</div>
+	</div>
+
+    <!-- 실제 개발시 style 모두 지워주세요 (style 퍼블용 preview 입니다.) - 가로사이즈 1500px -->
+
+    <div class="modal_bg" style="display:block; position:fixed;top:0;left:0;right:0;bottom:0;z-index:10; background:rgba(0, 0, 0, .43);"></div> <!-- modal 배경 -->
+
+    <div tabindex="-1" role="dialog" class="ui-dialog ui-corner-all ui-widget ui-widget-content ui-front" aria-describedby="readPop" aria-labelledby="ui-id-1" style="width:1500px; height:644px; top:170px; left:12%; visibility: visible;">
+        <div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix">
+            <span id="ui-id-1" class="ui-dialog-title">&nbsp;</span>
+            <button type="button" class="ui-button ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-close" title="Close">
+            <span class="ui-button-icon ui-icon ui-icon-closethick"></span>
+            <span class="ui-button-icon-space"> </span>Close</button>
+        </div>
+            
+        <div id="readPop" class="ajaxDialog ui-dialog-content ui-widget-content">
+
+        <!-- 기간 보류 -->
+        <div class="popWrap large modal_wrap h644" data-popup="modalAgencyViews">
+            <header>
+                <h3>기간 보류</h3>
+            </header>  
+
+            <!-- popCon -->
+            <div class="popCon">
+                <div class="popTitArea">
+                    <h3>기간 보류</h3>
+        
+                    <div class="popBtnArea">
+                        <button type="button" name="" class="comBtn" id="modalCloseBtn">닫기</button>                   
+                        <button type="button" name="" class="inquBtn">저장</button>
+                    </div>
+                </div>
+
+                <div class="conBox mt5">
+                    <!-- 적용 일정 -->
+                    <div class="tblWrap">
+                        <div class="titleArea right">
+                            <h3 class="tit01">적용 일정</h3>
+                            <p class="txt01"><i class="icoRequir"></i>필수 입력 항목입니다.</p>
+                        </div>
+                        
+                        <table class="tbl">
+                            <caption>적용 일정</caption>
+                            <colgroup>
+                                <col style="width:164px;">
+                                <col>
+                                <col style="width:164px;">
+                                <col>
+                            </colgroup>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="datepicker" class="required" title="필수입력">시작일자</label>
+                                    </th>
+                                    <td>
+                                        <div class="formWrap">
+                                            <div class="dateWrap">
+                                                <input type="text" name="date" value="10/24/1984" class="inp w160 datepicker" id="datepicker" readonly="">
+                                                <button type="button" class="datepickerBtn" title="날짜입력" data-target-id="datepicker"></button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <th scope="row">
+                                        <label for="datepicker" class="required" title="필수입력">출력일자</label>
+                                    </th>
+                                    <td>
+                                        <div class="formWrap" style="justify-content: flex-start; align-items: center;">
+                                            <div class="dateWrap">
+                                                <input type="text" name="date" value="10/24/1984" class="inp w160 datepicker" id="datepicker02" readonly="">
+                                                <button type="button" class="datepickerBtn" title="날짜입력" data-target-id="datepicker02"></button>
+                                            </div>
+                                            <div class="checkGroup ml20">
+                                                <input type="checkbox" id="stdPrdNm01" class="type01"><label for="stdPrdNm01"><span>출고증 인쇄 안함</span></label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th scope="row">
+                                        <label for="datepicker03" class="required" title="필수입력">종료일자</label>
+                                    </th>
+                                    <td colspan="3">
+                                        <div class="formWrap jStart alignCenter">
+                                            <div class="dateWrap">
+                                                <input type="text" name="date" value="10/24/1984" class="inp w160 datepicker" id="datepicker03" readonly="">
+                                                <button type="button" class="datepickerBtn" title="날짜입력" data-target-id="datepicker03"></button>
+                                            </div>
+                                            <input type="text" id="inp_product02" class="inp w160 ml30" value="" name="">
+                                            <span class="ml5 mr20 vaMd">일간</span>
+                                            <button type="button" name="" class="comBtn small">적용</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!--// 적용 일정 -->
+                </div>
+
+                <div class="titleArea">
+                    <h3 class="tit01">계약 정보</h3>
+                </div>
+                
+                <!-- grid -->
+                <div class="girdBox">
+                    <div id="grid_wrap"></div>
+                </div>
+                <!-- grid -->
+
+            </div>
+            <!-- popCon -->
+        </div>
+        <!--// 기간 보류 -->
+    </div>
+</div>
+</body>
+</html>

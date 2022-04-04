@@ -1,0 +1,373 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.cst.dao.CstStatMapper">
+	
+	<sql id="selectCstWhere">
+		
+		AND cm.AGEN_SEQ = #{agenSeq}	
+		<choose>
+			<when test="cntrSec == 'reg'">
+				AND cm.CST_REG_DTM BETWEEN #{startDate} AND #{endDate}
+			</when>
+			<when test="cntrSec == 'sbscrb'">
+				AND cm.UNTPC_DTM BETWEEN #{startDate} AND #{endDate}
+			</when>
+			<when test="cntrSec == 'inpt'">
+				AND cm.UNTPC_STAT_DTM BETWEEN #{startDate} AND #{endDate}
+			</when>
+			<when test="cntrSec == 'cntrEnd'">
+				AND cm.UNTPC_END_DTM BETWEEN #{startDate} AND #{endDate}
+			</when>					
+		</choose>
+		<if test="bilctStus == 'badn'">
+			AND cm.BADN_YN = 'Y'
+		</if>
+		<choose>
+			<when test="inptStus == 'pose'">
+				AND tcps.REG_DTM BETWEEN #{startDate} AND #{endDate}
+				AND tcps.CHG_SEC_CD = 'POSE'
+			</when>
+			<when test="inptStus == 'pdRerv'">
+				AND tcps.REG_DTM BETWEEN #{startDate} AND #{endDate}
+				AND tcps.CHG_SEC_CD = 'REEV'
+			</when>
+			<when test="inptStus == 'norm'">
+				AND cm.STPG_YN = 'N'				
+			</when>									
+		</choose>
+	
+	</sql>
+	
+	<select id="selectCstPeriAreaList" parameterType="com.namyang.nyorder.cst.vo.CstStatVO" resultType="com.namyang.nyorder.cst.vo.CstStatVO">
+		EXEC P_OPEN_KEY
+		SELECT cm.AGEN_AREA_CD, cm.AREA_SEQ, cm.AREA_NM, cm.EMPL_CD, cm.EMPL_NM, COUNT(cm.CST_SEQ) AS CST_CNT
+		FROM 
+			(SELECT tae.AGEN_SEQ, tae.EMPL_SEQ, tcp.CST_SEQ, tcp.CST_PRD_SEQ, tcp.PRD_SEQ, tae.EMPL_CD, tae.RETE_YN		
+				, CONVERT(varchar, DecryptByKey(tae.EMPL_NM)) AS EMPL_NM
+				, taa.AREA_SEQ, taa.AREA_NM, taa.AGEN_AREA_CD 
+				, tcm.CNTR_CST_CD, tcm.SBSCRB_COS_CD, tcm.BADN_YN 
+				, tcm.REG_DTM AS CST_REG_DTM
+				, IIF(tcpu.REG_DTM > tcpu.STAT_DT, tcpu.REG_DTM, tcpu.STAT_DT) AS UNTPC_DTM
+				, tcpu.STAT_DT AS UNTPC_STAT_DTM, tcpu.END_DT AS UNTPC_END_DTM, tcp.STPG_YN
+			FROM T_AGEN_EMPL tae 
+				, T_AGEN_AREA taa
+				, T_CST_MST tcm 
+				, T_CST_PRD tcp 
+				, T_PRD_MST tpm 
+				, T_CST_PTTN tcpt
+				, T_CST_PRD_UNTPC tcpu
+			WHERE tae.AGEN_SEQ = taa.AGEN_SEQ
+				and tae.EMPL_SEQ = taa.EMPL_SEQ
+				AND tae.AGEN_SEQ = tcm.AGEN_SEQ
+				AND	taa.AREA_SEQ = tcm.AREA_SEQ 
+				AND tcm.AGEN_SEQ = tcp.AGEN_SEQ
+				AND	tcm.AREA_SEQ = tcp.AREA_SEQ
+				AND	tcm.CST_SEQ  = tcp.CST_SEQ
+				AND tpm.PRD_SEQ = tcp.PRD_SEQ 	
+				AND tcp.AGEN_SEQ = tcpt.AGEN_SEQ
+				AND	tcp.AREA_SEQ = tcpt.AREA_SEQ
+				AND	tcp.CST_SEQ  = tcpt.CST_SEQ
+				AND tcp.CST_PRD_SEQ = tcpt.CST_PRD_SEQ
+				AND tcpt.AGEN_SEQ = tcpu.AGEN_SEQ
+				AND	tcpt.AREA_SEQ = tcpu.AREA_SEQ
+				AND	tcpt.CST_SEQ  = tcpu.CST_SEQ
+				AND tcpt.CST_PRD_SEQ = tcpu.CST_PRD_SEQ
+				AND tcpt.PTTN_SEQ  = tcpu.PTTN_SEQ		
+				AND tae.RETE_YN = 'Y'
+				--AND tcm.LAST_YN = 'Y'
+				AND tcpt.LAST_YN ='Y' 	
+				AND tcpu.LAST_YN ='Y'			
+			) AS cm
+			LEFT OUTER JOIN T_CST_PRD_STPG tcps  
+			ON tcps.USE_YN = 'Y'	
+				AND getdate() BETWEEN tcps.STAT_DT AND tcps.END_DT	
+				AND cm.AGEN_SEQ = tcps.AGEN_SEQ
+				AND	cm.AREA_SEQ = tcps.AREA_SEQ
+				AND	cm.CST_SEQ  = tcps.CST_SEQ
+				AND cm.CST_PRD_SEQ = tcps.CST_PRD_SEQ 	
+				AND cm.PRD_SEQ = tcps.PRD_SEQ
+		WHERE 1=1	
+		
+		<include refid="selectCstWhere"/>	
+		
+		<if test="searchSec != null and searchSec != ''">
+			<choose>
+				<when test="searchSec == 'areaCd' and searchVal != null and searchVal != ''">
+					AND cm.AGEN_AREA_CD = #{searchVal}					
+				</when>
+				<when test="searchSec == 'areaNm' and searchVal != null and searchVal != ''">
+					AND cm.AREA_NM LIKE '%' + #{searchVal} + '%'					
+				</when>
+				<when test="searchSec == 'emplNm' and searchVal != null and searchVal != ''">
+					AND cm.EMPL_NM LIKE '%' + #{searchVal} + '%'				
+				</when>									
+			</choose>
+		</if>
+				 	
+		GROUP BY cm.AGEN_AREA_CD, cm.AREA_SEQ, cm.AREA_NM, cm.EMPL_CD, cm.EMPL_NM
+	</select>
+	
+	<select id="selectCstPeriPrdList" parameterType="com.namyang.nyorder.cst.vo.CstStatVO" resultType="com.namyang.nyorder.cst.vo.CstStatVO">
+		EXEC P_OPEN_KEY
+		SELECT tcps.CST_STPG_SEQ, cm.*, tcps.STAT_DT, tcps.USE_YN, tcps.CHG_SEC_CD 
+			, CASE tcps.CHG_SEC_CD  
+				WHEN 'RERV' THEN '보류'  
+				WHEN 'POSE' THEN '일시중지'  
+				WHEN 'STPG' THEN '중지'  
+				ELSE '정상'  
+				END AS CHG_SEC_NM  
+			, IIF(tcps.CHG_SEC_CD = 'RERV', tcps.STAT_DT, '') AS RERV_DTM
+			, IIF(tcps.CHG_SEC_CD = 'STPG', tcps.STAT_DT, '') AS STPG_DTM
+			, IIF(tcps.CHG_SEC_CD = 'STPG', tcps.RMK, '') AS RMK
+			, NY_ORDER.dbo.F_GET_NAME_MASKING(cm.CST_NM, 0) AS CST_NM_MAS
+			, NY_ORDER.dbo.F_GET_TEL_MASKING(cm.MOB_NO, 0) AS MOB_NO_MAS
+		FROM 
+			(SELECT tae.AGEN_SEQ, tae.EMPL_SEQ, tcp.CST_SEQ, tcp.CST_PRD_SEQ, tcp.PRD_SEQ, tae.EMPL_CD, tae.RETE_YN
+				, CONVERT(varchar, DecryptByKey(tae.EMPL_NM)) AS EMPL_NM
+				, taa.AREA_SEQ, taa.AREA_NM, taa.AGEN_AREA_CD, taa.DLV_ORDR 
+				, CONVERT(varchar, DecryptByKey(tcm.CST_NM)) AS CST_NM  
+				, CONVERT(varchar, DecryptByKey(tcm.MOB_NO)) AS MOB_NO 	
+				, tcm.DLV_ADDR1 + CONVERT(varchar, DecryptByKey(tcm.DLV_ADDR2)) AS DLV_ADDR
+				, tcm.REG_DTM AS CST_REG_DTM
+				, tpm.PRD_NM
+				--, tcp.UNTPC
+				, tcp.HOP, tcp.HOP_UNTPC 
+				, tcpt.PTTN_SEQ
+				, tcpu.DFLT_QTY, tcpu.UNTPC  
+				, IIF(tcpu.REG_DTM > tcpu.STAT_DT, tcpu.REG_DTM, tcpu.STAT_DT) AS UNTPC_DTM
+				, tcpu.STAT_DT AS UNTPC_STAT_DTM
+				, tcpu.END_DT AS UNTPC_END_DTM
+				, tcm.CNTR_CST_CD, tcm.SBSCRB_COS_CD, tcm.BADN_YN, tcp.STPG_YN
+				, DATEDIFF(MONTH, tcpu.STAT_DT, tcpu.END_DT) AS CNTR_PERIOD
+				, IIF(MON_QTY > 0, '월', '') + IIF(TUE_QTY > 0, '화', '') + IIF(WED_QTY > 0, '수', '') 
+					+ IIF(THU_QTY > 0, '목', '') + IIF(FRI_QTY > 0, '금', '') + IIF(SAT_QTY > 0,'토', '')
+					+ IIF(SUN_QTY > 0, '일', '') AS SUM_DAY_QTY			
+			FROM T_AGEN_EMPL tae 
+				, T_AGEN_AREA taa
+				, T_CST_MST tcm 
+				, T_CST_PRD tcp 
+				, T_PRD_MST tpm 
+				, T_CST_PTTN tcpt
+				, T_CST_PRD_UNTPC tcpu
+			WHERE tae.AGEN_SEQ = taa.AGEN_SEQ
+				and tae.EMPL_SEQ = taa.EMPL_SEQ
+				AND tae.AGEN_SEQ = tcm.AGEN_SEQ
+				AND	taa.AREA_SEQ = tcm.AREA_SEQ 
+				AND tcm.AGEN_SEQ = tcp.AGEN_SEQ
+				AND	tcm.AREA_SEQ = tcp.AREA_SEQ
+				AND	tcm.CST_SEQ  = tcp.CST_SEQ
+				AND tpm.PRD_SEQ = tcp.PRD_SEQ 	
+				AND tcp.AGEN_SEQ = tcpt.AGEN_SEQ
+				AND	tcp.AREA_SEQ = tcpt.AREA_SEQ
+				AND	tcp.CST_SEQ  = tcpt.CST_SEQ
+				AND tcp.CST_PRD_SEQ = tcpt.CST_PRD_SEQ
+				AND tcpt.AGEN_SEQ = tcpu.AGEN_SEQ
+				AND	tcpt.AREA_SEQ = tcpu.AREA_SEQ
+				AND	tcpt.CST_SEQ  = tcpu.CST_SEQ
+				AND tcpt.CST_PRD_SEQ = tcpu.CST_PRD_SEQ
+				AND tcpt.PTTN_SEQ  = tcpu.PTTN_SEQ		
+				AND tae.RETE_YN = 'Y'
+				--AND tcm.LAST_YN = 'Y'
+				AND tcpt.LAST_YN ='Y' 	
+				AND tcpu.LAST_YN ='Y'			
+				
+			) AS cm
+			LEFT OUTER JOIN T_CST_PRD_STPG tcps  
+			ON tcps.USE_YN = 'Y'	
+				AND getdate() BETWEEN tcps.STAT_DT AND tcps.END_DT	
+				AND cm.AGEN_SEQ = tcps.AGEN_SEQ
+				AND	cm.AREA_SEQ = tcps.AREA_SEQ
+				AND	cm.CST_SEQ  = tcps.CST_SEQ
+				AND cm.CST_PRD_SEQ = tcps.CST_PRD_SEQ 	
+				AND cm.PRD_SEQ = tcps.PRD_SEQ
+		WHERE 1=1
+			AND cm.AREA_SEQ = #{areaSeq}	
+			<include refid="selectCstWhere"/>
+			
+		ORDER BY 
+			--cm.CST_SEQ
+			cm.AGEN_SEQ, cm.EMPL_SEQ, cm.CST_SEQ, cm.CST_PRD_SEQ
+	</select>
+	
+	<select id="selectPopAreaList" parameterType="com.namyang.nyorder.cst.vo.CstStatVO" resultType="com.namyang.nyorder.cst.vo.CstStatVO">
+		EXEC P_OPEN_KEY
+		SELECT * 
+		FROM
+			(SELECT taa.AREA_SEQ, taa.AGEN_SEQ, taa.EMPL_SEQ, taa.AREA_NM, taa.AGEN_AREA_CD 
+				, CONVERT(varchar, DecryptByKey(tae.EMPL_NM)) AS EMPL_NM  
+				, tae.EMPL_CD 
+			FROM dbo.T_AGEN_EMPL tae 
+				, dbo.T_AGEN_AREA taa 
+			WHERE tae.AGEN_SEQ = taa.AGEN_SEQ 
+				AND tae.EMPL_SEQ = taa.EMPL_SEQ 
+				AND taa.AGEN_SEQ = #{agenSeq}
+				<if test="popSearchSec == 'area' and searchVal != null and searchVal != ''">
+					AND taa.AREA_NM LIKE '%' + #{searchVal} + '%'
+				</if>
+			) cm
+		WHERE 1=1
+			<if test="popSearchSec == 'empl' and searchVal != null and searchVal != ''">
+				AND cm.EMPL_NM LIKE '%' + #{searchVal} + '%'
+			</if>
+			
+	</select>
+	
+	<select id="selectPuchList" parameterType="com.namyang.nyorder.cst.vo.CstStatVO" resultType="com.namyang.nyorder.cst.vo.CstStatVO">
+		SELECT PUCH_SEQ, '99999999' AS AGEN_SEQ, PUCH_CD, PUCH_NM  
+		FROM dbo.T_AGEN_MJR_PUCH tamp  
+		WHERE 1=1	
+		UNION 
+		SELECT PUCH_SEQ, AGEN_SEQ, PUCH_CD, PUCH_NM 
+		FROM dbo.T_AGEN_OTR_PUCH taop 
+		WHERE AGEN_SEQ = #{agenSeq}		
+	</select>
+	
+	<select id="selectPrdAreaList" parameterType="com.namyang.nyorder.cst.vo.CstStatVO" resultType="com.namyang.nyorder.cst.vo.CstStatVO">
+		SELECT tcp.PRD_SEQ, tpm.PRD_NM, tpm.PRD_SAP_CD
+			, SUM(tcpu.DFLT_QTY) AS DFLT_QTY , SUM(tcpu.UNTPC) AS UNTPC 			
+		FROM T_AGEN_EMPL tae 
+			, T_AGEN_AREA taa
+			, T_CST_MST tcm 
+			, T_CST_PRD tcp 
+			, T_PRD_MST tpm 
+			, T_CST_PTTN tcpt
+			, T_CST_PRD_UNTPC tcpu
+		WHERE tae.AGEN_SEQ = taa.AGEN_SEQ
+			and tae.EMPL_SEQ = taa.EMPL_SEQ
+			AND tae.AGEN_SEQ = tcm.AGEN_SEQ
+			AND	taa.AREA_SEQ = tcm.AREA_SEQ 
+			AND tcm.AGEN_SEQ = tcp.AGEN_SEQ
+			AND	tcm.AREA_SEQ = tcp.AREA_SEQ
+			AND	tcm.CST_SEQ  = tcp.CST_SEQ
+			AND tpm.PRD_SEQ = tcp.PRD_SEQ 	
+			AND tcp.AGEN_SEQ = tcpt.AGEN_SEQ
+			AND	tcp.AREA_SEQ = tcpt.AREA_SEQ
+			AND	tcp.CST_SEQ  = tcpt.CST_SEQ
+			AND tcp.CST_PRD_SEQ = tcpt.CST_PRD_SEQ
+			AND tcpt.AGEN_SEQ = tcpu.AGEN_SEQ
+			AND	tcpt.AREA_SEQ = tcpu.AREA_SEQ
+			AND	tcpt.CST_SEQ  = tcpu.CST_SEQ
+			AND tcpt.CST_PRD_SEQ = tcpu.CST_PRD_SEQ
+			AND tcpt.PTTN_SEQ  = tcpu.PTTN_SEQ		
+			AND tae.RETE_YN = 'Y'
+			--AND tcm.LAST_YN = 'Y'
+			AND tcpt.LAST_YN ='Y' 
+			AND tcpu.LAST_YN ='Y'
+			AND tcp.STPG_YN = 'N'
+			AND tcm.AGEN_SEQ = #{agenSeq}
+			<![CDATA[
+			AND NOT (tcpu.STAT_DT > #{prdEndDate} OR tcpu.END_DT < #{prdStartDate}) 
+			]]>
+			<if test="areaSeq != null and areaSeq != ''">
+				AND tcp.AREA_SEQ = #{areaSeq}
+			</if>
+			<if test="puchSeq != null and puchSeq != ''">
+				AND tpm.PUCH_SEQ = #{puchSeq}
+			</if>
+		GROUP BY tcp.PRD_SEQ, tpm.PRD_NM, tpm.PRD_SAP_CD
+		ORDER BY PRD_SEQ			
+	</select>
+	
+	<select id="selectPrdAreaDetailList" parameterType="com.namyang.nyorder.cst.vo.CstStatVO" resultType="com.namyang.nyorder.cst.vo.CstStatVO">
+		EXEC P_OPEN_KEY 
+		SELECT tcpu.STAT_DT, tcpu.END_DT, tae.AGEN_SEQ, tae.EMPL_SEQ, tcp.CST_SEQ, tcp.CST_PRD_SEQ, tcp.PRD_SEQ, tae.EMPL_CD, tae.RETE_YN
+			, taa.AREA_SEQ, taa.AREA_NM, taa.AGEN_AREA_CD, taa.DLV_ORDR 
+			, CONVERT(varchar, DecryptByKey(tcm.CST_NM)) AS CST_NM  
+			, CONVERT(varchar, DecryptByKey(tcm.MOB_NO)) AS MOB_NO 	
+			, tcm.DLV_ADDR1 + CONVERT(varchar, DecryptByKey(tcm.DLV_ADDR2)) AS DLV_ADDR
+			, tpm.PRD_NM
+			, tcpu.DFLT_QTY, tcpu.UNTPC  		
+			, tcm.CNTR_CST_CD, tcm.BADN_YN 	
+			, tcpu.STAT_DT, tcpu.END_DT		
+			, tcm.ORDR, tcm.CST_AGEN_CD	
+			, (tcpu.UNTPC * tcpu.DFLT_QTY) AS TOT_UNTPC
+		FROM T_AGEN_EMPL tae 
+			, T_AGEN_AREA taa
+			, T_CST_MST tcm 
+			, T_CST_PRD tcp 
+			, T_PRD_MST tpm 
+			, T_CST_PTTN tcpt
+			, T_CST_PRD_UNTPC tcpu			
+		WHERE tae.AGEN_SEQ = taa.AGEN_SEQ
+			and tae.EMPL_SEQ = taa.EMPL_SEQ
+			AND tae.AGEN_SEQ = tcm.AGEN_SEQ
+			AND	taa.AREA_SEQ = tcm.AREA_SEQ 
+			AND tcm.AGEN_SEQ = tcp.AGEN_SEQ
+			AND	tcm.AREA_SEQ = tcp.AREA_SEQ
+			AND	tcm.CST_SEQ  = tcp.CST_SEQ
+			AND tpm.PRD_SEQ = tcp.PRD_SEQ 	
+			AND tcp.AGEN_SEQ = tcpt.AGEN_SEQ
+			AND	tcp.AREA_SEQ = tcpt.AREA_SEQ
+			AND	tcp.CST_SEQ  = tcpt.CST_SEQ
+			AND tcp.CST_PRD_SEQ = tcpt.CST_PRD_SEQ
+			AND tcpt.AGEN_SEQ = tcpu.AGEN_SEQ
+			AND	tcpt.AREA_SEQ = tcpu.AREA_SEQ
+			AND	tcpt.CST_SEQ  = tcpu.CST_SEQ
+			AND tcpt.CST_PRD_SEQ = tcpu.CST_PRD_SEQ
+			AND tcpt.PTTN_SEQ  = tcpu.PTTN_SEQ	
+			AND tae.RETE_YN = 'Y'
+			--AND tcm.LAST_YN = 'Y'
+			AND tcpt.LAST_YN ='Y' 
+			AND tcpu.LAST_YN ='Y'
+			AND tcp.STPG_YN = 'N'			
+			AND tpm.PRD_SEQ = #{prdSeq}
+			AND tcm.AGEN_SEQ = #{agenSeq}
+			<![CDATA[
+			AND NOT (tcpu.STAT_DT > #{prdEndDate} OR tcpu.END_DT < #{prdStartDate}) 
+			]]>
+			<if test="areaSeq != null and areaSeq != ''">
+				AND tcp.AREA_SEQ = #{areaSeq}
+			</if>
+			
+			<if test='puchSeq != null and  puchSeq != ""'>
+				AND tpm.PUCH_SEQ = #{puchSeq}
+			</if>		
+		ORDER BY DLV_ADDR, ORDR, CST_NM		
+	</select>
+	
+	<select id="selectCstAreaMapList" parameterType="com.namyang.nyorder.cst.vo.CstStatVO" resultType="com.namyang.nyorder.cst.vo.CstStatVO">
+		EXEC P_OPEN_KEY
+		SELECT taa.AGEN_AREA_CD, taa.AREA_SEQ, taa.AREA_NM, tae.EMPL_CD
+			, CONVERT(varchar, DecryptByKey(tae.EMPL_NM)) AS EMPL_NM
+			, COUNT(tcm.CST_SEQ) AS CST_CNT		
+		FROM T_AGEN_EMPL tae 
+			, T_AGEN_AREA taa
+			, T_CST_MST tcm 
+			, T_CST_PRD tcp 				
+		WHERE tae.AGEN_SEQ = taa.AGEN_SEQ
+			and tae.EMPL_SEQ = taa.EMPL_SEQ
+			AND tae.AGEN_SEQ = tcm.AGEN_SEQ
+			AND	taa.AREA_SEQ = tcm.AREA_SEQ 
+			AND tcm.AGEN_SEQ = tcp.AGEN_SEQ
+			AND	tcm.AREA_SEQ = tcp.AREA_SEQ
+			AND	tcm.CST_SEQ  = tcp.CST_SEQ								
+			AND tae.RETE_YN = 'Y'	
+			AND tcm.AGEN_SEQ = #{agenSeq}
+			<if test="areaSeq != null and areaSeq != ''">
+				AND tcp.AREA_SEQ = #{areaSeq}
+			</if>
+			 	
+		GROUP BY taa.AGEN_AREA_CD, taa.AREA_SEQ, taa.AREA_NM, tae.EMPL_CD, EMPL_NM
+	</select>
+	
+	<select id="selectCstAreaMapDetailList" parameterType="com.namyang.nyorder.cst.vo.CstStatVO" resultType="com.namyang.nyorder.cst.vo.CstStatVO">
+		EXEC P_OPEN_KEY
+		SELECT taa.AGEN_AREA_CD, taa.AREA_SEQ, taa.AREA_NM, tae.EMPL_CD
+			, tcm.MAP_LATU, tcm.MAP_LOTU
+		FROM T_AGEN_EMPL tae 
+			, T_AGEN_AREA taa
+			, T_CST_MST tcm 
+			, T_CST_PRD tcp 				
+		WHERE tae.AGEN_SEQ = taa.AGEN_SEQ
+			and tae.EMPL_SEQ = taa.EMPL_SEQ
+			AND tae.AGEN_SEQ = tcm.AGEN_SEQ
+			AND	taa.AREA_SEQ = tcm.AREA_SEQ 
+			AND tcm.AGEN_SEQ = tcp.AGEN_SEQ
+			AND	tcm.AREA_SEQ = tcp.AREA_SEQ
+			AND	tcm.CST_SEQ  = tcp.CST_SEQ								
+			AND tae.RETE_YN = 'Y'	
+			AND tcm.AGEN_SEQ = #{agenSeq}
+			AND tcp.AREA_SEQ = #{areaSeq}
+	</select>
+	
+</mapper>

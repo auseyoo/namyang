@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.agn.dao.RtgdRegMapper">
+
+	<select id="selectRtgdRegList" parameterType="com.namyang.nyorder.agn.vo.RtgdVO" resultType="com.namyang.nyorder.agn.vo.RtgdVO">	
+		/* RtgdReg-Mapper - selectRtgdRegList */	
+			SELECT						
+				ROW_NUMBER() OVER(ORDER BY (SELECT 1)) AS ROWNUM						
+				, A.AGEN_SEQ
+				, A.ORD_RTGD_SEQ
+				, B.PRD_DTL_SEQ
+				, B.PRD_DTL_CD					
+				, B.SHTN_NM	AS PRD_NM				
+				, '' AS DEL_FLAG
+				, '' AS ERR_FLAG
+				, B.FALT_QTY					
+				, A.REQ_BOX_QTY
+				, A.REQ_IDDY_QTY
+				, ((ISNULL(A.REQ_BOX_QTY, 0) * ISNULL(B.FALT_QTY, 0)) + ISNULL(A.REQ_IDDY_QTY, 0)) AS REQ_QTY
+				, A.UNTPC					
+				, A.SPPRC					
+				, A.VAT_SPPRC					
+				, (A.SPPRC + A.VAT_SPPRC) AS TOT_AMOUNT					
+				, CASE WHEN A.TRNST_YN = 'Y' THEN '완료'
+						ELSE '-'
+					END TRNST_YN						
+				, A.ERR_MSG
+			FROM						
+				(					
+				<include refid="com.namyang.nyorder.agn.dao.RtgdMapper.selectRtgdList"/>
+			) A 						
+			INNER JOIN T_PRD_DTL B ON A.PRD_DTL_SEQ = B.PRD_DTL_SEQ  AND A.AGEN_SEQ = B.AGEN_SEQ 						
+			<!-- INNER JOIN T_PRD_MST C ON B.PRD_SEQ = C.PRD_SEQ --> 				
+			WHERE 1=1
+			<if test="rtgdSec != null and rtgdSec != '' ">
+				AND A.RTGD_SEC = #{rtgdSec}	 
+			</if>	
+	</select>
+	
+	<sql id="selectCallPrdList">
+		SELECT
+			ROW_NUMBER() OVER(ORDER BY (SELECT 1)) AS ROWNUM						
+			, A.AGEN_SEQ
+			, '' AS ORD_RTGD_SEQ
+			, A.PRD_DTL_SEQ
+			, A.PRD_DTL_CD					
+			, A.SHTN_NM	AS PRD_NM				
+			, '' AS DEL_FLAG
+			, '' AS ERR_FLAG
+			, B.FALT_QTY					
+			, '0' AS REQ_BOX_QTY					
+			, '0' AS REQ_IDDY_QTY					
+			, '0' AS REQ_QTY					
+			, '0' AS UNTPC	
+			, '0' AS SPPRC					
+			, '0' AS VAT_SPPRC					
+			, '0' AS TOT_AMOUNT					
+			, '-' AS TRNST_YN						
+			, '' AS ERR_MSG
+			, B.TAXT_CD
+		FROM T_PRD_DTL A 			
+		INNER JOIN T_PRD_MST B ON A.PRD_SEQ = B.PRD_SEQ AND B.USE_YN = 'Y'				 
+		WHERE 1=1	
+		AND A.AGEN_SEQ = #{agenSeq}
+		AND A.STD_PRD_YN = 'Y'	
+		AND PRD_DTL_SEQ NOT IN (
+				SELECT PRD_DTL_SEQ
+				FROM T_ORD_RTGD A			
+				WHERE 1 = 1				
+					AND A.AGEN_SEQ = #{agenSeq} 
+					AND REQ_DT LIKE CONVERT(CHAR(6), GETDATE(), 112) + '%'  
+					AND USE_YN = 'Y'
+		)		
+	</sql>
+	
+	<select id="selectStdPrdList" parameterType="com.namyang.nyorder.agn.vo.RtgdVO" resultType="com.namyang.nyorder.agn.vo.RtgdVO">	
+		/* RtgdReg-Mapper - selectStdPrdList */	
+			<include refid="selectCallPrdList"/> 	
+	</select>	
+	
+	<select id="selectPrevRtgdList" parameterType="com.namyang.nyorder.agn.vo.RtgdVO" resultType="com.namyang.nyorder.agn.vo.RtgdVO">	
+		/* RtgdReg-Mapper - selectPrevRtgdList */	
+			<include refid="selectCallPrdList"/>
+			AND A.PRD_DTL_SEQ IN (
+				SELECT PRD_DTL_SEQ
+				FROM T_ORD_RTGD A			
+				WHERE 1 = 1				
+					AND A.AGEN_SEQ = #{agenSeq}
+					AND REQ_DT LIKE CONVERT(CHAR(6), DATEADD(MONTH, -1, GETDATE()), 112) + '%'  
+					AND USE_YN = 'Y'
+			)			
+	</select>	
+	
+	<update id="megOrdRtgd" parameterType="com.namyang.nyorder.agn.vo.RtgdVO">
+		/* RtgdReg-Mapper - megOrdRtgd */
+			
+			DECLARE @ORD_RTGD_SEQ     numeric(13)
+			SET @ORD_RTGD_SEQ = NEXT VALUE FOR SQ_ORD_RTGD
+			MERGE INTO T_ORD_RTGD A
+			USING(
+					SELECT CASE WHEN #{ordRtgdSeq} IS NULL OR #{ordRtgdSeq} = '' THEN '0' 
+								ELSE #{ordRtgdSeq}
+							END ORD_RTGD_SEQ
+			) B
+			ON (
+				A.ORD_RTGD_SEQ = B.ORD_RTGD_SEQ
+			) 
+			WHEN	MATCHED THEN 
+					UPDATE	SET 
+							A.REQ_BOX_QTY 		= ISNULL(#{reqBoxQty}, '0')
+							, A.REQ_IDDY_QTY 	= ISNULL(#{reqIddyQty}, '0')
+							, A.UNTPC			= ISNULL(#{untpc}, '0')
+							, A.SPPRC			= ISNULL(#{spprc}, '0')
+							, A.VAT_SPPRC		= ISNULL(#{vatSpprc}, '0')
+							, A.RTGD_SEC		= #{rtgdSec} 
+							, A.UPD_DTM			= CURRENT_TIMESTAMP
+							, A.UPD_SEQ			= #{emplSeq, jdbcType=NUMERIC}
+			WHEN	NOT MATCHED THEN
+					INSERT(ORD_RTGD_SEQ, AGEN_SEQ, PRD_DTL_SEQ, ORD_STUS_CD, RTGD_SEC, PRGRM_DSTN_CD, REQ_DT, REQ_BOX_QTY, REQ_IDDY_QTY, UNTPC, SPPRC, VAT_SPPRC, TRNST_YN, DCSN_YN, REG_COS, USE_YN, REG_DTM, REG_SEQ)
+					VALUES(@ORD_RTGD_SEQ
+						, #{agenSeq}
+						, #{prdDtlSeq}
+						, 'RTGD'
+						, #{rtgdSec}
+						, 'T'
+						, CONVERT (CHAR(8), GETDATE(), 112)
+						, ISNULL(#{reqBoxQty}, '0')
+						, ISNULL(#{reqIddyQty}, '0')
+						, ISNULL(#{untpc}, '0')
+						, ISNULL(#{spprc}, '0')
+						, ISNULL(#{vatSpprc}, '0')
+						, 'N'
+						, 'N'
+						, '1' /*주문시스템*/
+						, 'Y'
+						, CURRENT_TIMESTAMP
+						, #{emplSeq, jdbcType=NUMERIC}
+					);
+	</update>
+		
+	<update id="sendOrdRtgd" parameterType="com.namyang.nyorder.agn.vo.RtgdVO">
+		/* RtgdReg-Mapper - sendOrdRtgd */	
+			UPDATE T_ORD_RTGD 
+			SET	TRNST_YN = 'Y',
+				UPD_DTM = CURRENT_TIMESTAMP,
+				UPD_SEQ = #{emplSeq}
+			WHERE ORD_RTGD_SEQ = #{ordRtgdSeq}
+	</update>		
+		
+	<select id="selectPrdList" parameterType="com.namyang.nyorder.agn.vo.RtgdVO" resultType="com.namyang.nyorder.agn.vo.RtgdVO">	
+		/* RtgdReg-Mapper - selectPrdList */	
+			SELECT
+				A.PRD_DTL_SEQ
+				, A.PRD_DTL_CD
+				, A.SHTN_NM AS PRD_NM
+				, B.FALT_QTY 
+				, B.TAXT_CD
+			FROM T_PRD_DTL A 
+			INNER JOIN T_PRD_MST B ON A.PRD_SEQ = B.PRD_SEQ 
+			WHERE 1=1 
+				AND A.AGEN_SEQ = #{agenSeq} 
+				AND A.STD_PRD_YN = 'Y'
+				AND A.USE_YN = 'Y'
+			<if test="(searchPart != null and searchPart != '') and (searchTxt != null and searchTxt != '') ">
+				AND A.${searchPart} LIKE '%' + #{searchTxt} + '%' 
+			</if>					
+	</select>
+	
+	<select id="selectTrnstYn" parameterType="com.namyang.nyorder.agn.vo.RtgdVO" resultType="String">	
+		/* RtgdReg-Mapper - selectTrnstYn */	
+			SELECT CASE WHEN COUNT(*) > 0 THEN 'Y' ELSE 'N' END TRNST_YN
+			FROM  T_ORD_RTGD			
+			WHERE				
+				AGEN_SEQ = #{agenSeq} 	
+				AND REQ_DT LIKE #{reqYm} + '%'
+				AND ORD_STUS_CD = 'RTGD'
+				AND PRGRM_DSTN_CD = 'T'
+				AND TRNST_YN = 'Y'
+				AND USE_YN = 'Y'			
+	</select>		
+	
+	<select id="selectSavedYn" parameterType="com.namyang.nyorder.agn.vo.RtgdVO" resultType="String">	
+		/* RtgdReg-Mapper - selectSavedYn */	
+			SELECT CASE WHEN COUNT(*) > 0 THEN 'Y' ELSE 'N' END SAVED_YN
+			FROM  T_ORD_RTGD			
+			WHERE				
+				AGEN_SEQ = #{agenSeq} 	
+				AND REQ_DT LIKE #{reqYm} + '%'
+				AND ORD_STUS_CD = 'RTGD'
+				AND PRGRM_DSTN_CD = 'T'
+				AND USE_YN = 'Y'			
+	</select>		
+	
+	<update id="delOrdRtgd" parameterType="com.namyang.nyorder.agn.vo.RtgdVO">
+		/* RtgdReg-Mapper - delOrdRtgd */
+			UPDATE T_ORD_RTGD 
+			SET	USE_YN = 'N',
+				UPD_DTM = CURRENT_TIMESTAMP,
+				UPD_SEQ = #{emplSeq}
+			WHERE	ORD_RTGD_SEQ = #{ordRtgdSeq}
+	</update>		
+	
+</mapper>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.comm.dao.BiznoMapper">
+
+	<select id="selectBizno" parameterType="com.namyang.nyorder.comm.vo.BiznoVO" resultType="com.namyang.nyorder.comm.vo.BiznoVO">
+		SELECT 
+			tam.AGEN_SEQ 
+		  , tam.SALE_CD 
+  		  , tam.AGEN_CD
+		FROM  
+			T_AGEN_MST tam
+		WHERE 
+			1=1
+			AND tam.BIZ_NO =  NY_ORDER.dbo.F_TRAN_NO256(#{bizNo})
+			AND tam.AGEN_CD = #{agenCd}
+	</select>
+	<select id="selectBiznoList" parameterType="com.namyang.nyorder.comm.vo.BiznoVO" resultType="com.namyang.nyorder.comm.vo.BiznoVO">
+	SELECT
+	      tam.AGEN_SEQ
+		, tam.AGEN_CD
+		, tam.AGEN_NM
+		, tae.EMPL_SEQ
+		, tae.EMPL_CD
+		, tam.AGEN_CD
+		, tam.SALE_CD 
+	FROM T_AGEN_EMPL tae
+	    ,T_AGEN_MST tam 
+	WHERE tae.AGEN_SEQ = tam.AGEN_SEQ 
+	AND tam.BIZ_NO = #{bizNo}
+	</select>
+</mapper>

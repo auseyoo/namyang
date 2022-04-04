@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.comm.dao.MainMapper">
+	
+	<select id="selectMainNotice" resultType="com.namyang.nyorder.cmmc.vo.NttVO">
+		/*Main-Mapper - selectMainNotice*/
+			SELECT TOP 5 NTT_SEQ
+						, NTT_SUB
+						, REG_DTM
+			FROM T_NTT_MST
+			WHERE NTT_CD = 1
+				AND USE_YN = 'Y'
+				AND NOTI_YN = 'Y'
+			ORDER BY REG_DTM DESC
+	</select>
+	
+	<select id="selectOrdTotAmount" parameterType="com.namyang.nyorder.comm.vo.CommVO" resultType="int">
+		/*Main-Mapper - selectOrdTotAmount*/
+		/*
+		대리점의 마지막 주문의 주문제품 합계 금액으로 조회했음.
+		추후에 쿼리 변경해야할듯!!!
+		*/
+			SELECT
+				SUM(((ISNULL(B.REQ_BOX_QTY, 0) * ISNULL(C.FALT_QTY, 0)) + ISNULL(B.REQ_IDDY_QTY, 0)) * ISNULL(B.UNTPC, 0))   
+			FROM T_ORD_MST A 
+			INNER JOIN T_ORD_PRD B ON A.AGEN_SEQ = B.AGEN_SEQ AND A.ORD_SEQ = B.ORD_SEQ
+			INNER JOIN T_PRD_DTL C ON A.AGEN_SEQ = C.AGEN_SEQ AND B.PRD_DTL_SEQ = C.PRD_DTL_SEQ  
+			WHERE A.AGEN_SEQ = #{agenSeq}
+			AND A.ORD_DT = (
+				SELECT MAX(ORD_DT) 
+				FROM T_ORD_MST 
+				WHERE AGEN_SEQ = #{agenSeq}
+			)
+	</select>
+	
+</mapper>

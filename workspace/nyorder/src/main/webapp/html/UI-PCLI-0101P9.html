@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템 - 애음자관리: 개별수금 팝업</title>
+<link rel="stylesheet" type="text/css" href="../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/lib/MonthPicker.min.css"/>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/lib/MonthPicker.min.js"></script>
+<script type="text/javascript" src="../js/datepicker_month_custom.js"></script>
+<script type="text/javascript" src="../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<script type="text/javascript">
+    var myGridID;
+	var myGridID2;
+    var gridData = [
+			{"id":"#Cust0","code":"FG51000","prdNm":"GT프리미엄200","purchasePrice":540,"intake":1050,"singleOrder":"가능","stockToday01":2,"stockToday02":5,"myQuantity01":8,"myQuantity02":1,"myQuantity03":13,"myQuantity04":20,"prepreDay01":20,"prepreDay02":20,"preDay01":20,"preDay02":20,"ownerOrder01":7,"ownerOrder02":1,"seOrder01":5,"seOrder02":3,"orderTotal01":5,"orderTotal02":3,"totalPrice":42800,"dePeriod":"+1","possible":"가능"},
+			{"id":"#Cust1","code":"FG51000","prdNm":"GT프리미엄200","purchasePrice":540,"intake":1050,"singleOrder":"가능","stockToday01":10,"stockToday02":10,"myQuantity01":8,"myQuantity02":1,"myQuantity03":13,"myQuantity04":100,"prepreDay01":20,"prepreDay02":20,"preDay01":20,"preDay02":20,"ownerOrder01":7,"ownerOrder02":1,"seOrder01":5,"seOrder02":3,"orderTotal01":5,"orderTotal02":3,"totalPrice":5800,"dePeriod":"+1","possible":"불가능"}
+	];
+	var gridData2 = [
+        {"id":"#Cust01","prdSapCd":0072,"prdNm":"GT프리미엄200","2order01":35,"2order02":35,"3order01":35,"3order02":35,"4order01":35,"4order02":35,"5order01":35,"5order02":35,"6order01":35,"6order02":35},
+		{"id":"#Cust11","prdSapCd":0072,"prdNm":"GT프리미엄200","2order01":35,"2order02":35,"3order01":35,"3order02":35,"4order01":35,"4order02":35,"5order01":35,"5order02":35,"6order01":35,"6order02":35}
+    ];
+   
+    $(document).ready(function(){
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid();
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.        
+        
+        AUIGrid.setGridData(myGridID, gridData);
+		AUIGrid.setGridData(myGridID2, gridData2);
+	    AUIGrid.setFooter(myGridID, footerLayout);
+    });
+    
+   
+    // AUIGrid 를 생성합니다.
+    function createAUIGrid(){
+        // 그리드 속성 설정
+        var gridPros = {
+                //headerHeight : 29,
+                headerHeights : [58, 29],
+                rowHeight : 29,
+                // 편집 가능 여부 (기본값 : false)
+                editable : true,
+                autoGridHeight : true,
+                
+                // 엔터키가 다음 행이 아닌 다음 칼럼으로 이동할지 여부 (기본값 : false)
+                enterKeyColumnBase : true,
+                editingOnKeyDown : true, // 키보드 입력으로 편집 모드 진입 (기본값:true임;)
+
+                wrapSelectionMove : true,
+                
+                // 셀 선택모드 (기본값: singleCell)
+                selectionMode : "multipleCells",
+                showFooter : true,
+                
+                // 컨텍스트 메뉴 사용 여부 (기본값 : false)
+                useContextMenu : true,
+                
+                // 필터 사용 여부 (기본값 : false)
+                enableFilter : true,
+            
+                // 그룹핑 패널 사용
+                useGroupingPanel : false,
+                
+               
+                // 그룹핑 또는 트리로 만들었을 때 펼쳐지게 할지 여부 (기본값 : false)
+                displayTreeOpen : true,
+                
+                noDataMessage : "출력할 데이터가 없습니다.",
+                
+                groupingMessage : "여기에 칼럼을 드래그하면 그룹핑이 됩니다."
+                
+        };
+    
+        // 실제로 #grid_wrap 에 그리드 생성
+        myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+        myGridID2 = AUIGrid.create("#grid_wrap2", columnLayout2, gridPros);
+    }
+
+    var columnLayout = [{
+            dataField : "code",
+			headerText : "제품코드",
+			width : "5%",
+		},{
+			dataField : "prdNm",
+			headerText : "제품명",
+            style : "auiLeft",
+			width : "10%",
+		},{
+			dataField : "purchasePrice",
+			headerText : "매입단가",
+            dataType : "numeric",
+			width : "3.5%",
+            style : "auiRight"
+		},{
+			dataField : "intake",
+			headerText : "입수량",
+			width : "4.5%",
+            style: "auiRight"
+		},{
+			dataField : "stockToday",
+			headerText : "대리점<br/>현 재고",
+            style: "auiRightBorR",
+                children : [{
+                    dataField : "stockToday01",
+                    headerText : "BOX",
+                    width : "3.5%",
+                    style: "auiRight"
+                }, {
+                    dataField : "stockToday02",
+                    headerText : "낱봉",
+                    width : "3.5%",
+                    style: "auiRight"
+                }]
+		},{
+			dataField : "prepreDay",
+			headerText : "전전일자<br/>주문량",
+                children : [{
+                    dataField : "prepreDay01",
+                    headerText : "BOX",
+                    width : "3.5%",
+                    style: "auiRight"
+                }, {
+                    dataField : "prepreDay02",
+                    headerText : "낱봉",
+                    width : "3.5%",
+                    style: "auiRight"
+                }]
+        },{
+			dataField : "preDay",
+			headerText : "전일자<br/>주문량",
+                children : [{
+                    dataField : "preDay01",
+                    headerText : "BOX",
+                    width : "3.5%",
+                    style: "auiRight"
+                }, {
+                    dataField : "preDay02",
+                    headerText : "낱봉",
+                    width : "3.5%",
+                    style: "auiRight"
+                }]
+        },{
+			dataField : "singleOrder",
+			headerText : "낱봉<br/>주문",
+            width : "4%",            
+        },{
+			dataField : "myQuantity",
+			headerText : "내 입력수량",
+                children : [{
+                    dataField : "myQuantity01",
+                    headerText : "BOX",                    
+                    width : "4%",
+                    style: "auiRight",
+                    editable : true,
+                    renderer : {
+                        type : "TemplateRenderer"
+                    },
+                    // dataField 로 정의된 필드 값이 HTML 이라면 labelFunction 으로 처리할 필요 없음.
+                    labelFunction : function (rowIndex, columnIndex, value, headerText, item ) {
+                        var template = '<div class="my_div">';
+                        template += '<span class="my_div_text_box center">' + value + '</span>';
+                        template += '</div>';
+                        return template;
+                    }
+                }, {
+                    dataField : "myQuantity02",
+                    headerText : "낱봉",
+                    width : "4%",
+                    style: "auiRight",
+                    editable : true,
+                    renderer : {
+                        type : "TemplateRenderer"
+                    },
+                    labelFunction : function (rowIndex, columnIndex, value, headerText, item ) {
+                        var template = '<div class="my_div">';
+                        template += '<span class="my_div_text_box center">' + value + '</span>';
+                        template += '</div>';
+                        return template;
+                    }
+                }, {
+                    dataField : "myQuantity03",
+                    headerText : "총수량",
+                    colSpan : 2,
+                    width : "3.5%",
+                    style: "auiRight"
+                },{
+                    dataField : "myQuantity04",
+                    headerText : "",
+                    width : 80,
+                    dataType : "numeric",
+                    formatString : "#,##0",
+                    style : "left",
+                    renderer : {
+                        type : "BarRenderer",
+                        showLabel : false,
+                        min : 0,
+                        max : 100
+                    },
+                    styleFunction : function(rowIndex, columnIndex, value, headerText, dataField, item) {
+                        if(value == 100)
+                            return "c-red";
+                        return "";
+                    }
+                }]
+        },{
+			dataField : "ownerOrder",
+			headerText : "점주 주문",
+                children : [{
+                    dataField : "ownerOrder01",
+                    headerText : "BOX",
+                    width : "3.5%",
+                    style: "auiRight"
+                }, {
+                    dataField : "ownerOrder02",
+                    headerText : "낱봉",
+                    width : "3.5%",
+                    style: "auiRight"
+                }]
+        },{
+			dataField : "seOrder",
+			headerText : "총무 주문<br/>(합계)",
+                children : [{
+                    dataField : "seOrder01",
+                    headerText : "BOX",
+                    width : "3.5%",
+                    style: "auiRight"
+                }, {
+                    dataField : "seOrder02",
+                    headerText : "낱봉",
+                    width : "3.5%",
+                    style: "auiRight"
+                }]
+        },{
+			dataField : "orderTotal",
+			headerText : "주문 합계",
+                children : [{
+                    dataField : "orderTotal01",
+                    headerText : "BOX",
+                    width : "3.5%",
+                    style: "auiRight"
+                }, {
+                    dataField : "orderTotal02",
+                    headerText : "낱봉",
+                    width : "3.5%",
+                    style: "auiRight"
+                }]
+        },{
+            dataField : "totalPrice",
+			headerText : "합계<br/>금액",
+            dataType : "numeric",
+			width : "5%",
+            style: "auiRight"
+        },{
+            dataField : "dePeriod",
+			headerText : "배송<br/>기간",
+			width : "3.5%"
+		},{
+			dataField : "possible",
+			headerText : "주문가능<br/>여부",
+		}
+	];
+
+	var columnLayout2 = [{
+			dataField : "prdSapCd",
+			headerText : "제품코드",
+            width : "10%" ,
+            style : "auiLink"           	
+		},{
+			dataField : "prdNm",
+			headerText : "제품명",
+            style : "auiLeft",
+        },{
+			dataField : "2order",
+			headerText : "2차 주문",
+			children : [{
+                    dataField : "2order",
+                    headerText : "11:35:00",
+                    width : "14%",
+					children : [{
+						dataField : "2order01",
+						headerText : "BOX",
+						width : "7%",
+						style: "auiRight"
+					}, {
+						dataField : "2order02",
+						headerText : "낱봉",
+						width : "7%",
+						style: "auiRight"
+					}]
+                }]
+		},{
+			dataField : "3order",
+			headerText : "3차 주문",
+			children : [{
+                    dataField : "3order",
+                    headerText : "11:35:00",
+                    width : "14%",
+					children : [{
+						dataField : "3order01",
+						headerText : "BOX",
+						width : "7%",
+						style: "auiRight"
+					}, {
+						dataField : "3order02",
+						headerText : "낱봉",
+						width : "7%",
+						style: "auiRight"
+					}]
+                }]
+		},{
+			dataField : "4order",
+			headerText : "4차 주문",
+			children : [{
+                    dataField : "4order",
+                    headerText : "11:35:00",
+					width : "14%",
+					children : [{
+						dataField : "4order01",
+						headerText : "BOX",
+						width : "7%",
+						style: "auiRight"
+					}, {
+						dataField : "4order02",
+						headerText : "낱봉",
+						width : "7%",
+						style: "auiRight"
+					}]
+                }]
+		},{
+			dataField : "5order",
+			headerText : "5차 주문",
+			children : [{
+                    dataField : "5order",
+                    headerText : "11:35:00",
+					width : "14%",
+					children : [{
+						dataField : "5order01",
+						headerText : "BOX",
+						width : "7%",
+						style: "auiRight"
+					}, {
+						dataField : "5order02",
+						headerText : "낱봉",
+						width : "7%",
+						style: "auiRight"
+					}]
+                }]
+		},{
+			dataField : "6order",
+			headerText : "6차 주문",
+			children : [{
+                    dataField : "6order",
+                    headerText : "11:35:00",
+                    width : "14%",
+					children : [{
+						dataField : "6order01",
+						headerText : "BOX",
+						width : "7%",
+						style: "auiRight"
+					}, {
+						dataField : "6order02",
+						headerText : "낱봉",
+						width : "7%",
+						style: "auiRight"
+					}]
+                }]
+		}
+	];
+
+
+    // 푸터 설정
+    var footerLayout = [{
+        labelText : "∑",
+        positionField : "#base"
+        }, {
+            dataField : "code",
+            positionField : "code",
+            operation : "SUM",
+            colSpan : 13, // 자신을 포함하여 3개의 푸터를 가로 병합함.
+            labelFunction : function(value, columnValues, footerValues) {
+                //return "합계 : " + AUIGrid.formatNumber(value, "#,##0");
+                return "합계 : "
+            }
+        }, {
+            dataField : "myQuantity01",
+            positionField : "myQuantity01",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "myQuantity02",
+            positionField : "myQuantity02",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "myQuantity03",
+            positionField : "myQuantity03",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "ownerOrder01",
+            positionField : "ownerOrder01",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "ownerOrder02",
+            positionField : "ownerOrder02",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "seOrder01",
+            positionField : "seOrder01",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "seOrder02",
+            positionField : "seOrder02",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "orderTotal01",
+            positionField : "orderTotal01",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "orderTotal02",
+            positionField : "orderTotal02",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }, {
+            dataField : "totalPrice",
+            positionField : "totalPrice",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }];
+
+
+</script>
+</head>
+<body>
+    <!-- 실제 개발시 style 모두 지워주세요 (style 퍼블용 preview 입니다.) - 가로사이즈 600px -->
+
+	<div class="modal_bg" style="display:block; position:fixed;top:0;left:0;right:0;bottom:0;z-index:10; background:rgba(0, 0, 0, .43);"></div> <!-- modal 배경 -->
+
+    <div tabindex="-1" role="dialog" class="ui-dialog ui-corner-all ui-widget ui-widget-content ui-front" aria-describedby="readPop" aria-labelledby="ui-id-1" style="width:600px; height:540px; top:170px; left:35%; visibility: visible;">
+        <div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix">
+            <span id="ui-id-1" class="ui-dialog-title">&nbsp;</span>
+            <button type="button" class="ui-button ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-close" title="Close">
+            <span class="ui-button-icon ui-icon ui-icon-closethick"></span>
+            <span class="ui-button-icon-space"> </span>Close</button>
+        </div>
+            
+        <div id="readPop" class="ajaxDialog ui-dialog-content ui-widget-content">
+
+        <!-- 개별 수금 -->
+        <div class="popWrap small modal_wrap h540" data-popup="modalAgencyViews">
+            <header>
+                <h3>개별 수금</h3>
+                <button type="button" name="" class="closeBtn" id="modalCloseBtn"></button>
+            </header>  
+
+            <!-- popCon -->
+            <div class="popCon">
+                <div class="popTitArea">
+                    <h3>개별 수금</h3>
+        
+                    <div class="popBtnArea">
+                        <button type="button" name="" class="inquBtn">저장</button>
+                        <button type="button" name="" class="comBtn" id="modalCloseBtn">닫기</button>                   
+                    </div>
+                </div>
+
+                <div class="title ar">
+                    <p class="txt01"><i class="icoRequir"></i>필수 입력 항목입니다.</p>
+                </div>
+
+                <div class="tblWrap mb0">
+                    <table class="tbl">
+                        <caption>여신 상세정보</caption>
+                        <colgroup>
+                            <col style="width:164px;">
+                            <col>
+                        </colgroup>
+                        <tbody>
+                            <tr>
+                                <th scope="row">
+                                    성명
+                                </th>
+                                <td>
+                                    <input type="text" id="inp_name02" class="inp bg_gray" value="김비티" name="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    코드
+                                </th>
+                                <td>
+                                    <input type="text" id="inp_name02" class="inp bg_gray" value="12345678" name="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="inp_name02" class="required" title="필수입력">청구월</label>
+                                </th>
+                                <td>
+                                    <div class="dateWrap">
+                                        <input type="text" name="date" value="2022-05" class="inp w160" id="monthPicker" readonly="">
+                                        <button type="button" class="datepickerBtn" title="날짜입력" data-target-id="monthPicker"></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    청구금액
+                                </th>
+                                <td>
+                                    <input type="text" id="inp_name02" class="inp bg_gray ar" value="2,500" name="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="inp_name02" class="required" title="필수입력">수금일자</label>
+                                </th>
+                                <td>
+                                    <div class="dateWrap">
+                                        <input type="text" name="date" value="10/24/1984" class="inp w160" id="datepicker" readonly="">
+                                        <button type="button" class="datepickerBtn" title="날짜입력" data-target-id="datepicker"></button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="inp_name02">수금방법</label>
+                                </th>
+                                <td>
+                                    <select name="" class="sel w160" id="inp_prDt" value="직수">
+                                        <option selected="">직수</option>
+                                        <option>-</option>
+                                        <option>-</option>
+                                        <option>-</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="inp_name02" class="required" title="필수입력">수금액</label>
+                                </th>
+                                <td>
+                                    <input type="number" id="inp_name02" class="inp ar" value="2,500" name="">
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="inp_name02">수수료</label>
+                                </th>
+                                <td>
+                                    <div class="formWrap">
+                                        <input type="number" id="inp_name02" class="inp ar mr10" value="0" name="">
+                                        <input type="number" id="inp_name02" class="inp bg_gray ar" value="2,500" name="">
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th scope="row">
+                                    <label for="inp_name02">메모</label>
+                                </th>
+                                <td>
+                                    <textarea id="" name="" rows="15" class="mt5" style="height: 112px;"></textarea>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- popCon -->
+        </div>
+        <!--// 개별 수금 -->
+    </div>
+</div>
+</body>
+</html>

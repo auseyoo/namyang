@@ -1,0 +1,498 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.std.dao.StdPrdMngMapper">
+	<sql id="selectStdPrdMngWhere">
+		<where>
+			AND	M.USE_YN = 'Y'
+			AND	D.AGEN_SEQ = #{agenSeq}
+			AND	D.STD_PRD_YN = 'Y'
+			AND D.USE_YN = 'Y'
+			<if test="srcPrdCd != null and srcPrdCd != '' ">
+				AND M.PRD_SAP_CD LIKE '%'+ #{srcPrdCd} + '%'
+			</if>
+			<if test="srcPrdNm != null and srcPrdNm != '' ">
+				AND M.prd_nm LIKE '%'+ #{srcPrdNm} + '%'
+			</if>
+			<if test="ordChk != null and ordChk != '' ">
+				AND M.ORD_USE_YN = #{ordChk}
+			</if>
+			<if test="ordChk == null ">
+				AND M.ORD_USE_YN is null
+			</if>
+			<if test="lcls != null and lcls != '' ">
+				AND M.lcls = #{lcls}
+			</if>
+			<if test="mcls != null and mcls != '' ">
+				AND M.mcls = #{mcls}
+			</if>
+			<if test="scls != null and scls != '' ">
+				AND M.scls = #{scls}
+			</if>
+			<if test="dcls != null and dcls != '' ">
+				AND M.dcls = #{dcls}
+			</if>
+			<if test="prdType != null and prdType != '' ">
+				AND M.PRD_TYPE = #{prdType}
+			</if>
+		</where>
+	</sql>
+	<sql id="selectStdPrdMngBaseWhere">
+		<where>
+			<if test="prdType != null and prdType != '' ">
+				AND M.PRD_TYPE = #{prdType}
+			</if>
+			<if test="lcls != null and lcls != '' ">
+				AND M.lcls = #{lcls}
+			</if>
+			<if test="mcls != null and mcls != '' ">
+				AND M.mcls = #{mcls}
+			</if>
+			<if test="scls != null and scls != '' ">
+				AND M.scls = #{scls}
+			</if>
+			<if test="dcls != null and dcls != '' ">
+				AND M.dcls = #{dcls}
+			</if>
+			<if test="srcType != null and srcType != '' ">
+				<choose>
+					<when test="srcType == 'prdCd' and srcKeyword != null and srcKeyword != ''">
+						AND M.PRD_SAP_CD LIKE '%'+ #{srcPrdCd} + '%'
+					</when>
+					<when test="srcType == 'prdNm' and srcKeyword != null and srcKeyword != ''">
+						AND M.prd_nm LIKE '%'+ #{srcPrdNm} + '%'
+					</when>
+				</choose>
+			</if>
+			<if test="srcPrdCd != null and srcPrdCd != '' ">
+				AND M.PRD_SAP_CD LIKE '%'+ #{srcPrdCd} + '%'
+			</if>
+			<if test="srcPrdNm != null and srcPrdNm != '' ">
+				AND M.prd_nm LIKE '%'+ #{srcPrdNm} + '%'
+			</if>
+			<if test="baseChk != null ">
+				AND M.PRD_SEQ NOT IN ( 
+										SELECT	PRD_SEQ
+										FROM 	T_PRD_DTL
+										WHERE	USE_YN = 'Y'
+										AND		AGEN_SEQ = #{agenSeq}
+										AND		STD_PRD_YN = 'Y'
+				)
+			</if>
+		</where>
+	</sql>
+
+	<select id="selectPrdMstList" parameterType="com.namyang.nyorder.std.vo.StdPrdMngVO" resultType="com.namyang.nyorder.std.vo.StdPrdMngVO">
+	/* stdPrdMng-Mapper - selectPrdMstList : 	제품 마스터 조회 */
+	
+		SELECT
+			 M.PRD_SEQ
+			,M.PUCH_SEQ
+			,M.PRD_SAP_CD
+			,M.PRD_NM
+			,M.PRD_TYPE
+			,(SELECT COMM_NM FROM T_COMM WHERE COMM_GRP_CD = 'SD0001' AND COMM_CD = M.PRD_TYPE) PRD_TYPE_NM
+			,PC.LCLS_NM
+			,M.MCLS
+			,PC.MCLS_NM
+			,M.SCLS
+			,PC.SCLS_NM
+			,M.DCLS
+			,PC.DCLS_NM
+			,M.PRMT_CD
+			,M.FALT_CT
+			,M.BRCD
+			,M.IDDY_BRCD
+			,M.FALT_QTY
+			,M.PRD_STRD
+			,M.PUCH_YN
+			,M.TAXT_CD
+			,IIF(M.TAXT_CD = '2', '면세', '과세') AS TAXT_NM 
+			,M.ORD_USE_YN
+			,M.FEE_UNTPC
+			,M.IDDY_UNTPC
+			,M.SPPRC
+			,M.VAT_SPPRC
+			,M.VALD_PD
+			,M.PRD_UNIT
+			,M.RTGD_PERM_TN
+			,M.UNTPC_APPL_DT
+			,M.REG_DTM
+			,M.REG_SEQ
+			,M.UPD_DTM
+			,M.UPD_SEQ
+			,M.SHTN_NM
+			,M.PRD_TYPE
+			,M.ORD_PD
+			,M.ETC_BRCD
+			,M.USE_YN
+			,IIF(M.USE_YN = 'Y', '사용', '미사용') AS USE_YN_TX
+			,IIF(M.ORD_USE_YN = 'Y', '주문가능', '주문불가') AS ORD_USE_YN_TX
+		FROM	T_PRD_MST M
+		LEFT
+		JOIN T_COMM_PRD_CLS pc
+		ON	PC.LCLS = M.LCLS
+		AND PC.MCLS = M.MCLS
+		AND PC.SCLS = M.SCLS
+		AND PC.DCLS = M.DCLS
+		<include refid="selectStdPrdMngBaseWhere"/>
+	
+	</select>
+
+	<select id="selectStdPrdMngList" parameterType="com.namyang.nyorder.std.vo.StdPrdMngVO" resultType="com.namyang.nyorder.std.vo.StdPrdMngDetailVO">
+		/* stdPrdMng-Mapper - selectStdPrdMngList : 표준 제품 조회 */
+		
+		SELECT 
+				M.PRD_SEQ,
+				M.PUCH_SEQ,
+				P.PUCH_NM,
+				M.PRD_SAP_CD,
+				M.PRD_NM,
+				M.PRD_TYPE,
+				M.LCLS,
+				PC.LCLS_NM,
+				M.MCLS,
+				PC.MCLS_NM,
+				M.SCLS,
+				PC.SCLS_NM,
+				M.DCLS,
+				PC.DCLS_NM,
+				M.PRMT_CD,
+				IIF(M.ORD_USE_YN = 'Y', '주문가능', '주문불가') AS ORD_USE_YN_TX,
+				M.ORD_USE_YN,
+				D.STD_PRD_NM,
+				D.PRD_ORDR,
+				D.PRD_DTL_SEQ,
+				D.IDDY_STDR
+		FROM NY_ORDER.dbo.T_PRD_MST	M
+		INNER
+		JOIN NY_ORDER.dbo.T_PRD_DTL D
+		ON	 M.PRD_SEQ = D.PRD_SEQ
+		AND  D.STD_PRD_YN = 'Y'
+		LEFT
+		JOIN
+		(
+			SELECT	PUCH_SEQ, PUCH_CD, PUCH_NM, USE_CD
+			FROM	T_AGEN_MJR_PUCH
+			WHERE	USE_CD ='USE'
+			UNION ALL
+			SELECT	PUCH_SEQ, PUCH_CD, PUCH_NM, USE_CD  
+			FROM T_AGEN_OTR_PUCH
+			WHERE	USE_CD ='USE'
+			AND 	AGEN_SEQ = #{agenSeq}
+		)  P
+		ON	M.PUCH_SEQ = P.PUCH_SEQ
+		LEFT
+		JOIN T_COMM_PRD_CLS pc
+		ON	PC.LCLS = M.LCLS
+		AND PC.MCLS = M.MCLS
+		AND PC.SCLS = M.SCLS
+		AND PC.DCLS = M.DCLS
+		<include refid="selectStdPrdMngWhere"/>
+		ORDER BY
+			ISNULL(D.PRD_ORDR,999), PRD_SAP_CD ASC
+	</select>
+	
+	<select id="selectStdPrdMngDetail" parameterType="com.namyang.nyorder.std.vo.StdPrdMngDetailVO" resultType="com.namyang.nyorder.std.vo.StdPrdMngDetailVO">
+		/* stdPrdMng-Mapper - selectStdPrdMngDetail : 	표준제품 상세 조회 */
+		SELECT 
+				M.PRD_SEQ,
+				M.PUCH_SEQ,
+				P.PUCH_NM,
+				M.PRD_SAP_CD,
+				M.PRD_NM,
+				M.LCLS,
+				PC.LCLS_NM,
+				M.MCLS,
+				PC.MCLS_NM,
+				M.SCLS,
+				PC.SCLS_NM,
+				M.DCLS,
+				PC.DCLS_NM,
+				M.PRMT_CD,
+				M.FALT_CT,
+				M.BRCD,
+				M.IDDY_BRCD,
+				IIF( M.IDDY_BRCD is null , '불가', '가능') AS IDDY_UNT_YN,
+				M.FALT_QTY,
+				M.PRD_STRD,
+				M.PUCH_YN,
+				IIF(M.ORD_USE_YN = 'Y', '주문가능', '주문불가') AS ORD_USE_YN_TX,
+				M.ORD_USE_YN,
+				M.FEE_UNTPC,
+				M.IDDY_UNTPC,
+				ISNULL(M.SPPRC, 0) SPPRC,
+				ISNULL(M.VAT_SPPRC, 0) VAT_SPPRC,
+				M.VALD_PD,
+				M.PRD_UNIT,
+				M.RTGD_PERM_TN,
+				CONVERT(VARCHAR(10), CONVERT(DATE, M.UNTPC_APPL_DT), 120) AS UNTPC_APPL_DT,
+				-- M.UNTPC_APPL_DT,
+				M.REG_DTM,
+				M.REG_SEQ,
+				M.UPD_DTM,
+				M.UPD_SEQ,
+				M.SHTN_NM,
+				M.PRD_TYPE,
+				(SELECT COMM_NM FROM T_COMM WHERE COMM_GRP_CD = 'SD0001' AND COMM_CD = M.PRD_TYPE) PRD_TYPE_NM,
+				M.ORD_PD,
+				M.ETC_BRCD,
+				M.TAXT_CD,
+				--(SELECT COMM_NM FROM T_COMM WHERE COMM_GRP_CD = 'TAXT_CD' AND COMM_CD = M.TAXT_CD) TXAT_NM,
+				IIF(M.TAXT_CD = '2', '면세', '과세') AS TAXT_NM,
+				D.PRD_DTL_SEQ,
+				D.STD_PRD_NM,
+				D.STD_PRD_YN,
+				IIF(D.STD_PRD_YN = 'Y', '사용', '미사용') AS STD_PRD_YN_TX,
+				D.ABRV_NM,
+				IIF(M.USE_YN = 'Y', '사용', '미사용') AS USE_YN_TX,
+				D.ORD_ORDR,
+				D.PRD_ORDR,
+				D.USE_YN,
+				P.PUCH_CD
+		FROM NY_ORDER.dbo.T_PRD_MST	M
+		LEFT
+		JOIN NY_ORDER.dbo.T_PRD_DTL D
+		ON	 M.PRD_SEQ = D.PRD_SEQ
+		AND	 D.AGEN_SEQ = #{agenSeq}
+		AND  D.STD_PRD_YN = 'Y'
+		LEFT
+		JOIN
+		(
+			SELECT	PUCH_SEQ, PUCH_CD, PUCH_NM, USE_CD
+			FROM	T_AGEN_MJR_PUCH
+			WHERE	USE_CD ='USE'
+			UNION ALL
+			SELECT	PUCH_SEQ, PUCH_CD, PUCH_NM, USE_CD  
+			FROM T_AGEN_OTR_PUCH
+			WHERE	USE_CD='USE'
+			AND 	AGEN_SEQ = #{agenSeq}
+		)  P
+		ON	M.PUCH_SEQ = P.PUCH_SEQ
+		LEFT
+		JOIN T_COMM_PRD_CLS pc
+		ON	PC.LCLS = M.LCLS
+		AND PC.MCLS = M.MCLS
+		AND PC.SCLS = M.SCLS
+		AND PC.DCLS = M.DCLS
+		WHERE M.PRD_SEQ = #{prdSeq}
+		<if test="prdDtlSeq != null and prdDtlSeq != '' ">
+			AND D.PRD_DTL_SEQ = #{prdDtlSeq}
+		</if>
+		
+	</select>
+	
+	<update id="updateStdPRdYn" parameterType="com.namyang.nyorder.std.vo.StdPrdMngDetailVO">
+		/* stdPrdMng-Mapper - updateStdPRdYn : 	기존 제품 표준 N 수정 */
+
+		UPDATE 	NY_ORDER.dbo.T_PRD_DTL
+		SET 	STD_PRD_YN = 'N'
+		WHERE	PRD_SEQ = #{prdSeq}
+		AND 	AGEN_SEQ = #{agenSeq};
+		
+	</update>
+	
+	<update id="insertStdPrdDetail" parameterType="com.namyang.nyorder.std.vo.StdPrdMngDetailVO">
+	
+	
+		<selectKey keyProperty="prdDtlSeq" resultType="String" order="BEFORE"> SELECT NEXT VALUE FOR SQ_PRD_DTL</selectKey>
+	
+		/* stdPrdMng-Mapper - insertStdPrdDetail : 	표준 제품 등록 */
+		INSERT INTO NY_ORDER.dbo.T_PRD_DTL
+		(	
+			PRD_DTL_SEQ,
+			AGEN_SEQ,
+			PUCH_SEQ,
+			PRD_SEQ,
+			PRD_DTL_CD,
+			STD_PRD_NM,
+			SHTN_NM,
+			ABRV_NM,
+			SALE_ORD_USE_CD,
+			PRD_ORDR,
+			ORD_ORDR,
+			STD_PRD_YN,
+			BRCD,
+			IDDY_BRCD,
+			ETC_BRCD,
+			SUITE_NM,
+			USE_YN,
+			REG_DTM,
+			REG_SEQ,
+			UPD_DTM,
+			UPD_SEQ
+		)
+		SELECT
+				#{prdDtlSeq},
+				#{agenSeq,	jdbcType=NUMERIC},
+				PUCH_SEQ,
+				PRD_SEQ,
+				PRD_SAP_CD,
+				#{stdPrdNm},
+				#{shtnNm},
+				#{abrvNm},  
+				'Y',
+				CASE #{prdOrdr, jdbcType=NUMERIC} WHEN NULL THEN NULL 
+					ELSE CEILING(#{prdOrdr, jdbcType=NUMERIC}) 
+				END as PRD_ORDR,
+				null as ORD_ORDR,
+				'Y' AS std_Prd_Yn,
+				BRCD,
+				IDDY_BRCD,
+				ETC_BRCD,
+				NULL,
+				'Y' as USE_YN, 
+				CURRENT_TIMESTAMP,
+				#{emplSeq}, 
+				CURRENT_TIMESTAMP,
+				#{emplSeq}
+		FROM	T_PRD_MST
+		WHERE	PRD_SEQ = #{prdSeq};
+		
+		
+	</update>
+	
+	<update id="UpdateStdPrdDetail" parameterType="com.namyang.nyorder.std.vo.StdPrdMngDetailVO">
+		/* stdPrdMng-Mapper - UpdateStdPrdDetail : 	표준 제품 수정 */ 
+		UPDATE 	NY_ORDER.dbo.T_PRD_DTL
+		SET		ABRV_NM	 = #{abrvNm},
+				PRD_ORDR = #{prdOrdr},
+				UPD_DTM	 = CURRENT_TIMESTAMP,
+				UPD_SEQ  = #{emplSeq}
+		WHERE	PRD_DTL_SEQ = #{prdDtlSeq}
+		
+	</update>
+	<update id="delStdPrdDetail" parameterType="com.namyang.nyorder.std.vo.StdPrdMngDetailVO">
+		/* stdPrdMng-Mapper - delStdPrdDetail : 	표준 제품 삭제 */ 
+		
+		UPDATE 	NY_ORDER.dbo.T_PRD_DTL
+		SET		USE_YN	= 'N',
+				UPD_DTM	= CURRENT_TIMESTAMP,
+				UPD_SEQ = #{emplSeq}
+		WHERE	PRD_DTL_SEQ = #{prdDtlSeq}
+		
+	</update>
+	<update id="updateStdPrdOrdr" parameterType="com.namyang.nyorder.std.vo.StdPrdMngDetailVO">
+		/* stdPrdMng-Mapper - updateStdPrdOrdr : 	표준 제품 순서 수정 */ 
+		
+		UPDATE 	NY_ORDER.dbo.T_PRD_DTL
+		SET		PRD_ORDR = #{prdOrdr},
+				UPD_DTM	= CURRENT_TIMESTAMP,
+				UPD_SEQ = #{emplSeq}
+		WHERE	PRD_DTL_SEQ = #{prdDtlSeq}
+		
+	</update>
+	<update id="updateStdAllPrdOrdr" parameterType="com.namyang.nyorder.std.vo.StdPrdMngDetailVO">
+		/* stdPrdMng-Mapper - updateStdAllPrdOrdr : 	표준 제품 순서 수정 */ 
+		
+		UPDATE 	NY_ORDER.dbo.T_PRD_DTL
+		SET 	PRD_ORDR = (	
+								SELECT 
+									ORDR
+								FROM
+								(	SELECT B.PRD_DTL_SEQ , 
+									<if test="prdOrdr != null and prdOrdr != ''">
+									CEILING(#{prdOrdr,jdbcType=NUMERIC }) + 
+									</if>
+									RANK() OVER (ORDER BY B.PRD_ORDR  ASC)  ORDR
+									FROM NY_ORDER.dbo.T_PRD_DTL B 
+									WHERE B.AGEN_SEQ = #{agenSeq,	jdbcType=NUMERIC}
+									<if test="prdOrdr != null and prdOrdr != ''">
+									AND	CONVERT(int, CEILING(#{prdOrdr,jdbcType=NUMERIC })) &lt;= B.PRD_ORDR
+									</if>
+									AND USE_YN ='Y'
+									AND PRD_ORDR is not null
+									AND PRD_DTL_SEQ != #{prdDtlSeq}
+								) B
+								WHERE B.PRD_DTL_SEQ  = A.PRD_DTL_SEQ 
+							),
+				UPD_DTM	= CURRENT_TIMESTAMP,
+				UPD_SEQ = #{emplSeq}
+		FROM	NY_ORDER.dbo.T_PRD_DTL A
+		WHERE	AGEN_SEQ = #{agenSeq,	jdbcType=NUMERIC}
+		<if test="prdOrdr != null and prdOrdr != ''">
+		AND		CONVERT(int, CEILING(#{prdOrdr,jdbcType=NUMERIC })) &lt;= PRD_ORDR
+		</if>
+		AND		PRD_ORDR IS NOT NULL
+		AND		A.PRD_DTL_SEQ != #{prdDtlSeq}
+	</update>
+	
+	<select id="selectStdPrdBndChgList" parameterType="com.namyang.nyorder.std.vo.StdPrdBndChgVO" resultType="com.namyang.nyorder.std.vo.StdPrdBndChgVO">
+		EXEC P_OPEN_KEY
+		
+		SELECT 
+				P.PRD_BND_CHG_SEQ,
+				P.PRD_SEQ,
+				P.PRD_DTL_SEQ,
+				p.PUCH_SEQ,
+				P.AGEN_SEQ,
+				M1.PRD_SAP_CD,
+				M1.PRD_NM,
+				P.CHG_PRD_SEQ,
+				M2.PRD_SAP_CD AS CHG_PRD_SAP_CD,
+				M2.PRD_NM AS CHG_PRD_NM,
+				P.USE_YN,
+				CONVERT(DATE, P.APPL_DT, 23) APPL_DT,
+				P.APPL_YN,
+				P.REG_DTM,
+				P.REG_SEQ,
+				CONVERT(varchar, DecryptByKey((SELECT EMPL_NM FROM T_AGEN_EMPL E WHERE E.EMPL_SEQ = P.REG_SEQ))) as REG_NM,
+				P.UPD_DTM,
+				P.UPD_SEQ,
+				CONVERT(varchar, DecryptByKey((SELECT EMPL_NM FROM T_AGEN_EMPL E WHERE E.EMPL_SEQ = P.UPD_SEQ))) as REG_NM
+		FROM	T_PRD_BND_CHG	P 
+		INNER 
+		JOIN	T_PRD_MST		M1
+		ON		P.PRD_SEQ = M1.PRD_SEQ 
+		INNER 
+		JOIN	T_PRD_MST		M2
+		ON		P.CHG_PRD_SEQ = M2.PRD_SEQ 
+		WHERE	AGEN_SEQ  = #{agenSeq}
+		AND		APPL_DT  =  replace(#{applDt},'-','')
+		AND		P.USE_YN = 'Y'
+		ORDER BY PRD_BND_CHG_SEQ DESC
+	</select>
+	
+	<update id="insertStdPrdBndChg" parameterType="com.namyang.nyorder.std.vo.StdPrdBndChgVO">
+		INSERT INTO NY_ORDER.dbo.T_PRD_BND_CHG
+		(PRD_BND_CHG_SEQ, PRD_DTL_SEQ, AGEN_SEQ, PUCH_SEQ, PRD_SEQ, CHG_PRD_SEQ, APPL_DT, APPL_YN, USE_YN, REG_DTM, REG_SEQ,UPD_DTM,UPD_SEQ)
+		VALUES(
+			NEXT VALUE FOR SQ_PRD_BND_CHG_SEQ,
+			#{prdDtlSeq},
+			#{agenSeq},
+			#{puchSeq},
+			#{prdSeq},
+			#{chgPrdSeq},
+			replace(#{applDt},'-',''),
+			'N',
+			'Y',
+			CURRENT_TIMESTAMP,
+			#{emplSeq},
+			CURRENT_TIMESTAMP,
+			#{emplSeq}
+		);
+	</update>
+
+	<update id="updateStdPrdBndChg" parameterType="com.namyang.nyorder.std.vo.StdPrdBndChgVO">
+		UPDATE NY_ORDER.dbo.T_PRD_BND_CHG
+		SET	PRD_DTL_SEQ = #{prdDtlSeq},
+			AGEN_SEQ = #{agenSeq},
+			PUCH_SEQ = #{puchSeq},
+			PRD_SEQ = #{prdSeq},
+			CHG_PRD_SEQ = #{chgPrdSeq},
+			UPD_DTM = CURRENT_TIMESTAMP,
+			UPD_SEQ = #{emplSeq}
+		WHERE	PRD_BND_CHG_SEQ = #{prdBndChgSeq}
+	</update>
+	
+	<update id="delStdPrdBndChg" parameterType="com.namyang.nyorder.std.vo.StdPrdBndChgVO">
+		UPDATE NY_ORDER.dbo.T_PRD_BND_CHG
+		SET	USE_YN = 'N',
+			UPD_DTM = CURRENT_TIMESTAMP,
+			UPD_SEQ = #{emplSeq}
+		WHERE	PRD_BND_CHG_SEQ = #{prdBndChgSeq}
+	</update>
+	
+	<update id="updateStdPrdBndChgProc">
+		{CALL NY_ORDER.dbo.P_PRD_BND_CHG()}
+	</update>
+</mapper>

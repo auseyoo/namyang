@@ -1,0 +1,297 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.prmt.dao.PrmtAgenRqstMapper">
+	
+	<select id="selectDvyfgRqstMonth" parameterType="com.namyang.nyorder.prmt.vo.PrmtAgenRqstVO" resultType="com.namyang.nyorder.prmt.vo.PrmtAgenRqstVO">
+		/* prmtAgenRqst-Mapper selectDvyfgRqstMonth */	
+			SELECT 
+				PRMT_RQST_SEQ
+				, DVYFG_RQST_MONTH
+				, AGEN_CLS_DT
+			FROM T_PRMT_RQST_MNG
+			WHERE 1=1
+			AND SALE_CD = (SELECT SALE_CD FROM T_AGEN_MST TAM WHERE AGEN_SEQ = #{agenSeq})
+			AND DVYFG_RQST_MONTH = #{reqYm}			
+			AND USE_YN = 'Y'
+	</select>
+	
+	<select id="selectPrmtAgenRqstList" parameterType="com.namyang.nyorder.prmt.vo.PrmtAgenRqstVO" resultType="com.namyang.nyorder.prmt.vo.PrmtAgenRqstVO">
+		/* prmtAgenRqst-Mapper selectPrmtAgenRqstList */
+			SELECT *
+			FROM (
+				<!-- 요청한 판촉물 조회 -->
+				SELECT
+					'1' AS DISP_SEQ
+					, 'M' AS CRUDMODE
+					, A.PRMT_AGEN_SEQ
+					, A.BHFC_SEQ
+					, A.AGEN_SEQ
+					, A.PUCH_SEQ
+					, A.PRD_SEQ
+					, A.PRMT_RQST_SEQ
+					, A.AGEN_BOX_QTY
+					, A.AGEN_IDDY_QTY
+					, A.AGEN_ORD_DTM
+					, A.HOFF_BOX_QTY
+					, A.HOFF_IDDY_QTY
+					, CONVERT(CHAR(8), A.HOFF_DCSN_DTM, 112) AS HOFF_DCSN_DTM
+					, A.UNTPC
+					, A.TOT_CT
+					, A.TOT_VAT_CT
+					, A.TOT_AMOUNT
+					, B.PRD_SAP_CD 
+					, B.PRD_NM
+					, CASE WHEN B.PRTM_FREE_YN = 'Y' THEN '무상' 
+						ELSE '유상' 
+						END FREE_YN			/*유상여부*/
+					, B.FALT_QTY			/*입수량*/ 
+					, CASE WHEN B.FALT_ORD_YN = 'Y' THEN '가능' 
+						ELSE '불가'
+						END IDDY_ORD_YN		/*낱봉주문가능여부*/
+					, B.SPPRC				/*공급가*/
+					, B.VAT_SPPRC			/*공급가(VAT)*/
+					, ((ISNULL(AGEN_BOX_QTY, 0) * B.FALT_QTY) + ISNULL(AGEN_IDDY_QTY, 0)) AS AGEN_QTY 	/*주문수량*/
+					, ((ISNULL(HOFF_BOX_QTY, 0) * B.FALT_QTY) + ISNULL(HOFF_IDDY_QTY, 0)) AS HOFF_QTY 				/*확정수량*/
+					, (((ISNULL(HOFF_BOX_QTY, 0) * B.FALT_QTY) + ISNULL(HOFF_IDDY_QTY, 0)) * A.UNTPC) AS HOFF_AMOUNT /*확정금액*/
+					, (ISNULL((AGEN_BOX_QTY * B.FALT_QTY) + AGEN_IDDY_QTY, 0) - ISNULL((HOFF_BOX_QTY * B.FALT_QTY) + HOFF_IDDY_QTY, 0)) AS DIFF_QTY /*차이수량*/
+				FROM
+					T_PRMT_AGEN_RQST A
+					INNER JOIN T_PRD_MST B ON A.PUCH_SEQ = B.PUCH_SEQ AND A.PRD_SEQ = B.PRD_SEQ
+					WHERE 1=1 
+						AND AGEN_SEQ = #{agenSeq}
+						AND PRMT_RQST_SEQ = (CASE WHEN #{prmtRqstSeq} =  '' THEN 0 WHEN #{prmtRqstSeq} IS NULL THEN 0 ELSE #{prmtRqstSeq} END)
+				
+				UNION ALL			
+				
+				<!-- 요청 가능한 판촉물 조회 -->
+				SELECT 				
+					'2' AS DISP_SEQ
+					, 'C' AS CRUDMODE
+					, 0 AS PRMT_AGEN_SEQ
+					, 0 AS BHFC_SEQ
+					, 0 AS AGEN_SEQ
+					, A.PUCH_SEQ
+					, A.PRD_SEQ
+					, 0 AS PRMT_RQST_SEQ
+					, 0 AS AGEN_BOX_QTY
+					, 0 AS AGEN_IDDY_QTY
+					, '' AS AGEN_ORD_DTM
+					, 0 AS HOFF_BOX_QTY
+					, 0 AS HOFF_IDDY_QTY
+					, '' AS HOFF_DCSN_DTM
+					, (ISNULL(B.SPPRC, 0) + ISNULL(B.VAT_SPPRC, 0)) AS UNTPC	/*매입단가*/				
+					, 0 AS TOT_CT
+					, 0 AS TOT_VAT_CT
+					, 0 AS TOT_AMOUNT
+					, B.PRD_SAP_CD 
+					, B.PRD_NM
+					, CASE WHEN B.PRTM_FREE_YN = 'Y' THEN '무상' 
+						ELSE '유상' 
+						END FREE_YN			/*유상여부*/
+					, B.FALT_QTY			/*입수량*/ 
+					, CASE WHEN B.FALT_ORD_YN = 'Y' THEN '가능' 
+						ELSE '불가'
+						END IDDY_ORD_YN		/*낱봉주문가능여부*/
+					, ISNULL(B.SPPRC, 0) AS SPPRC			/*공급가*/
+					, ISNULL(B.VAT_SPPRC, 0) AS VAT_SPPRC	/*공급가(VAT)*/
+					, 0 AS AGEN_QTY 	/*주문수량*/
+					, 0 AS HOFF_QTY 	/*확정수량*/
+					, 0 AS HOFF_AMOUNT 	/*확정금액*/
+					, 0 AS DIFF_QTY 	/*차이수량*/
+				FROM T_PRMT_PRD A 
+					INNER JOIN T_PRD_MST B 
+					ON A.PRD_SEQ = B.PRD_SEQ 
+				WHERE 1=1
+					AND A.RQST_MONTH = #{reqYm}
+					AND A.USE_YN = 'Y'
+					AND A.PRD_SEQ NOT IN (
+										SELECT A.PRD_SEQ
+										FROM
+										T_PRMT_AGEN_RQST A
+										WHERE 
+										AGEN_SEQ = #{agenSeq}
+										AND PRMT_RQST_SEQ = (CASE WHEN #{prmtRqstSeq} =  '' THEN 0 WHEN #{prmtRqstSeq} IS NULL THEN 0 ELSE #{prmtRqstSeq} END) 
+									)								
+			
+			) TB 
+			WHERE 1=1
+			<if test="searchPrdCd != null and searchPrdCd != '' ">
+				AND PRD_SAP_CD LIKE '%' + #{searchPrdCd} + '%'			
+			</if>
+			<if test="searchPrdNm != null and searchPrdNm != '' ">
+				AND PRD_NM LIKE '%' + #{searchPrdNm} + '%'		
+			</if>
+			ORDER BY TB.DISP_SEQ, TB.PRD_NM									
+	</select>
+	
+	<select id="selectAgenRqstLastSend" parameterType="com.namyang.nyorder.prmt.vo.PrmtAgenRqstVO" resultType="com.namyang.nyorder.prmt.vo.PrmtAgenRqstVO">
+		/* prmtAgenRqst-Mapper selectAgenRqstLastSend */	
+				SELECT MAX(A.AGEN_ORD_DTM) AS AGEN_ORD_DTM
+				FROM
+					T_PRMT_AGEN_RQST A
+					INNER JOIN T_PRD_MST B ON A.PRD_SEQ = B.PRD_SEQ	
+					WHERE 1=1 
+					AND PRMT_RQST_SEQ = (CASE WHEN #{prmtRqstSeq} =  '' THEN 0 WHEN #{prmtRqstSeq} IS NULL THEN 0 ELSE #{prmtRqstSeq} END)	
+	</select>
+	
+	<update id="updPrmtAgenRqst" parameterType="com.namyang.nyorder.prmt.vo.PrmtAgenRqstVO">
+		/* prmtAgenRqst-Mapper updPrmtAgenRqst */
+			UPDATE
+				T_PRMT_AGEN_RQST
+			SET
+				AGEN_BOX_QTY = #{agenBoxQty}
+				, AGEN_IDDY_QTY = #{agenIddyQty}
+				, UPD_DTM = CURRENT_TIMESTAMP
+				, UPD_SEQ = #{emplSeq}
+			WHERE PRMT_AGEN_SEQ = #{prmtAgenSeq}		
+	</update>
+	
+	<insert id="insPrmtAgenRqst" parameterType="com.namyang.nyorder.prmt.vo.PrmtAgenRqstVO">
+		/* prmtAgenRqst-Mapper insPrmtAgenRqst */	
+			INSERT INTO T_PRMT_AGEN_RQST(
+				PRMT_AGEN_SEQ
+				, BHFC_SEQ
+				, AGEN_SEQ
+				, PUCH_SEQ
+				, PRD_SEQ
+				, PRMT_RQST_SEQ
+				, AGEN_BOX_QTY
+				, AGEN_IDDY_QTY
+				, BHFC_BOX_QTY
+				, BHFC_IDDY_QTY
+				, HOFF_BOX_QTY
+				, HOFF_IDDY_QTY
+				, UNTPC
+				, TOT_CT
+				, TOT_VAT_CT
+				, TOT_AMOUNT
+				, REG_DTM
+				, REG_SEQ
+			)VALUES(
+				NEXT VALUE FOR SQ_PRMT_AGEN_RQST
+				, (SELECT BHFC_SEQ FROM T_BHFC_AGEN WHERE AGEN_SEQ = #{agenSeq})
+				, #{agenSeq}
+				, #{puchSeq}
+				, #{prdSeq}
+				, #{prmtRqstSeq}
+				, ISNULL(#{agenBoxQty}, 0)
+				, ISNULL(#{agenIddyQty}, 0)
+				, 0
+				, 0				
+				, 0
+				, 0
+				, #{untpc}
+				, #{totCt}
+				, #{totVatCt}
+				, #{totAmount}
+				, CURRENT_TIMESTAMP
+				, #{emplSeq, jdbcType=NUMERIC}
+			)
+	</insert>		
+	
+	<update id="updPrmtAgenRqstSend" parameterType="com.namyang.nyorder.prmt.vo.PrmtAgenRqstVO">
+		/* prmtAgenRqst-Mapper updPrmtAgenRqstSend */
+			UPDATE
+				T_PRMT_AGEN_RQST
+			SET
+				AGEN_ORD_DTM = CURRENT_TIMESTAMP
+				, UPD_DTM = CURRENT_TIMESTAMP
+				, UPD_SEQ = #{emplSeq}
+			WHERE PRMT_RQST_SEQ = (CASE WHEN #{prmtRqstSeq} =  '' THEN 0 WHEN #{prmtRqstSeq} IS NULL THEN 0 ELSE #{prmtRqstSeq} END)	
+	</update>
+	
+	<update id="merStdPrdDetail" parameterType="com.namyang.nyorder.prmt.vo.PrmtAgenRqstVO">
+		/* prmtAgenRqst-Mapper "merStdPrdDetail" */
+				DECLARE @PRD_DTL_SEQ numeric(13)
+				SET @PRD_DTL_SEQ = NEXT VALUE FOR SQ_PRD_DTL
+				
+				MERGE INTO T_PRD_DTL A
+				USING(
+						SELECT 	#{agenSeq} AS AGEN_SEQ,
+								PUCH_SEQ,
+								PRD_SEQ,
+								PRD_SAP_CD,
+								PRD_NM,
+								SHTN_NM,
+								'N' AS SALE_ORD_USE_CD,
+								NULL AS PRD_ORDR,
+								NULL AS ORD_ORDR,
+								'N' AS STD_PRD_YN,
+								BRCD,
+								IDDY_BRCD,
+								ETC_BRCD,
+								FALT_QTY,
+								TAXT_CD
+						FROM	T_PRD_MST
+						WHERE	PUCH_SEQ = #{puchSeq} 
+								AND PRD_SEQ = #{prdSeq} 
+				) B
+				ON (
+					A.AGEN_SEQ = B.AGEN_SEQ AND A.PUCH_SEQ = B.PUCH_SEQ AND A.PRD_SEQ = B.PRD_SEQ  
+				) 
+
+				WHEN	NOT MATCHED THEN
+							INSERT(	
+								PRD_DTL_SEQ,
+								AGEN_SEQ,
+								PUCH_SEQ,
+								PRD_SEQ,
+								PRD_DTL_CD,
+								STD_PRD_NM,
+								SHTN_NM,
+								ABRV_NM,
+								SALE_ORD_USE_CD,
+								PRD_ORDR,
+								ORD_ORDR,
+								STD_PRD_YN,
+								BRCD,
+								IDDY_BRCD,
+								ETC_BRCD,
+								SUITE_NM,
+								FALT_QTY,
+								TAXT_CD,
+								USE_YN,
+								REG_DTM,
+								REG_SEQ,
+								UPD_DTM,
+								UPD_SEQ
+							)VALUES(
+									@PRD_DTL_SEQ,
+									#{agenSeq},
+									B.PUCH_SEQ,
+									B.PRD_SEQ,
+									B.PRD_SAP_CD,
+									B.PRD_NM,
+									B.SHTN_NM,
+									B.SHTN_NM,  
+									'N',
+									NULL,
+									NULL,
+									'N',
+									B.BRCD,
+									B.IDDY_BRCD,
+									B.ETC_BRCD,
+									NULL,
+									B.FALT_QTY,
+									B.TAXT_CD,
+									'Y', 
+									CURRENT_TIMESTAMP,
+									#{emplSeq}, 
+									CURRENT_TIMESTAMP,
+									#{emplSeq}
+							);
+							
+				
+	</update>	
+	
+	<select id="selectSavedYn" parameterType="com.namyang.nyorder.prmt.vo.PrmtAgenRqstVO" resultType="String">	
+		/* prmtAgenRqst-Mapper - selectSavedYn */	
+			SELECT CASE WHEN COUNT(*) > 0 THEN 'Y' ELSE 'N' END SAVED_YN
+			FROM T_PRMT_AGEN_RQST A
+			INNER JOIN T_PRD_MST B ON A.PUCH_SEQ = B.PUCH_SEQ AND A.PRD_SEQ = B.PRD_SEQ
+			WHERE 1=1 
+				AND AGEN_SEQ = #{agenSeq}
+				AND PRMT_RQST_SEQ = (CASE WHEN #{prmtRqstSeq} =  '' THEN 0 WHEN #{prmtRqstSeq} IS NULL THEN 0 ELSE #{prmtRqstSeq} END)
+	</select>
+	
+</mapper>

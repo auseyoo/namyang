@@ -1,0 +1,89 @@
+USE [NY_ORDER]
+GO
+/****** Object:  StoredProcedure [dbo].[P_CRTB_AFTER_UPD]    Script Date: 2022-03-15 오후 12:51:57 ******/
+SET ANSI_NULLS ON
+GO
+SET QUOTED_IDENTIFIER ON
+GO
+-- =============================================
+-- AUTHOR: 김정애
+-- CREATE DATE: 2022-02-22
+-- DESCRIPTION:	크레이트 반납 변경 이후월(Month) 갱신
+-- =============================================
+ALTER PROCEDURE [dbo].[P_CRTB_AFTER_UPD]
+(
+	@I_AGEN_CD NVARCHAR(20)
+	, @I_CRTB_CD NUMERIC(9)
+	, @I_RTGD_YM NVARCHAR(6)
+	, @I_EMPL_SEQ NUMERIC(9)
+	, @O_OUT_MSG NVARCHAR(MAX) OUTPUT
+)
+AS
+BEGIN
+	-- SET NOCOUNT ON ADDED TO PREVENT EXTRA RESULT SETS FROM
+	-- INTERFERING WITH SELECT STATEMENTS.
+	SET NOCOUNT ON;
+
+	DECLARE @SEL_DATE VARCHAR(8) 
+
+	DECLARE DB_CURSOR CURSOR FOR 
+	SELECT A.RTGD_DT 
+	FROM T_CRTB_RTGD A 				
+	WHERE 1=1				
+	and AGEN_SEQ = @I_AGEN_CD				
+	and CRTB_CD = @I_CRTB_CD				
+	AND RTGD_DT > CONVERT(char(8), EOMONTH(@I_RTGD_YM + '01'), 112)				
+	ORDER BY RTGD_DT ASC
+	
+	-- OPEN THE CURSOR
+	OPEN DB_CURSOR
+
+	-- FETCH THE NEXT RECORD FROM THE CURSOR
+	FETCH NEXT FROM DB_CURSOR INTO @SEL_DATE
+
+	-- SET THE STATUS FOR THE CURSOR
+	WHILE @@FETCH_STATUS = 0  
+ 
+	BEGIN  
+
+		-- 크레이트 반납 데이터 업데이트
+		WITH    A AS							
+        (							
+        	SELECT TOP 1 A.*			
+        		, (SELECT MAX(RTGD_DT)
+					FROM T_CRTB_RTGD 
+					WHERE 
+					AGEN_SEQ = @I_AGEN_CD				
+					and CRTB_CD = @I_CRTB_CD	
+					AND RTGD_DT < A.RTGD_DT) AS PREV_RTGD_DT
+			FROM T_CRTB_RTGD A 				
+			WHERE 1=1				
+			and AGEN_SEQ = @I_AGEN_CD				
+			and CRTB_CD = @I_CRTB_CD					
+			AND RTGD_DT= @SEL_DATE	
+        )							
+		UPDATE A	SET 						
+				YESTD_QTY = B.INVRY_QTY 					
+				, INVRY_QTY = ISNULL(B.INVRY_QTY, 0) + (A.REPT_QTY - A.RTGD_QTY) 					
+				, UPD_DTM = CURRENT_TIMESTAMP					
+				, UPD_SEQ = @I_EMPL_SEQ			
+		FROM (							
+				SELECT * 					
+				FROM T_CRTB_RTGD 					
+				WHERE 					
+					AGEN_SEQ = @I_AGEN_CD					
+					and CRTB_CD = @I_CRTB_CD		
+				) B					
+		WHERE A.PREV_RTGD_DT = B.RTGD_DT;
+
+		-- FETCH THE NEXT RECORD FROM THE CURSOR
+ 		FETCH NEXT FROM DB_CURSOR INTO @SEL_DATE
+	END 
+
+	-- CLOSE THE CURSOR
+	CLOSE DB_CURSOR  
+
+	-- DEALLOCATE THE CURSOR
+	DEALLOCATE DB_CURSOR 
+
+END

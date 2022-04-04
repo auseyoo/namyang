@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.myp.dao.AgentMngMapper">
+
+	<resultMap id="agentMngVO" type="com.namyang.nyorder.myp.vo.AgentMngVO"></resultMap>
+	<resultMap id="totalRow" type="com.namyang.nyorder.myp.vo.AgentMngVO"></resultMap>
+
+    <select id="selectAgentMngList" parameterType="com.namyang.nyorder.myp.vo.AgentMngVO" resultMap="agentMngVO, totalRow">
+    	SELECT EMPL_SEQ, AGEN_SEQ, EMPL_CD, EMPL_SEC_CD
+    		, (SELECT COMM_NM FROM T_COMM WHERE COMM_GRP_CD = 'EMPL_SEC'	AND COMM_DESC1 ='Y' AND COMM_CD = tae.EMPL_SEC_CD) AS EMPL_SEC_NM
+    		, EMPL_NM, EMPL_RNK, TEL_NO, MOB_NO, EMPL_EML, RETE_YN, RETE_DT
+    		, IIF(RETE_YN = 'N', '사용', '중지') AS RETE_YN_NM
+			, ORDR, ZIP_CD, ADDR1, ADDR2, REG_DTM, REG_SEQ, UPD_DTM, UPD_SEQ
+			, (SELECT EMPL_NM FROM T_AGEN_EMPL WHERE EMPL_SEQ = tae.EMPL_SEQ) AS UPD_NM
+		FROM dbo.T_AGEN_EMPL tae
+		WHERE AGEN_SEQ = #{agenSeq}
+		<if test="emplSecCd != null and emplSecCd != '' ">
+			AND EMPL_SEC_CD = #{emplSecCd}
+		</if>
+		<if test="reteYn != null and reteYn != '' ">
+			AND RETE_YN = #{reteYn}
+		</if>
+		<if test="emplNm != null and emplNm != '' ">
+			AND EMPL_NM LIKE '%' + #{emplNm} + '%'
+		</if>
+		SELECT @@ROWCOUNT AS totalRow
+    </select>
+
+    <update id="insertAgentMng" parameterType="com.namyang.nyorder.myp.vo.AgentMngVO">
+    	DECLARE @EMPL_SEQ     numeric(13)
+		SET @EMPL_SEQ = NEXT VALUE FOR SQ_EMPL
+
+		MERGE INTO T_AGEN_EMPL AS tae
+		USING (SELECT
+			<choose>
+				<when test="emplSeq == null or emplSeq == '' ">
+					0
+				</when>
+				<otherwise>
+					${emplSeq}
+				</otherwise>
+			</choose>
+			AS emplSeq, ${agenSeq} AS agenSeq) AS t
+			ON (tae.EMPL_SEQ = t.emplSeq AND tae.AGEN_SEQ = t.agenSeq)
+		WHEN MATCHED THEN
+			UPDATE SET
+		   		tae.EMPL_NM = #{emplNm}, tae.EMPL_CD = #{emplCd}, tae.MOB_NO = #{mobNo}, tae.EMPL_SEC_CD = #{emplSecCd}
+		   		, tae.RETE_YN = #{reteYn}
+		   		<if test='reteYn == "Y" '>
+		   			, tae.RETE_DT = CONVERT(CHAR(8), DATETIME, 112)
+		   		</if>
+		   		<if test="emplEml != null and emplEml != '' ">
+		   			, tae.EMPL_EML = #{emplEml}
+		   		</if>
+		   		<if test="zipCd != null and zipCd != '' ">
+		   			, tae.ZIP_CD = #{zipCd}
+		   		</if>
+		   		<if test="addr1 != null and addr1 != '' ">
+		   			, tae.ADDR1 = #{addr1}
+		   		</if>
+		   		<if test="addr2 != null and addr2 != '' ">
+		   			, tae.ADDR2 = #{addr2}
+		   		</if>
+		WHEN NOT MATCHED THEN
+			INSERT(EMPL_SEQ, AGEN_SEQ, EMPL_NM, EMPL_CD, MOB_NO, EMPL_SEC_CD, RETE_YN, RETE_DT
+				, EMPL_EML,	ZIP_CD, ADDR1, ADDR2, REG_DTM, REG_SEQ, UPD_DTM, UPD_SEQ)
+			VALUES(@EMPL_SEQ, #{agenSeq}, #{emplNm}
+				<![CDATA[
+				, (SELECT CONVERT(VARCHAR, IIF((CONVERT(numeric, (SELECT MAX(EMPL_CD) FROM T_AGEN_EMPL WHERE AGEN_SEQ = ${agenSeq})) + 1) < 10
+					, '0' + CONVERT(VARCHAR, (CONVERT(numeric, (SELECT MAX(EMPL_CD) FROM T_AGEN_EMPL WHERE AGEN_SEQ = ${agenSeq})) + 1))
+					,  CONVERT(VARCHAR, (CONVERT(numeric, (SELECT MAX(EMPL_CD) FROM T_AGEN_EMPL WHERE AGEN_SEQ = ${agenSeq})) + 1) ))))
+				]]>
+				, #{mobNo}, #{emplSecCd}, #{reteYn}
+				<choose>
+					<when test='reteYn == "Y" '>
+						, CONVERT(CHAR(8), DATETIME, 112)
+					</when>
+					<otherwise>
+						, ''
+					</otherwise>
+				</choose>
+				, #{emplEml}
+				, #{zipCd}
+				, #{addr1}
+				, #{addr2}
+				, CURRENT_TIMESTAMP
+				<choose>
+					<when test="regSeq == null or regSeq == '' ">
+						, 0
+					</when>
+					<otherwise>
+						, ${regSeq}
+					</otherwise>
+				</choose>
+				, CURRENT_TIMESTAMP
+				<choose>
+					<when test="updSeq == null or updSeq == '' ">
+						, 0
+					</when>
+					<otherwise>
+						, ${updSeq}
+					</otherwise>
+				</choose>
+				);
+
+    </update>
+</mapper>

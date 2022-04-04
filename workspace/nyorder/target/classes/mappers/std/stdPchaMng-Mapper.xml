@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.std.dao.StdPchaMngMapper">
+
+	<select id="selectPchaList" parameterType="com.namyang.nyorder.std.vo.StdPchaMngVO" resultType="com.namyang.nyorder.std.vo.StdPchaMngVO">
+		/* stdPchaMng-Mapper - selectPchaList */
+        SELECT taop.PUCH_SEQ
+             , taop.PUCH_CD
+             , taop.PUCH_NM
+             , dbo.F_GET_BIZ_NO( taop.BIZ_NO ) AS BIZ_NO
+             , taop.BIZ_CON
+             , taop.BIZ_INDU
+             , taop.COMP_NM
+             , tc.COMM_NM AS USE_CD
+          FROM T_AGEN_OTR_PUCH taop
+         INNER JOIN T_COMM tc
+            ON ( taop.USE_CD = tc.COMM_CD AND tc.COMM_GRP_CD = 'USE_CD' )
+         WHERE 1=1
+           AND taop.AGEN_SEQ = #{agenSeq}
+         <if test="puchNm != null and puchNm != ''">
+           AND taop.PUCH_NM like '%'+#{puchNm}+'%'
+         </if>
+         ORDER BY taop.PUCH_SEQ ASC
+	</select>
+	
+	<select id="selectPchaDetail" parameterType="com.namyang.nyorder.std.vo.StdPchaMngVO" resultType="com.namyang.nyorder.std.vo.StdPchaMngVO">
+		/* stdPchaMng-Mapper - selectPchaDetail */
+		EXEC P_OPEN_KEY
+		
+        SELECT taop.PUCH_SEQ
+             , taop.PUCH_CD
+             , taop.PUCH_NM
+             , dbo.F_GET_BIZ_NO( taop.BIZ_NO ) AS BIZ_NO
+             , CONVERT( varchar, DecryptByKey( taop.PRST_NM ) ) AS PRST_NM
+             , taop.COMP_NM
+             , taop.BIZ_CON
+             , taop.BIZ_INDU
+             , taop.ZIP_CD
+             , taop.ADDR1
+             , CONVERT( varchar, DecryptByKey( taop.ADDR2 ) ) AS ADDR2
+             , dbo.F_GET_SPLIT( dbo.F_GET_TEL_NO( CONVERT( varchar, DecryptByKey(taop.TEL_NO) ) ) , '-' , 1 ) AS TEL_NO1
+             , dbo.F_GET_SPLIT( dbo.F_GET_TEL_NO( CONVERT( varchar, DecryptByKey(taop.TEL_NO) ) ) , '-' , 2 ) AS TEL_NO2
+             , dbo.F_GET_SPLIT( dbo.F_GET_TEL_NO( CONVERT( varchar, DecryptByKey(taop.TEL_NO) ) ) , '-' , 3 ) AS TEL_NO3
+             , dbo.F_GET_SPLIT( dbo.F_GET_TEL_NO( CONVERT( varchar, DecryptByKey(taop.MOB_NO) ) ) , '-' , 1 ) AS MOB_NO1
+             , dbo.F_GET_SPLIT( dbo.F_GET_TEL_NO( CONVERT( varchar, DecryptByKey(taop.MOB_NO) ) ) , '-' , 2 ) AS MOB_NO2
+             , dbo.F_GET_SPLIT( dbo.F_GET_TEL_NO( CONVERT( varchar, DecryptByKey(taop.MOB_NO) ) ) , '-' , 3 ) AS MOB_NO3
+             , dbo.F_GET_SPLIT( dbo.F_GET_TEL_NO( CONVERT( varchar, DecryptByKey(taop.FAX_NO) ) ) , '-' , 1 ) AS FAX_NO1
+             , dbo.F_GET_SPLIT( dbo.F_GET_TEL_NO( CONVERT( varchar, DecryptByKey(taop.FAX_NO) ) ) , '-' , 2 ) AS FAX_NO2
+             , dbo.F_GET_SPLIT( dbo.F_GET_TEL_NO( CONVERT( varchar, DecryptByKey(taop.FAX_NO) ) ) , '-' , 3 ) AS FAX_NO3
+             , taop.PUCH_EML
+             , CONVERT( varchar, DecryptByKey( taop.PUCH_CHAG ) ) AS PUCH_CHAG
+             , taop.USE_CD
+             , taop.STAT_DT
+             , taop.END_DT
+          FROM T_AGEN_OTR_PUCH taop
+         WHERE 1=1
+           AND taop.PUCH_SEQ = #{puchSeq}
+           AND taop.AGEN_SEQ = #{agenSeq}
+	</select>
+	
+	<update id="updatePchaDetail" parameterType="com.namyang.nyorder.std.vo.StdPchaMngVO" >
+		/* stdPchaMng-Mapper - updatePchaDetail */
+		EXEC P_OPEN_KEY
+        UPDATE T_AGEN_OTR_PUCH
+           SET PUCH_NM = #{puchNm}
+             , BIZ_NO = #{bizNo}
+             , PRST_NM = dbo.F_GET_ENCRYT(#{prstNm})
+             , COMP_NM = #{compNm}
+             , BIZ_CON = #{bizCon}
+             , BIZ_INDU = #{bizIndu}
+             , ZIP_CD = #{zipCd}
+             , ADDR1 = #{addr1}
+             , ADDR2 = dbo.F_GET_ENCRYT(#{addr2})
+             , TEL_NO = dbo.F_GET_ENCRYT(#{telNo})
+             , MOB_NO = dbo.F_GET_ENCRYT(#{mobNo})
+             , FAX_NO = dbo.F_GET_ENCRYT(#{faxNo})
+             , PUCH_EML = #{puchEml}
+             , PUCH_CHAG = dbo.F_GET_ENCRYT(#{puchChag})
+             , USE_CD = #{useCd}
+             , STAT_DT = #{statDt}
+             , END_DT = #{endDt}
+             , UPD_DTM = CURRENT_TIMESTAMP
+             , UPD_SEQ = #{agenSeq}
+         WHERE 1=1
+           AND PUCH_SEQ = #{puchSeq}
+           AND AGEN_SEQ = #{agenSeq}
+	</update>
+	
+	<insert id="insertPchaDetail" parameterType="com.namyang.nyorder.std.vo.StdPchaMngVO" >
+	/* stdPchaMng-Mapper - insertPchaDetail	*/
+	<selectKey resultType="int" keyProperty="puchSeq" order="BEFORE">
+		SELECT ISNULL ( MAX( PUCH_SEQ ) , 0 ) + 1
+		  FROM T_AGEN_OTR_PUCH
+		 WHERE 1=1
+		   <!-- AND AGEN_SEQ = #{agenSeq} -->
+	</selectKey>
+	
+	EXEC P_OPEN_KEY
+	INSERT INTO T_AGEN_OTR_PUCH 
+	(
+		PUCH_SEQ,
+		AGEN_SEQ,
+		PUCH_CD,
+		PUCH_NM,
+		BIZ_NO,
+		PRST_NM,
+		COMP_NM,
+		BIZ_CON,
+		BIZ_INDU,
+		ZIP_CD,
+		ADDR1,
+		ADDR2,
+		TEL_NO,
+		MOB_NO,
+		FAX_NO,
+		PUCH_EML,
+		PUCH_CHAG,
+		USE_CD,
+		STAT_DT,
+		END_DT,
+		REG_DTM,
+		REG_SEQ
+	)
+	VALUES
+	(
+		#{puchSeq},
+		#{agenSeq},
+		#{puchCd},
+		#{puchNm},
+		#{bizNo},
+		dbo.F_GET_ENCRYT(#{prstNm}),
+		#{compNm},
+		#{bizCon},
+		#{bizIndu},
+		#{zipCd},
+		#{addr1},
+		dbo.F_GET_ENCRYT(#{addr2}),
+		dbo.F_GET_ENCRYT(#{telNo}),
+		dbo.F_GET_ENCRYT(#{mobNo}),
+		dbo.F_GET_ENCRYT(#{faxNo}),
+		#{puchEml},
+		dbo.F_GET_ENCRYT(#{puchChag}),
+		#{useCd},
+		#{statDt},
+		#{endDt},
+		CURRENT_TIMESTAMP,
+		#{emplSeq}
+	)
+	</insert>
+	
+	<update id="removePcha" parameterType="com.namyang.nyorder.std.vo.StdPchaMngVO" >
+		/* stdPchaMng-Mapper	- removePcha */
+        UPDATE T_AGEN_OTR_PUCH
+           SET USE_CD = 'UN_USED',
+               UPD_DTM = CURRENT_TIMESTAMP,
+               UPD_SEQ = #{emplSeq}
+         WHERE 1=1
+           AND PUCH_SEQ = #{puchSeq}
+           AND AGEN_SEQ = #{agenSeq}
+	</update>
+	
+	<select id="getNextPuchCd" parameterType="com.namyang.nyorder.std.vo.StdPchaMngVO" resultType="String">
+		SELECT 'S'+ RIGHT('00000' + CONVERT(VARCHAR(4), ISNULL(MAX( RIGHT(PUCH_CD,5) ), 0) + 1), 5) AS NEXT_PUCH_CD
+		  FROM T_AGEN_OTR_PUCH
+		 WHERE 1=1
+		   AND AGEN_SEQ = #{agenSeq}
+	</select>
+	
+</mapper>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템 - 지역 관리</title>
+<link rel="stylesheet" type="text/css" href="../css/lib/daterangepicker.css"/>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/lib/moment.min.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/lib/daterangepicker.js"></script>
+<script type="text/javascript" src="../js/datepicker_custom.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<script type="text/javascript">
+    var myGridID;
+    var gridData = [
+        {"id":"#Cust02","order":0072,"areaCd":0022,"areaNm":"역삼동","sellNm":"판매원1"},
+		{"id":"#Cust03","order":0072,"areaCd":0022,"areaNm":"역삼동","sellNm":"판매원2"},
+		{"id":"#Cust02","order":0072,"areaCd":0022,"areaNm":"역삼동","sellNm":"판매원1"},
+		{"id":"#Cust04","order":0072,"areaCd":0022,"areaNm":"역삼동","sellNm":"판매원2"},
+		{"id":"#Cust05","order":0072,"areaCd":0022,"areaNm":"역삼동","sellNm":"판매원2"},
+		{"id":"#Cust06","order":0072,"areaCd":0022,"areaNm":"역삼동","sellNm":"판매원2"},
+		{"id":"#Cust07","order":0072,"areaCd":0022,"areaNm":"역삼동","sellNm":"판매원2"},
+		{"id":"#Cust08","order":0072,"areaCd":0022,"areaNm":"역삼동","sellNm":"판매원2"},
+		{"id":"#Cust09","order":0072,"areaCd":0022,"areaNm":"역삼동","sellNm":"판매원2"},
+		{"id":"#Cust10","order":0072,"areaCd":0022,"areaNm":"역삼동","sellNm":"판매원2"}
+    ];
+	
+
+	$(document).ready(function(){
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid();
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.        
+        
+        AUIGrid.setGridData(myGridID, gridData);
+	
+	    //AUIGrid.setFooter(myGridID, footerLayout);
+    });
+
+	// AUIGrid 를 생성합니다.
+	function createAUIGrid() {
+		// 그리드 속성 설정
+		var gridPros = {
+				headerHeight : 29,
+				rowHeight : 29,
+				// 편집 가능 여부 (기본값 : false)
+
+				rowIdField : "id",
+				showStateColumn : false,
+				wrapSelectionMove : true,
+				editingOnKeyDown : true, // 키보드 입력으로 편집 모드 진입 (기본값:true임;)
+				
+				editable : true,
+				// 엔터키가 다음 행이 아닌 다음 칼럼으로 이동할지 여부 (기본값 : false)
+				enterKeyColumnBase : true,
+				// 셀 선택모드 (기본값: singleCell)
+				selectionMode : "singleRow",
+				//showFooter : true,
+				// 컨텍스트 메뉴 사용 여부 (기본값 : false)
+				useContextMenu : true,
+				// 필터 사용 여부 (기본값 : false)
+				enableFilter : true,
+				// 그룹핑 패널 사용
+				useGroupingPanel : false,
+				
+				// 그룹핑 또는 트리로 만들었을 때 펼쳐지게 할지 여부 (기본값 : false)
+				displayTreeOpen : true,
+				
+				noDataMessage : "출력할 데이터가 없습니다.",
+				
+				groupingMessage : "여기에 칼럼을 드래그하면 그룹핑이 됩니다."
+		};
+
+		
+        // 실제로 #grid_wrap 에 그리드 생성
+        myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+
+        // 행 추가 이벤트 바인딩 
+	    AUIGrid.bind(myGridID, "addRow", auiAddRowHandler);
+		
+	}
+
+    var columnLayout = [{
+			dataField : "order",
+			headerText : "순서",
+            width : "20%" ,
+            editable : true, 
+                renderer : {
+                    type : "TemplateRenderer"
+                },
+                labelFunction : function (rowIndex, columnIndex, value, headerText, item, dataField, cItem ) { // HTML 템플릿 작성
+                    if(!value)	return "";
+                    var width = (cItem.width - 12);
+                    var template = '<input type="text" class="auiInput01 w50"';
+                    template += ' style="width:' + width + 'px;"'; 
+                    template += ' value="' + value +'" onblur="javascript:myInputHandler(' + rowIndex + ', this.value, event);"'
+                    template += ' onkeydown="if(event.keyCode == 9) event.preventDefault();"' 
+                    template += '>';
+                    return template; 
+                }           	
+        },{
+			dataField : "areaCd",
+			headerText : "지역코드",
+			width : "20%",		
+		},{
+			dataField : "areaNm",
+			headerText : "지역명",
+		},{
+			dataField : "sellNm",
+			headerText : "판매원명",
+			width : "27%",
+		}
+	];
+
+
+	// 행 추가 이벤트 핸들러
+	function auiAddRowHandler(event) {
+		//alert(event.type + " 이벤트\r\n" + "삽입된 행 인덱스 : " + event.rowIndex + "\r\n삽입된 행 개수 : " + event.items.length);
+		document.getElementById("rowInfo").innerHTML = (event.type + " 이벤트 :  " + "삽입된 행 인덱스 : " + event.rowIndex + ", 삽입된 행 개수 : " + event.items.length);
+	};
+	
+	//행추가
+	var countries = ["areaCd", "sellerNm",  "order", "course", "telNm"];
+	var cnt = 0;
+	function addRow(rowPos) {
+		var item = new Object();
+		AUIGrid.addRow(myGridID, item, rowPos);		
+	}
+
+	// 전체 체크 설정/ 해제
+    function checkAll(checked) {
+        var rowCount = AUIGrid.getRowCount(myGridID);
+        if(checked) {
+            // 전체 데이터를 대상으로 isActive 필드를 "Active" 값으로 변경
+            AUIGrid.updateRowBlockToValue(myGridID, 0, rowCount-1, "isActive", "Active");
+        } else {
+            // 전체 데이터를 대상으로 isActive 필드를 "Inactive" 값으로 변경
+            AUIGrid.updateRowBlockToValue(myGridID, 0, rowCount-1, "isActive", "Inactive");
+        }
+    };
+    
+</script>
+</head>
+<body>
+
+
+<!-- 실제 개발시 style 모두 지워주세요 (style 퍼블용 preview 입니다.) 가로사이즈 800px -->
+
+<div class="modal_bg" style="display:block; position:fixed;top:0;left:0;right:0;bottom:0;z-index:10; background:rgba(0, 0, 0, .43);"></div> <!-- modal 배경 -->
+
+    <div tabindex="-1" role="dialog" class="ui-dialog ui-corner-all ui-widget ui-widget-content ui-front" aria-describedby="readPop" aria-labelledby="ui-id-1" style="width:800px; height:420px; top:170px; left:30%; visibility: visible;">
+        <div class="ui-dialog-titlebar ui-corner-all ui-widget-header ui-helper-clearfix">
+            <span id="ui-id-1" class="ui-dialog-title">&nbsp;</span>
+            <button type="button" class="ui-button ui-corner-all ui-widget ui-button-icon-only ui-dialog-titlebar-close" title="Close">
+            <span class="ui-button-icon ui-icon ui-icon-closethick"></span>
+            <span class="ui-button-icon-space"> </span>Close</button>
+        </div>
+            
+        <div id="readPop" class="ajaxDialog ui-dialog-content ui-widget-content">
+			<!-- 지역관리 순서변경 -->
+			<div class="popWrap mideum modal_wrap h420" data-popup="modalAgencyViews">
+				<header>
+					<h3>지역관리 순서변경</h3>
+				</header>  
+
+				<div class="popCon">
+					<div class="popTitArea">
+						<h3>지역관리 순서변경</h3>
+
+						<div class="popBtnArea">
+							<button type="button" name="" class="inquBtn">저장</button>
+							<button type="button" name="" class="comBtn modalCloseBtn" id="modalCloseBtn">닫기</button>                   
+						</div>
+					</div>
+
+					<p class="numState">
+						<em>총 <span class="pColor01 fb">123</span></em> 건 이 조회되었습니다.
+					</p>
+
+					<!-- grid -->
+					<div class="girdBox">
+						<div id="grid_wrap"></div>
+					</div>
+					<!-- grid -->
+
+				</div>
+			</div>
+			<!-- 지역관리 순서변경 -->
+	
+		</div>
+	</div>
+</body>
+</html>

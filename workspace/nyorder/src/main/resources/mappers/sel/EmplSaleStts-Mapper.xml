@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.sel.dao.EmplSaleSttsMapper">
+	<select id="selectEmplList" parameterType="com.namyang.nyorder.sel.vo.EmplSaleSttsVO" resultType="com.namyang.nyorder.sel.vo.EmplSaleSttsVO">
+		/* emplSaleStts-Mapper selectEmplList */
+		EXEC P_OPEN_KEY
+
+		SELECT 	AM.AGEN_SEQ,
+				AE.EMPL_SEQ,
+				AE.EMPL_CD,
+				CONVERT(varchar, DecryptByKey(AE.EMPL_NM)) as EMPL_NM
+		FROM 	T_AGEN_EMPL AE
+		INNER
+		JOIN	T_AGEN_MST	AM
+		ON		AE.AGEN_SEQ = AM.AGEN_SEQ
+		WHERE 	AM.AGEN_SEQ	= #{agenSeq}
+<!-- 	<choose>
+		<when test="saleCd == 'BA'">
+		AND	EMPL_SEC_CD	IN ()
+		</when>
+		<when test="saleCd == 'SI'">
+		AND EMPL_SEC_CD = ''
+		</when>
+	</choose> -->
+		ORDER BY EMPL_CD ASC
+	</select>
+
+	<select id="selectEmplSaleSttsList" parameterType="com.namyang.nyorder.sel.vo.EmplSaleSttsVO" resultType="com.namyang.nyorder.sel.vo.EmplSaleSttsVO">
+	/* emplSaleStts-Mapper selectEmplSaleSttsList */
+		SELECT
+	<if test="srcType != null and srcType != ''">
+		<choose>
+		<when test="srcType == 'day'">
+			CONVERT(DATE, SALE_DT, 121) SALE_DT,
+		</when>
+		<when test="srcType == 'month'">
+			CONVERT(VARCHAR(7), CONVERT(DATE, SALE_DT +'01', 121)) SALE_DT,
+		</when>
+		</choose>
+	</if>
+			SALE_QTY,
+			RTGD_QTY,
+			PRSNT_QTY,
+			EXCHG_QTY,
+			RTGD_CT,
+			SALE_CT,
+			SU_CT,
+			VAT_CT,
+			SALE_AMT
+		FROM
+		(
+			SELECT
+				SALE_DT,
+				SUM(SALE_QTY) SALE_QTY,
+				SUM(RTGD_QTY) RTGD_QTY,
+				SUM(PRSNT_QTY) PRSNT_QTY,
+				SUM(EXCHG_QTY) EXCHG_QTY,
+				SUM(RTGD_CT) RTGD_CT,
+				MAX(SALE_CT) SALE_CT,
+				ROUND(((SUM(SALE_AMT)-SUM(RTGD_CT)) * 100) / 110, 2) AS SU_CT,
+				ROUND(((SUM(SALE_AMT)-SUM(RTGD_CT)) * 10) / 110, 2) AS VAT_CT,
+				(SUM(SALE_AMT)-SUM(RTGD_CT)) SALE_AMT
+			FROM
+			(
+				SELECT
+					BSM.AGEN_SEQ ,
+				 	BSD.PRD_DTL_SEQ,
+				 	<if test="srcType != null and srcType != ''">
+						<choose>
+							<when test="srcType == 'day'">
+								BSM.SALE_DT,
+							</when>
+							<when test="srcType == 'month'">
+								LEFT(BSM.SALE_DT,6) AS SALE_DT,
+							</when>
+						</choose>
+					</if>
+				 	SALE_QTY,
+					SALE_CT,
+					SALE_QTY * SALE_CT	AS SALE_AMT,
+					RTGD_QTY,
+					RTGD_CT,
+					PRSNT_QTY,
+					EXCHG_QTY
+				FROM T_BA_SALE_MST BSM
+				INNER
+				JOIN T_BA_SALE_DTL BSD
+				ON	BSM.AGEN_SEQ = BSD.AGEN_SEQ
+				AND	BSM.VEND_SEQ  = BSD.VEND_SEQ
+				AND BSM.VEND_SALE_SEQ = BSD.VEND_SALE_SEQ
+
+				WHERE BSM.AGEN_SEQ =  #{agenSeq}
+				<if test="srcType != null and srcType != ''">
+					<choose>
+						<when test="srcType == 'day'">
+							AND BSM.SALE_DT BETWEEN replace(#{srcStartDate},'-','') AND replace(#{srcEndDate},'-','')
+						</when>
+						<when test="srcType == 'month'">
+							AND LEFT(BSM.SALE_DT,6) BETWEEN replace(#{srcStartMonth},'-','') AND replace(#{srcEndMonth},'-','')
+						</when>
+					</choose>
+				</if>
+				<if test="emplSeq != null and emplSeq != ''">
+					AND CHAG_EMPL_SEQ = #{emplSeq}
+				</if>
+				AND BSM.USE_YN = 'Y'
+
+				UNION ALL
+
+				SELECT
+					PD.AGEN_SEQ,
+					D.PRD_DTL_SEQ,
+				 	<if test="srcType != null and srcType != ''">
+						<choose>
+							<when test="srcType == 'day'">
+								PD.DLVY_DT,
+							</when>
+							<when test="srcType == 'month'">
+								LEFT(PD.DLVY_DT,6) AS SALE_DT,
+							</when>
+						</choose>
+					</if>
+					DLVY_QTY,
+					DLVY_UNTPC,
+					DLVY_QTY * DLVY_UNTPC AS SALE_AMT,
+					0,
+					0,
+					0,
+					0
+				FROM T_CST_PRD_DLVY PD
+				INNER
+				JOIN T_PRD_DTL D
+				ON   PD.AGEN_SEQ = D.AGEN_SEQ
+				AND  PD.PRD_DTL_SEQ  = D.PRD_DTL_SEQ
+				AND  D.STD_PRD_YN   = 'Y'
+
+				INNER
+				JOIN T_AGEN_AREA AA
+				ON	 PD.AGEN_SEQ  = AA.AGEN_SEQ
+				AND  PD.AREA_SEQ  = AA.AREA_SEQ
+
+				WHERE PD.AGEN_SEQ = #{agenSeq}
+				<if test="srcType != null and srcType != ''">
+					<choose>
+						<when test="srcType == 'day'">
+							AND PD.DLVY_DT BETWEEN replace(#{srcStartDate},'-','') AND replace(#{srcEndDate},'-','')
+						</when>
+						<when test="srcType == 'month'">
+							AND LEFT(PD.DLVY_DT,6) BETWEEN replace(#{srcStartMonth},'-','') AND replace(#{srcEndMonth},'-','')
+						</when>
+					</choose>
+				</if>
+				<if test="emplSeq != null and emplSeq != ''">
+					AND AA.EMPL_SEQ	= #{emplSeq}
+				</if>
+				AND PD.USE_YN = 'Y'
+			) a
+			GROUP BY SALE_DT
+		) a
+		ORDER BY SALE_DT ASC
+	</select>
+</mapper>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.common.mapper.TestMapper">
+
+    <insert id="insertSqlSession" parameterType="Map">
+        /* batch.insert */
+        INSERT INTO TEST (ID, NAME, SEX, REG_DATE) VALUES (NEXT VALUE FOR TEST_SEQ, #{name}, #{sex}, getdate())
+    </insert>
+    <insert id="insertSqlSession1" parameterType="Map">
+        /* batch.insert */
+        INSERT INTO TEST1 (ID, NAME, SEX, REG_DATE) VALUES (NEXT VALUE FOR TEST_SEQ, #{name}, #{sex}, getdate())
+    </insert>
+
+</mapper>

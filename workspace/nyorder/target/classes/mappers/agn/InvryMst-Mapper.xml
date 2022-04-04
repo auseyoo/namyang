@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.agn.dao.InvryMstMapper">
+	
+	<select id="selectPuchList" parameterType="com.namyang.nyorder.agn.vo.InvryMstVO" resultType="com.namyang.nyorder.agn.vo.InvryMstVO">
+		/* InvryMst-Mapper - selectPuchList */
+			SELECT
+				PUCH_SEQ
+				, PUCH_CD
+				, PUCH_NM
+			FROM
+				T_AGEN_MJR_PUCH
+			WHERE
+				USE_CD = 'Y'
+				AND PUCH_CD = 1
+				AND PUCH_SEQ = 1
+			UNION ALL
+			SELECT
+				A.PUCH_SEQ
+				, A.PUCH_CD 
+				, A.PUCH_NM
+			FROM
+				T_AGEN_OTR_PUCH A
+			WHERE
+				A.AGEN_SEQ = #{agenSeq}
+	</select>
+	
+	<select id="selectInvryMstList" parameterType="com.namyang.nyorder.agn.vo.InvryMstVO" resultType="com.namyang.nyorder.agn.vo.InvryMstVO">
+		/* InvryMst-Mapper - selectInvryMstList */
+				SELECT
+					A.INVRY_SEQ
+					, A.AGEN_SEQ
+					, A.PUCH_SEQ
+					, A.PRD_DTL_SEQ 
+					, C.PRD_SAP_CD 
+					, A.STDR_DT
+					, B.STD_PRD_NM AS PRD_NM
+					, A.FALT_QTY
+					, A.YESTD_BOX_QTY
+					, A.YESTD_IDDY_QTY
+					, A.WRHS_BOX_QTY
+					, A.WRHS_IDDY_QTY
+					, A.SALE_BOX_QTY
+					, A.SALE_IDDY_QTY
+					, A.RTGD_BOX_QTY
+					, A.RTGD_IDDY_QTY
+					, A.PRSNT_BOX_QTY
+					, A.PRSNT_IDDY_QTY
+					, A.EXCHG_BOX_QTY
+					, A.EXCHG_IDDY_QTY
+					, A.INVRY_CHG_BOX_QTY
+					, A.INVRY_CHG_IDDY_QTY
+					, A.INVRY_BOX_QTY
+					, A.INVRY_IDDY_QTY
+				FROM
+					T_INVRY_MST A 
+					INNER JOIN T_PRD_DTL B ON A.PRD_DTL_SEQ = B.PRD_DTL_SEQ AND A.AGEN_SEQ = B.AGEN_SEQ
+					INNER JOIN T_PRD_MST C ON C.PRD_SEQ = B.PRD_SEQ
+				WHERE 1=1 
+				AND A.AGEN_SEQ = #{agenSeq}
+				AND A.STDR_DT =  #{stdrDt}
+				AND A.PUCH_SEQ = #{searchPuchSeq}
+				<if test="searchPart == 'PRD' ">
+					AND C.PRMT_CD = 'NONE' 
+				</if>	
+				<if test="searchPart == 'PRMT' ">
+					AND C.PRMT_CD != 'NONE' 
+				</if>				
+	</select>
+	
+	<update id="updInvryMst" parameterType="com.namyang.nyorder.agn.vo.InvryMstVO">
+		/* InvryMst-Mapper - updInvryMst */
+			UPDATE
+				T_INVRY_MST
+			SET
+				INVRY_CHG_BOX_QTY = #{invryChgBoxQty, jdbcType=NUMERIC}
+				, INVRY_CHG_IDDY_QTY = #{invryChgIddyQty, jdbcType=NUMERIC}
+				, INVRY_BOX_QTY = #{invryBoxQty, jdbcType=NUMERIC}
+				, INVRY_IDDY_QTY = #{invryIddyQty, jdbcType=NUMERIC}
+				, UPD_DTM = CURRENT_TIMESTAMP
+				, UPD_SEQ = #{emplSeq, jdbcType=NUMERIC}
+			WHERE
+				INVRY_SEQ = #{invrySeq}
+				AND AGEN_SEQ = #{agenSeq}
+				AND PUCH_SEQ = #{puchSeq}
+				AND STDR_DT = #{stdrDt}
+	</update>
+	
+	<insert id="insInvryMstLog" parameterType="com.namyang.nyorder.agn.vo.InvryMstVO">
+		/* InvryMst-Mapper - insInvryMstLog */
+			INSERT INTO	T_INVRY_LOG(
+				INVRY_LOG_SEQ
+				, AGEN_SEQ
+				, PUCH_SEQ
+				, PRD_DTL_SEQ
+				, INVRY_SEQ
+				, STDR_DT
+				, FALT_QTY
+				, YESTD_BOX_QTY
+				, YESTD_IDDY_QTY
+				, WRHS_BOX_QTY
+				, WRHS_IDDY_QTY
+				, SALE_BOX_QTY
+				, SALE_IDDY_QTY
+				, RTGD_BOX_QTY
+				, RTGD_IDDY_QTY
+				, PRSNT_BOX_QTY
+				, PRSNT_IDDY_QTY
+				, EXCHG_BOX_QTY
+				, EXCHG_IDDY_QTY
+				, INVRY_CHG_BOX_QTY
+				, INVRY_CHG_IDDY_QTY
+				, INVRY_BOX_QTY
+				, INVRY_IDDY_QTY
+				, REG_DTM
+				, REG_SEQ)
+			SELECT
+				NEXT VALUE FOR SQ_INVRY_LOG
+				, AGEN_SEQ
+				, PUCH_SEQ
+				, PRD_DTL_SEQ
+				, INVRY_SEQ
+				, STDR_DT
+				, FALT_QTY
+				, YESTD_BOX_QTY
+				, YESTD_IDDY_QTY
+				, WRHS_BOX_QTY
+				, WRHS_IDDY_QTY
+				, SALE_BOX_QTY
+				, SALE_IDDY_QTY
+				, RTGD_BOX_QTY
+				, RTGD_IDDY_QTY
+				, PRSNT_BOX_QTY
+				, PRSNT_IDDY_QTY
+				, EXCHG_BOX_QTY
+				, EXCHG_IDDY_QTY
+				, INVRY_CHG_BOX_QTY
+				, INVRY_CHG_IDDY_QTY
+				, INVRY_BOX_QTY
+				, INVRY_IDDY_QTY
+				, CURRENT_TIMESTAMP
+				, #{emplSeq, jdbcType=NUMERIC}
+			FROM
+				T_INVRY_MST A
+			WHERE
+				INVRY_SEQ = #{invrySeq}
+	</insert>	
+	
+	<update id="updStdPrdInvryAfterUpd" parameterType="com.namyang.nyorder.agn.vo.InvryMstVO">
+		{CALL NY_ORDER.dbo.P_INVRY_AFTER_UPD(#{agenSeq}, #{prdDtlSeq}, #{puchSeq}, #{stdrDt}, #{emplSeq}, '' )}
+	</update>
+	
+	<update id="updInvryWrhsBefPrmtChg" parameterType="com.namyang.nyorder.agn.vo.InvryMstVO">
+		/* InvryMst-Mapper - updInvryWrhsBefPrmtChg */
+				<![CDATA[
+				DECLARE @V_YESTD_BOX_QTY NUMERIC(9,0) 
+				SET @V_YESTD_BOX_QTY = NULL 
+				
+				DECLARE @V_YESTD_IDDY_QTY NUMERIC(9,0) 
+				SET @V_YESTD_IDDY_QTY = NULL 
+				
+				--전일 재고(박스) 조회
+				SELECT @V_YESTD_BOX_QTY = ISNULL(INVRY_BOX_QTY, 0) 
+									FROM T_INVRY_MST A
+									WHERE 
+									AGEN_SEQ = #{agenSeq} AND PRD_DTL_SEQ = #{prdDtlSeq} AND PUCH_SEQ = #{puchSeq} 
+									AND STDR_DT = (
+										SELECT MAX(STDR_DT)
+										FROM T_INVRY_MST 
+										WHERE AGEN_SEQ = #{agenSeq}
+										AND PRD_DTL_SEQ = #{prdDtlSeq}
+										AND PUCH_SEQ = #{puchSeq}
+										AND STDR_DT < A.STDR_DT
+									)
+									
+				--전일 재고(박스) 조회
+				SELECT @V_YESTD_IDDY_QTY = ISNULL(INVRY_IDDY_QTY, 0) 
+									FROM T_INVRY_MST A
+									WHERE 
+									AGEN_SEQ = #{agenSeq} AND PRD_DTL_SEQ = #{prdDtlSeq} AND PUCH_SEQ = #{puchSeq} 
+									AND STDR_DT = (
+										SELECT MAX(STDR_DT)
+										FROM T_INVRY_MST 
+										WHERE AGEN_SEQ = #{agenSeq}
+										AND PRD_DTL_SEQ = #{prdDtlSeq}
+										AND PUCH_SEQ = #{puchSeq}
+										AND STDR_DT < A.STDR_DT
+									)							
+			]]>	
+											
+			UPDATE T_INVRY_MST
+			SET
+				YESTD_BOX_QTY = ISNULL(@V_YESTD_BOX_QTY, 0)
+				, YESTD_IDDY_QTY = ISNULL(@V_YESTD_IDDY_QTY, 0)
+				, WRHS_BOX_QTY = WRHS_BOX_QTY - ISNULL(#{wrhsBoxQty}, 0)
+				, WRHS_IDDY_QTY = WRHS_IDDY_QTY - ISNULL(#{wrhsIddyQty}, 0)
+				, INVRY_BOX_QTY = FLOOR((/*전일재고*/ ( ( ISNULL(@V_YESTD_BOX_QTY, 0) * FALT_QTY ) + ISNULL(@V_YESTD_IDDY_QTY, 0) ) 
+												+ /*입고*/ ( ( (ISNULL(WRHS_BOX_QTY, 0) - ISNULL(#{wrhsBoxQty}, 0)) * FALT_QTY ) + (ISNULL(WRHS_IDDY_QTY, 0) - ISNULL(#{wrhsIddyQty}, 0)) )
+												- /*판매*/ ( ( ISNULL(SALE_BOX_QTY, 0) * FALT_QTY ) + ISNULL(SALE_IDDY_QTY, 0) )
+												- /*반품*/ ( ( ISNULL(RTGD_BOX_QTY, 0) * FALT_QTY ) + ISNULL(RTGD_IDDY_QTY, 0) )
+												- /*증정*/ ( ( ISNULL(PRSNT_BOX_QTY, 0) * FALT_QTY ) + ISNULL(PRSNT_IDDY_QTY, 0) )
+												+ /*재고조정*/ ( ( ISNULL(INVRY_CHG_BOX_QTY, 0) * FALT_QTY ) + ISNULL(INVRY_CHG_IDDY_QTY, 0) )
+												) / FALT_QTY)
+				, INVRY_IDDY_QTY = (/*전일재고*/ ( ( ISNULL(@V_YESTD_BOX_QTY, 0) * FALT_QTY ) + ISNULL(@V_YESTD_IDDY_QTY, 0) ) 
+												+ /*입고*/ ( ( (ISNULL(WRHS_BOX_QTY, 0) - ISNULL(#{wrhsBoxQty}, 0)) * FALT_QTY ) + (ISNULL(WRHS_IDDY_QTY, 0) - ISNULL(#{wrhsIddyQty}, 0)) )
+												- /*판매*/ ( ( ISNULL(SALE_BOX_QTY, 0) * FALT_QTY ) + ISNULL(SALE_IDDY_QTY, 0) )
+												- /*반품*/ ( ( ISNULL(RTGD_BOX_QTY, 0) * FALT_QTY ) + ISNULL(RTGD_IDDY_QTY, 0) )
+												- /*증정*/ ( ( ISNULL(PRSNT_BOX_QTY, 0) * FALT_QTY ) + ISNULL(PRSNT_IDDY_QTY, 0) )
+												+ /*재고조정*/ ( ( ISNULL(INVRY_CHG_BOX_QTY, 0) * FALT_QTY ) + ISNULL(INVRY_CHG_IDDY_QTY, 0) )
+												) % FALT_QTY 
+				, UPD_DTM = CURRENT_TIMESTAMP
+				, UPD_SEQ = #{emplSeq, jdbcType=NUMERIC}
+			WHERE AGEN_SEQ = #{agenSeq}
+				AND PUCH_SEQ = #{puchSeq}
+				AND PRD_DTL_SEQ = #{prdDtlSeq}
+				AND STDR_DT = #{stdrDt}
+	</update>
+	
+	<update id="merInvryWrhsAfterPrmtChg" parameterType="com.namyang.nyorder.agn.vo.CrtbRtgdVO">
+		/* InvryMst-Mapper - merInvryWrhsAfterPrmtChg */
+			<![CDATA[
+			DECLARE @INVRY_MST_SEQ numeric(13)
+			SET @INVRY_MST_SEQ = NEXT VALUE FOR SQ_INVRY
+			
+			DECLARE @V_YESTD_BOX_QTY NUMERIC(9,0) 
+			SET @V_YESTD_BOX_QTY = NULL 
+			
+			DECLARE @V_YESTD_IDDY_QTY NUMERIC(9,0) 
+			SET @V_YESTD_IDDY_QTY = NULL 
+			
+			--전일 재고(박스) 조회
+			SELECT @V_YESTD_BOX_QTY = ISNULL(INVRY_BOX_QTY, 0) 
+								FROM T_INVRY_MST A
+								WHERE 
+								AGEN_SEQ = #{agenSeq} AND PRD_DTL_SEQ = #{prdDtlSeq} AND PUCH_SEQ = #{puchSeq} 
+								AND STDR_DT = (
+									SELECT MAX(STDR_DT)
+									FROM T_INVRY_MST 
+									WHERE AGEN_SEQ = #{agenSeq}
+									AND PRD_DTL_SEQ = #{prdDtlSeq}
+									AND PUCH_SEQ = #{puchSeq}
+									AND STDR_DT < A.STDR_DT
+								)
+								
+			--전일 재고(박스) 조회
+			SELECT @V_YESTD_IDDY_QTY = ISNULL(INVRY_IDDY_QTY, 0) 
+								FROM T_INVRY_MST A
+								WHERE 
+								AGEN_SEQ = #{agenSeq} AND PRD_DTL_SEQ = #{prdDtlSeq} AND PUCH_SEQ = #{puchSeq} 
+								AND STDR_DT = (
+									SELECT MAX(STDR_DT)
+									FROM T_INVRY_MST 
+									WHERE AGEN_SEQ = #{agenSeq}
+									AND PRD_DTL_SEQ = #{prdDtlSeq}
+									AND PUCH_SEQ = #{puchSeq}
+									AND STDR_DT < A.STDR_DT
+								)								
+						
+			MERGE INTO T_INVRY_MST A
+			USING(
+					SELECT #{agenSeq} AS AGEN_SEQ
+							, #{puchSeq} AS PUCH_SEQ
+							, #{prdDtlSeq} AS PRD_DTL_SEQ
+							, #{stdrDt} AS STDR_DT
+			) B
+			ON (
+				A.AGEN_SEQ = B.AGEN_SEQ AND A.PUCH_SEQ = B.PUCH_SEQ  AND A.PRD_DTL_SEQ = B.PRD_DTL_SEQ  AND A.STDR_DT = B.STDR_DT 
+			) 
+			WHEN	MATCHED THEN 
+					UPDATE	SET 
+							YESTD_BOX_QTY = ISNULL(@V_YESTD_BOX_QTY, 0)
+							, YESTD_IDDY_QTY = ISNULL(@V_YESTD_IDDY_QTY, 0)
+							, WRHS_BOX_QTY = ISNULL(#{wrhsBoxQty}, 0)
+							, WRHS_IDDY_QTY = ISNULL(#{wrhsIddyQty}, 0)
+							, INVRY_BOX_QTY = FLOOR((/*전일재고*/ ( ( ISNULL(@V_YESTD_BOX_QTY, 0) * A.FALT_QTY ) + ISNULL(@V_YESTD_IDDY_QTY, 0) ) 
+												+ /*입고*/ ( ( ISNULL(#{wrhsBoxQty}, 0) * A.FALT_QTY ) + ISNULL(#{wrhsIddyQty}, 0) )
+												- /*판매*/ ( ( ISNULL(A.SALE_BOX_QTY, 0) * A.FALT_QTY ) + ISNULL(A.SALE_IDDY_QTY, 0) )
+												- /*반품*/ ( ( ISNULL(A.RTGD_BOX_QTY, 0) * A.FALT_QTY ) + ISNULL(A.RTGD_IDDY_QTY, 0) )
+												- /*증정*/ ( ( ISNULL(A.PRSNT_BOX_QTY, 0) * A.FALT_QTY ) + ISNULL(A.PRSNT_IDDY_QTY, 0) )
+												+ /*재고조정*/ ( ( ISNULL(A.INVRY_CHG_BOX_QTY, 0) * A.FALT_QTY ) + ISNULL(A.INVRY_CHG_IDDY_QTY, 0) )
+												) / A.FALT_QTY)
+							, INVRY_IDDY_QTY = (/*전일재고*/ ( ( ISNULL(@V_YESTD_BOX_QTY, 0) * A.FALT_QTY ) + ISNULL(@V_YESTD_IDDY_QTY, 0) ) 
+												+ /*입고*/ ( ( ISNULL(#{wrhsBoxQty}, 0) * A.FALT_QTY ) + ISNULL(#{wrhsIddyQty}, 0) )
+												- /*판매*/ ( ( ISNULL(A.SALE_BOX_QTY, 0) * A.FALT_QTY ) + ISNULL(A.SALE_IDDY_QTY, 0) )
+												- /*반품*/ ( ( ISNULL(A.RTGD_BOX_QTY, 0) * A.FALT_QTY ) + ISNULL(A.RTGD_IDDY_QTY, 0) )
+												- /*증정*/ ( ( ISNULL(A.PRSNT_BOX_QTY, 0) * A.FALT_QTY ) + ISNULL(A.PRSNT_IDDY_QTY, 0) )
+												+ /*재고조정*/ ( ( ISNULL(A.INVRY_CHG_BOX_QTY, 0) * A.FALT_QTY ) + ISNULL(A.INVRY_CHG_IDDY_QTY, 0) )
+												) % A.FALT_QTY 
+							, UPD_DTM = CURRENT_TIMESTAMP
+							, UPD_SEQ = #{emplSeq, jdbcType=NUMERIC}
+			WHEN	NOT MATCHED THEN
+					INSERT(INVRY_SEQ
+							, AGEN_SEQ
+							, PUCH_SEQ
+							, PRD_DTL_SEQ
+							, STDR_DT
+							, FALT_QTY
+							, YESTD_BOX_QTY
+							, YESTD_IDDY_QTY
+							, WRHS_BOX_QTY
+							, WRHS_IDDY_QTY
+							, INVRY_BOX_QTY
+							, INVRY_IDDY_QTY
+							, REG_DTM
+							, REG_SEQ)
+					VALUES(@INVRY_MST_SEQ
+						, #{agenSeq}						
+						, #{puchSeq}
+						, #{prdDtlSeq}
+						, #{stdrDt}
+						, ISNULL(#{faltQty}, 0)
+						, ISNULL(@V_YESTD_BOX_QTY, 0)
+						, ISNULL(@V_YESTD_IDDY_QTY, 0)
+						, ISNULL(#{wrhsBoxQty}, 0)
+						, ISNULL(#{wrhsIddyQty}, 0)
+						, (ISNULL(@V_YESTD_BOX_QTY, 0) + ISNULL(#{wrhsBoxQty}, 0))
+						, (ISNULL(@V_YESTD_IDDY_QTY, 0) + ISNULL(#{wrhsIddyQty}, 0))
+						, CURRENT_TIMESTAMP
+						, #{emplSeq, jdbcType=NUMERIC}
+					);
+			]]>	
+	</update>
+				
+</mapper>

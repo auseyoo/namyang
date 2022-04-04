@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.sale.dao.BcncBilctMngMapper">
+	<select id="selectBaBillTotList" parameterType="com.namyang.nyorder.sale.vo.SaleRegVO" resultType="com.namyang.nyorder.sale.vo.SaleRegVO">
+	/* saleReg-Mapper - selectBaBillTot */
+	SELECT
+		A.VEND_BILL_SEQ,
+		A.AGEN_SEQ,
+		A.VEND_SEQ,
+		B.VEND_CD,
+		B.VEND_NM,
+		C.EMPL_SEQ,
+		(SELECT ny_order.dbo.F_GET_DECRYT(EMPL_NM) FROM T_AGEN_EMPL AS D  WHERE D.EMPL_SEQ =  C.EMPL_SEQ) EMPL_NM,
+		A.SALE_CT,
+ 		A.RTGD_CT,
+ 		A.SUM_CT,
+ 		A.TOT_PCHA_CT,
+ 		A.DELG_ATMPT_CT,
+ 		A.RL_SALE_CT,
+ 		A.CASH_BILCT ,
+ 		A.CASH_EXCP_BILCT,
+ 		A.PRD_DC_RATE,
+ 		A.PRD_DC_CT,
+ 		A.ATMPT_CT,
+ 		A.SALE_DT,
+ 		A.BILL_DT,
+ 		CASE A.SALE_DT
+	 		WHEN NULL THEN 'Y'
+	 		WHEN '' THEN 'Y'
+	 		ELSE 'N'
+ 		END EDITABLE_YN
+	FROM T_BA_BILL_TOT A
+	LEFT JOIN T_AGEN_VEND B ON B.VEND_SEQ = A.VEND_SEQ
+	LEFT JOIN T_AGEN_VEND_EMPL C ON C.VEND_SEQ = A.VEND_SEQ
+	WHERE
+		A.AGEN_SEQ = #{agenSeq}
+		AND
+			BILL_DT BETWEEN REPLACE(#{schStatBillDt},'-','') AND REPLACE(#{schEndBillDt},'-','')
+
+	</select>
+	<select id="selectBaBillTot" parameterType="com.namyang.nyorder.sale.vo.SaleRegVO" resultType="com.namyang.nyorder.sale.vo.SaleRegVO">
+	/* saleReg-Mapper - selectBaBillTot */
+	SELECT
+		VEND_BILL_SEQ,
+		AGEN_SEQ,
+		VEND_SEQ,
+		SALE_CT,
+ 		RTGD_CT,
+ 		SUM_CT,
+ 		TOT_PCHA_CT,
+ 		DELG_ATMPT_CT,
+ 		RL_SALE_CT,
+ 		CASH_BILCT ,
+ 		CASH_EXCP_BILCT,
+ 		PRD_DC_RATE,
+ 		PRD_DC_CT,
+ 		ATMPT_CT,
+ 		SALE_DT,
+ 		BILL_DT
+	FROM T_BA_BILL_TOT
+	WHERE
+		AGEN_SEQ = #{agenSeq}
+	AND VEND_SEQ = #{vendSeq}
+	AND SALE_DT = REPLACE(#{saleDt},'-','')
+	</select>
+	<update id="megBaBillTot" parameterType="com.namyang.nyorder.sale.vo.SaleRegVO">
+	/* saleReg-Mapper - "megBaBillTot" */
+
+		DECLARE @VEND_BILL_SEQ     numeric(13)
+		SET @VEND_BILL_SEQ = NEXT VALUE FOR SQ_VEND_BILL_TOT
+
+		MERGE INTO T_BA_BILL_TOT A
+		USING(
+			SELECT
+				#{agenSeq} as AGEN_SEQ,
+				#{vendSeq} as VEND_SEQ,
+				REPLACE(#{billDt},'-','') as BILL_DT
+
+		) B
+		ON (
+				A.AGEN_SEQ = B.AGEN_SEQ
+			AND	A.VEND_SEQ = B.VEND_SEQ
+			AND	A.BILL_DT = B.BILL_DT
+		)
+		WHEN	MATCHED THEN
+			UPDATE SET
+		 		A.SALE_CT = #{saleCt},
+		 		A.RTGD_CT = #{rtgdCt},
+		 		A.SUM_CT = #{sumCt},
+		 		A.TOT_PCHA_CT = #{totPchaCt},
+		 		A.DELG_ATMPT_CT = ISNULL((SELECT
+		 							ISNULL(ATMPT_CT,0)
+		 						   FROM
+		 						   	T_BA_BILL_TOT
+		 						   WHERE
+		 						   <![CDATA[
+		 						   	VEND_BILL_SEQ = (SELECT MAX(VEND_BILL_SEQ) FROM T_BA_BILL_TOT WHERE AGEN_SEQ= #{agenSeq} AND VEND_SEQ = #{vendSeq} AND BILL_DT< REPLACE(#{billDt},'-',''))
+		 						   ]]>
+		 						  ),0),
+		 		A.RL_SALE_CT = #{rlSaleCt},
+		 		A.CASH_BILCT = #{cashBilct},
+		 		A.CASH_EXCP_BILCT = #{cashExcpBilct},
+		 		A.PRD_DC_RATE = #{prdDcRate},
+		 		A.PRD_DC_CT = #{prdDcCt},
+		 		A.ATMPT_CT = (CONVERT(NUMERIC,ISNULL(#{rlSaleCt},0) )-CONVERT(NUMERIC,ISNULL(#{cashBilct},0) )-CONVERT(NUMERIC,ISNULL(#{cashExcpBilct},0) ))+CONVERT(NUMERIC,ISNULL((SELECT
+					ATMPT_CT
+				 FROM
+				 	T_BA_BILL_TOT
+				 WHERE
+				 <![CDATA[
+				 	VEND_BILL_SEQ = (SELECT MAX(VEND_BILL_SEQ) FROM T_BA_BILL_TOT WHERE AGEN_SEQ= #{agenSeq} AND VEND_SEQ = #{vendSeq} AND BILL_DT< REPLACE(#{billDt},'-',''))
+				 ]]>
+				),0)),
+				A.UPD_DTM = CURRENT_TIMESTAMP,
+				A.UPD_SEQ = #{emplSeq},
+				A.BILL_DT = REPLACE(#{billDt},'-','')
+		WHEN	NOT MATCHED THEN
+			INSERT (VEND_BILL_SEQ, AGEN_SEQ, VEND_SEQ, SALE_CT, RTGD_CT, SUM_CT, TOT_PCHA_CT, DELG_ATMPT_CT,
+			 RL_SALE_CT, CASH_BILCT, CASH_EXCP_BILCT, PRD_DC_RATE, PRD_DC_CT, ATMPT_CT, REG_DTM, REG_SEQ,BILL_DT
+			 <if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(saleDt)">
+				 , SALE_DT
+			 </if>
+			 )
+			VALUES(
+				@VEND_BILL_SEQ,
+				#{agenSeq},
+				#{vendSeq},
+				#{saleCt},
+				#{rtgdCt},
+				#{sumCt},
+				#{totPchaCt},
+				ISNULL((SELECT
+					ATMPT_CT
+				 FROM
+				 	T_BA_BILL_TOT
+				 WHERE
+				 <![CDATA[
+				 	VEND_BILL_SEQ = (SELECT MAX(VEND_BILL_SEQ) FROM T_BA_BILL_TOT WHERE AGEN_SEQ= #{agenSeq} AND VEND_SEQ = #{vendSeq} AND BILL_DT< REPLACE(#{billDt},'-',''))
+				 ]]>
+				),0),
+				#{rlSaleCt},
+				#{cashBilct},
+				#{cashExcpBilct},
+				#{prdDcRate},
+				#{prdDcCt},
+				(CONVERT(NUMERIC,ISNULL(#{rlSaleCt},0))-CONVERT(NUMERIC,ISNULL(#{cashBilct},0))-CONVERT(NUMERIC,ISNULL(#{cashExcpBilct},0)))+CONVERT(NUMERIC,ISNULL((SELECT
+					ATMPT_CT
+				 FROM
+				 	T_BA_BILL_TOT
+				 WHERE
+				 <![CDATA[
+				 	VEND_BILL_SEQ = (SELECT MAX(VEND_BILL_SEQ) FROM T_BA_BILL_TOT WHERE AGEN_SEQ= #{agenSeq} AND VEND_SEQ = #{vendSeq} AND BILL_DT< REPLACE(#{billDt},'-',''))
+				 ]]>
+				),0)),
+				CURRENT_TIMESTAMP,
+				#{emplSeq},
+				REPLACE(#{billDt},'-','')
+				<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(saleDt)">
+				,REPLACE(#{saleDt},'-','')
+				</if>
+			);
+	</update>
+	<update id="updateAtmptCt" parameterType="com.namyang.nyorder.sale.vo.SaleRegVO">
+	DECLARE @MINUS_ATMPT     numeric(13)
+		SET @MINUS_ATMPT = CONVERT(NUMERIC,ISNULL(#{cashBilct},0)) + CONVERT(NUMERIC,ISNULL(#{cashExcpBilct},0))
+
+	UPDATE T_BA_BILL_TOT SET
+		DELG_ATMPT_CT  = DELG_ATMPT_CT - @MINUS_ATMPT,
+		ATMPT_CT  = ATMPT_CT - @MINUS_ATMPT
+	WHERE
+			AGEN_SEQ = #{agenSeq}
+		AND VEND_SEQ = #{vendSeq}
+		AND BILL_DT > #{billDt}
+	</update>
+</mapper>

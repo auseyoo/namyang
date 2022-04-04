@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템</title>
+<!--<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>-->
+<!--<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>-->
+<style>
+	body,html{margin:0; padding:0; height:100%; font-size:12pt;}
+	* {color-adjust: exact!important; -webkit-print-color-adjust: exact!important; print-color-adjust: exact!important; box-sizing:border-box; -moz-box-sizing: border-box}
+     .page {width:21cm; min-height:29.7cm; padding:1cm 1.5cm; margin:1cm auto; background:#fff; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);}
+	/*.subpage {padding:1cm; height:256mm;}*/
+	@page {
+		/*size: A4 landscape;*/    /*Portrait*/
+		size: A4 Portrait;
+		margin:20px 0 10px;
+		/*size: landscape;*/
+	}
+	@media print {
+		html, body {width:210mm; height:297mm;}
+		.page {margin:0; border:initial; border-radius:initial; width:initial; min-height:initial; box-shadow:initial; background:initial; page-break-after:avoid}
+		.tbl tbody th {background:#f5f5f5 !important;}
+	}
+
+	/*table, img, svg {break-inside:avoid;}*/
+	.printWrap{text-align:center;}
+	.printWrap h2{font-size:27px;}
+
+	.tblWrap{height:100%;}
+	table[class*="tbl"] {table-layout:fixed; width:100%; height:100%; clear:both; border-collapse:collapse;}
+	table[class*="tbl"] tr > * {vertical-align:middle;}
+	.tbl {border:1px solid #dedede;}
+	.tbl tbody th, .tbl tbody td{white-space:nowrap;}
+	.tbl thead th {font-size:10pt; font-weight:bold; height:26px; line-height:25px; background:#f5f5f5; border-right:1px solid #dedede; border-bottom:1px solid #dedede; padding:0 5px; color:#000;}
+	.tbl tbody td {font-size:9.5pt; text-align:left; border-right:1px solid #dedede; border-bottom:1px solid #dedede; padding:4px 7px 4px 7px; height:100%;}
+	.tbl tbody td p{margin:0;}
+	.tbl tbody td.ac{text-align:center;}
+	.tbl tbody td.ar{text-align:right;}
+	caption,legend{visibility:hidden;}
+
+	.usage{font-size:10pt;}
+	.info{text-align:left;}
+	.info dl{display:flex; margin:0; font-size:11pt;}
+	.info dl dd{margin-left:10px;}
+
+	.confirm{display:flex; justify-content:space-between; font-size:11pt;}
+	.ac{text-align:center;}
+	.ar{text-align:right;}
+</style>
+</head>
+<body>
+	<div class="printWrap">
+		<div class="page">
+			<h2>홍길동(9878) 애음자 수금 내역</h2>
+
+			<div class="info">
+				<dl>
+					<dt>전화번호 :</dt>
+					<dd>(010-1234-5678)</dd>
+				</dl>
+				<dl>
+					<dt>주소 :</dt>
+					<dd>코아 101-2112</dd>
+				</dl>
+				<dl>
+					<dt>제품 :</dt>
+					<dd>
+						Pet750(수량: 1 단가: 2790 판촉물: 10%+1달(지정))<br/>
+						이오(수량: 1 단가: 500)
+					</dd>
+				</dl>
+			</div>
+
+			<div class="tblWrap">
+				<table class="tbl"> <!-- style="page-break-after:always;"-->
+					<caption>홍길동(9878) 애음자 수금 내역</caption>
+					<colgroup>
+						<col style="width:5%;">
+						<col style="width:9%;">
+						<col style="width:10%;">
+						<col style="width:10%;">
+						<col style="width:15%;">
+						<col style="width:15%;">
+						<col style="width:10%;">
+						<col style="width:10%;">
+						<col>
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col">No</th>
+							<th scope="col">청구월</th>
+							<th scope="col">당월애음</th>
+							<th scope="col">당월청구</th>
+							<th scope="col">구분</th>
+							<th scope="col">수금일</th>
+							<th scope="col">수금금액</th>
+							<th scope="col">미수잔액</th>
+							<th scope="col">메모</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+						<tr>
+							<td class="ac">1</td>
+							<td>202108</td>
+							<td class="ar">21,100</td>
+							<td class="ar">21,100</td>
+							<td class="ac">CMS(자동이체)</td>
+							<td class="ac">2021-08-25</td>
+							<td class="ar">21,100</td>
+							<td class="ar">0</td>
+							<td>
+								
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

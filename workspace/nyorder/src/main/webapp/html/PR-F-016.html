@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>남양유업 대리점 주문시스템 - 애음자 통계</title>
+<link rel="stylesheet" type="text/css" href="../css/AUIGrid/grid_custom.css"/>
+<link rel="stylesheet" type="text/css" href="../css/layout.css"/>
+<script type="text/javascript" src="../js/lib/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="../js/lib/jquery-ui.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGridLicense.js"></script>
+<script type="text/javascript" src="../js/AUIGrid/AUIGrid.js"></script>
+<script type="text/javascript" src="../js/common_ui.js"></script>
+<style>
+	body,html{margin:0; padding:0; font-size:12pt; overflow-y:auto;}
+	* {color-adjust: exact!important; -webkit-print-color-adjust: exact!important; print-color-adjust: exact!important; box-sizing:border-box; -moz-box-sizing: border-box;}
+     .page {width:29.7cm; min-height:1cm; padding:1cm 0.5cm; margin:1cm auto; background:#fff; box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);}
+	/*.subpage {padding:1cm; height:256mm;}*/
+	@page {
+		/*size: A4 landscape;*/    /*Portrait*/
+		size: A4 landscape; /* 가로 */ 
+		margin:10px 10px;	
+	}
+	@media print {
+		html, body {margin:0; padding:0; overflow-y:inherit;}
+		.page {margin:10px 10px; border:initial; border-radius:initial; width:initial; min-height:initial; box-shadow:initial; background:initial; size: A4 landscape;}
+		.tbl tbody th {background:#f5f5f5 !important;}
+		.aui-grid .aui-grid-table td{font-size:9pt;}
+		header,footer{display:none}
+	}
+
+	/*table, img, svg {break-inside:avoid;}*/
+	.printWrap{text-align:center;}
+	.printWrap h2{font-size:27px;}
+
+	.tblWrap{height:100%;}
+	table[class*="tbl"] {table-layout:fixed; width:100%; height:100%; clear:both; border-collapse:collapse;}
+	table[class*="tbl"] tr > * {vertical-align:middle;}
+	.tbl {border:1px solid #dedede;}
+	.tbl tbody th, .tbl tbody td{white-space:nowrap;}
+	.tbl thead th {font-size:10pt; font-weight:bold; height:20px; line-height:20px; background:#f5f5f5; border-right:1px solid #dedede; border-bottom:1px solid #dedede; padding:0 5px; color:#000;}
+	.tbl tbody td {font-size:9.5pt; text-align:left; border-right:1px solid #dedede; border-bottom:1px solid #dedede; padding:4px 7px 4px 7px; height:100%;}
+	.tbl tbody td p{margin:0;}
+	.tbl tbody td.ac{text-align:center;}
+	.tbl tbody td.ar{text-align:right;}
+	caption,legend{visibility:hidden;}
+
+	.dateInfo{position:relative; font-size:12pt; margin:5px 0 5px; text-align:left;}
+	.dateInfo span{position:absolute; right:0}
+
+	.confirm{display:flex; justify-content:space-between; font-size:11pt;}
+	.ac{text-align:center;}
+	.ar{text-align:right;}
+
+	.w50per{width:50% !important}
+	.h600{height:600px !important}
+	.ml10{margin-left:10px}
+</style>
+<script type="text/javascript">
+	var myGridID;
+
+	var gridData = [
+			{"id":"#Cust0","deDate":"2021-12-20","areaNm":"논현 2동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"서울시 도산대로 대우아파트 100-10, 1층","phone":"010-8520-5050"},
+			{"id":"#Cust1","deDate":"2021-12-20","areaNm":"논현 2동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"학동로 100-10, 1층","phone":"010-8520-5050"},
+			{"id":"#Cust2","deDate":"2021-12-20","areaNm":"논현 2동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"학동로 100-10, 1층","phone":"010-8520-5050"},
+			{"id":"#Cust3","deDate":"2021-12-20","areaNm":"논현 2동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"학동로 100-10, 1층","phone":"010-8520-5050"},
+			{"id":"#Cust4","deDate":"2021-12-20","areaNm":"논현 2동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"학동로 100-10, 1층","phone":"010-8520-5050"},
+			{"id":"#Cust5","deDate":"2021-12-20","areaNm":"논현 2동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"학동로 100-10, 1층","phone":"010-8520-5050"},
+			{"id":"#Cust6","deDate":"2021-12-20","areaNm":"논현 2동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"학동로 100-10, 1층","phone":"010-8520-5050"},
+			{"id":"#Cust7","deDate":"2021-12-20","areaNm":"논현 2동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"학동로 100-10, 1층","phone":"010-8520-5050"},
+			{"id":"#Cust8","deDate":"2021-12-20","areaNm":"청담 4동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"청담로 20-10, 232-5 401호","phone":"010-8520-5050"},
+			
+			{"id":"#Cust10","deDate":"2021-12-20","areaNm":"청담 4동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"청담로 20-10, 232-5 401호","phone":"010-8520-5050"},
+			{"id":"#Cust11","deDate":"2021-12-20","areaNm":"청담 4동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"청담로 20-10, 232-5 401호","phone":"010-8520-5050"},
+			{"id":"#Cust12","deDate":"2021-12-20","areaNm":"청담 4동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"청담로 20-10, 232-5 401호","phone":"010-8520-5050"},
+			{"id":"#Cust13","deDate":"2021-12-20","areaNm":"청담 4동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"청담로 20-10, 232-5 401호","phone":"010-8520-5050"},
+			{"id":"#Cust14","deDate":"2021-12-20","areaNm":"강일 1동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"강일1동 리버파크 102동 202호","phone":"010-8520-5050"},
+			{"id":"#Cust15","deDate":"2021-12-20","areaNm":"강일 1동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"강일1동 리버파크 102동 202호","phone":"010-8520-5050"},
+			{"id":"#Cust16","deDate":"2021-12-20","areaNm":"강일 1동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"강일1동 리버파크 102동 202호","phone":"010-8520-5050"},
+			{"id":"#Cust17","deDate":"2021-12-20","areaNm":"강일 1동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"강일1동 리버파크 102동 202호","phone":"010-8520-5050"},
+			{"id":"#Cust18","deDate":"2021-12-20","areaNm":"강일 1동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"강일1동 리버파크 102동 202호","phone":"010-8520-5050"},
+			{"id":"#Cust19","deDate":"2021-12-20","areaNm":"강일 1동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"강일1동 리버파크 102동 202호","phone":"010-8520-5050"},
+			{"id":"#Cust20","deDate":"2021-12-20","areaNm":"강일 1동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"강일1동 리버파크 102동 202호","phone":"010-8520-5050"},
+			{"id":"#Cust21","deDate":"2021-12-20","areaNm":"강일 1동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"강일1동 리버파크 102동 202호","phone":"010-8520-5050"},
+			{"id":"#Cust22","deDate":"2021-12-20","areaNm":"강일 1동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"강일1동 리버파크 102동 202호","phone":"010-8520-5050"},
+			{"id":"#Cust23","deDate":"2021-12-20","areaNm":"강일 1동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"강일1동 리버파크 102동 202호","phone":"010-8520-5050"},
+			{"id":"#Cust23","deDate":"2021-12-20","areaNm":"강일 1동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"강일1동 리버파크 102동 202호","phone":"010-8520-5050"},
+			{"id":"#Cust9","deDate":"2021-12-20","areaNm":"청담 4동","code":45666,"name":"김*비","cDate":"2022-12","cMethod":"CMS(자동이체)","bAmount":5000,"cAmount":4500,"fee":1500,"total":6750,"address":"청담로 20-10, 232-5 401호","phone":"010-8520-5050"},
+	];
+
+	$(document).ready(function(){
+        // AUIGrid 생성 후 반환 ID
+        createAUIGrid();
+        // 데이터 요청, 요청 성공 시 AUIGrid 에 데이터 삽입합니다.        
+        
+		AUIGrid.setGridData(myGridID, gridData);
+	    AUIGrid.setFooter(myGridID, footerLayout);
+    });
+
+	// AUIGrid 를 생성합니다.
+	function createAUIGrid() {
+		// 그리드 속성 설정
+		var gridPros = {
+				
+				headerHeight : 58,
+				
+				rowHeight : 29,
+				// 편집 가능 여부 (기본값 : false)
+				
+				autoGridHeight : true,
+				//wordWrap : true,
+				enableFilter : true,
+			
+
+				rowIdField : "id",
+				wrapSelectionMove : true,
+				editingOnKeyDown : true, // 키보드 입력으로 편집 모드 진입 (기본값:true임;)
+				
+				editable : true,
+				// 엔터키가 다음 행이 아닌 다음 칼럼으로 이동할지 여부 (기본값 : false)
+				enterKeyColumnBase : true,
+				// 셀 선택모드 (기본값: singleCell)
+				selectionMode : "singleRow",
+				showFooter : true,
+
+				groupingFields : ["areaNm"],
+				
+				//adjustSummaryPosition : true,
+				//enableCellMerge : true,
+
+				// 브랜치에 해당되는 행을 출력 여부
+				showBranchOnGrouping : false,
+			
+				// 그룹핑 패널 사용
+				//useGroupingPanel : true,
+
+				// 합계(소계) 설정
+				groupingSummary  : {
+					// 합계 필드는 total 1개에 대하여 실시 합니다.
+					dataFields : [ "bAmount", "cAmount", "fee", "total" ],
+					
+					// country, proudct, name 으로 그룹핑했기에 3계층의 소계가 발생함.
+					// 해당 텍스트 변경.
+					//labelTexts : ["$value 전체 합계"],
+					labelTexts : ["소계"],
+					/*
+					// 그룹핑 썸머리 행의 구체적 설정
+					rows : [{
+						// 썸머리 필드에 임의의 텍스트 설정
+						text : { 
+							color : "원하는 $value",
+							areaNm : "논현 2동"
+						}
+					}]
+				*/
+				},
+				
+				//groupingSummaryPosition : "top", // 소계 위로 보내는거임
+				
+				enableCellMerge : true,
+				
+
+				// 그리드 ROW 스타일 함수 정의
+				rowStyleFunction : function(rowIndex, item){					
+					if(item._$isGroupSumField) { // 그룹핑으로 만들어진 합계 필드인지 여부
+						
+						// 그룹핑을 더 많은 필드로 하여 depth 가 많아진 경우는 그에 맞게 스타일을 정의하십시오.
+						// 현재 3개의 스타일이 기본으로 정의됨.(AUIGrid_style.css)
+						switch(item._$depth) {  // 계층형의 depth 비교 연산
+						case 2:
+							return "aui-grid-row-depth1-style";
+						case 3:
+							return "aui-grid-row-depth2-style";
+						case 4:
+							return "aui-grid-row-depth3-style";
+						default:
+							return "aui-grid-row-depth-default-style";
+						}
+					}
+					
+					return null;
+				} // end of rowStyleFunction
+
+		};
+		
+        // 실제로 #grid_wrap 에 그리드 생성
+        myGridID = AUIGrid.create("#grid_wrap", columnLayout, gridPros);
+
+	}
+
+	var columnLayout = [{
+            dataField : "deDate", 
+            headerText : "입금일자",
+			width : "7%"
+		},{
+            dataField : "areaNm", 
+            headerText : "지역명",
+			width : "7%"
+		},{
+            dataField : "code", 
+            headerText : "애음자<br/>코드",
+			width : "5%"	
+		},{
+            dataField : "name", 
+            headerText : "성명",
+			width : "5%"
+		},{
+            dataField : "address", 
+            headerText : "주소",
+			style: "auiLeft",
+		},{
+            dataField : "phone", 
+            headerText : "핸드폰번호",
+			width : "9%"
+		},{
+            dataField : "cDate",
+            headerText : "청구<br/>년월",
+			width : "6%"
+		},{
+            dataField : "cMethod",
+            headerText : "수금방법",
+			width : "9%",
+		},{
+            dataField : "bAmount",
+            headerText : "청구금액",
+			dataType : "numeric",
+			style: "auiRight",
+			width : "7%"
+		},{
+            dataField : "cAmount",
+            headerText : "수금금액",
+			dataType : "numeric",
+			style: "auiRight",
+			width : "7%"
+		},{
+            dataField : "fee",
+            headerText : "수수료",
+			dataType : "numeric",
+			style: "auiRight",
+			width : "7%"
+		},{
+            dataField : "total", 
+            headerText : "수금 합계",
+			dataType : "numeric",
+			style: "auiRight",
+			width : "7%",
+			disableGrouping : true // 그룹핑의 직접적인 대상이 될 수 없음
+		}
+	];
+
+	// 푸터 설정
+    var footerLayout = [{
+        labelText : "∑",
+        positionField : "#base"
+        },{
+            dataField : "code",
+            positionField : "code",
+            operation : "SUM",
+            colSpan : 8, // 자신을 포함하여 8개의 푸터를 가로 병합함.
+            labelFunction : function(value, columnValues, footerValues) {
+                //return "합계 : " + AUIGrid.formatNumber(value, "#,##0");
+                return "합계 : "
+            }
+        },{
+            dataField : "bAmount",
+            positionField : "bAmount",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        },{
+            dataField : "cAmount",
+            positionField : "cAmount",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        },{
+            dataField : "fee",
+            positionField : "fee",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        },{
+            dataField : "total",
+            positionField : "total",
+            operation : "SUM",
+            style : "auiRight",
+            colSpan : 1, 
+            labelFunction : function(value, columnValues, footerValues) {
+                return " " + AUIGrid.formatNumber(value, "#,##0");
+            }
+        }];
+    
+</script>
+</head>
+<body>
+	<div class="printWrap">
+		<div class="page">
+			<h2>애음자 수금 내역</h2>
+
+			<p class="dateInfo">기간 : 2021-12-01 ~ 2021-12-31 <span>지역 : 전체</span></p>
+
+			<!-- grid -->
+			<div class="girdBox">
+				<div id="grid_wrap"></div>
+			</div>
+			<!-- grid -->
+			
+		</div>
+	</div>
+</body>
+</html>

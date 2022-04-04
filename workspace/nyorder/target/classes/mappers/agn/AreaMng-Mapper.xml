@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper	namespace="com.namyang.nyorder.agn.dao.AreaMngMapper">
+
+	<!-- 지역목록 조회 -->
+	<select id="selectAgenAreaList" parameterType="com.namyang.nyorder.agn.vo.AreaMngVO" resultType="com.namyang.nyorder.agn.vo.AreaMngVO">
+	/* AreaMngMapper - selectAgenAreaList */
+		EXEC P_OPEN_KEY
+		
+		SELECT 
+				AA.AREA_SEQ
+			,	AA.AGEN_SEQ
+			,	AA.EMPL_SEQ
+			,	AA.AREA_NM
+			,	AA.AREA_RM
+			,	AA.STPG_EXCL_YN
+			,	AA.DLV_STPG_YN
+			,	AA.AGEN_AREA_CD
+			,	AA.DLV_ORDR
+			,	AA.AREA_ORDR
+			,	AA.RMK
+			,	AA.REG_DTM
+			,	AA.REG_SEQ
+			,	AA.UPD_DTM
+			,	AA.UPD_SEQ
+			,	AA.USE_YN
+			,	CONVERT(varchar, DecryptByKey(AE.EMPL_NM)) as EMPL_NM
+			,	dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(AE.MOB_NO))) as MOB_NO
+		FROM	T_AGEN_AREA 	AA 
+		JOIN	T_AGEN_EMPL 	AE
+		ON		AE.EMPL_SEQ 	= AA.EMPL_SEQ 
+		AND		AE.AGEN_SEQ 	= AA.AGEN_SEQ
+		WHERE	AA.USE_YN 		= 'Y'
+		AND 	AA.AGEN_SEQ = #{agenSeq}
+		<if test="emplNm != null and emplNm != ''">
+			AND CONVERT(varchar, DecryptByKey(AE.EMPL_NM)) like '%'+#{emplNm}+'%'
+		</if>
+	ORDER BY	ISNULL(AA.AREA_ORDR,999) ,	AA.AGEN_AREA_CD ASC;
+	
+	</select>
+	
+	<!-- 지역 목록 - 세부 정보 조회 -->
+	<select id="selectAreaMngDetail" parameterType="com.namyang.nyorder.agn.vo.AreaMngVO" resultType="com.namyang.nyorder.agn.vo.AreaMngVO">
+	/* AreaMngMapper - selectAreaMngDetail */
+	EXEC P_OPEN_KEY
+
+	SELECT
+		  AA.AREA_SEQ
+	    , AA.AGEN_SEQ
+	    , AA.EMPL_SEQ AS SALE_EMPL_SEQ
+		, AA.AGEN_AREA_CD 
+		, AA.DLV_STPG_YN 
+		, AA.AREA_NM 
+		, tam.CLS_YN_CD
+		, CONVERT(varchar, DecryptByKey(AE.EMPL_NM)) as EMPL_NM
+		, tam.AGEN_NM 
+		, AA.DLV_ORDR
+		, AA.AREA_ORDR
+		, CASE 
+			WHEN AE.MOB_NO IS NULL THEN NULL 
+			WHEN AE.MOB_NO = '' THEN NULL
+			ELSE dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(AE.MOB_NO))) END MOB_NO
+		, dbo.F_GET_SPLIT(dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(AE.MOB_NO))),'-',1) as MOB_NO1
+		, dbo.F_GET_SPLIT(dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(AE.MOB_NO))),'-',2) as MOB_NO2
+		, dbo.F_GET_SPLIT(dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(AE.MOB_NO))),'-',3) as MOB_NO3
+		, AE.ZIP_CD
+		, AE.ADDR1
+		, CONVERT(varchar, DecryptByKey(AE.ADDR2)) as ADDR2
+		, (AE.ADDR1 + ' ' + CONVERT(varchar, DecryptByKey(AE.ADDR2))) as FULL_ADDR
+	    , AA.AREA_RM
+	FROM 
+	T_AGEN_AREA AA  
+	LEFT OUTER JOIN  T_AGEN_EMPL AE
+	ON	AE.EMPL_SEQ = AA.EMPL_SEQ 
+	LEFT OUTER JOIN T_AGEN_MST tam 
+	ON tam.AGEN_SEQ = AE.AGEN_SEQ
+	AND tam.AGEN_SEQ = AA.AGEN_SEQ 
+	WHERE 1=1
+	AND AA.USE_YN = 'Y'
+	AND AA.AREA_SEQ = #{areaSeq}
+	AND AA.AGEN_SEQ = #{agenSeq}
+	AND AA.EMPL_SEQ = #{emplSeq}
+	;
+	</select>
+	
+		<!-- 애음자관리 - 지역관리 - 세부 정보 - 판매원명 (계좌관련 정보)-->
+	<select id="selectEmplAcctList" parameterType="com.namyang.nyorder.agn.vo.AreaMngVO" resultType="com.namyang.nyorder.myp.vo.AgenAcctInfoVO">
+	/* AreaMngMapper - selectEmplAcctList */
+	EXEC P_OPEN_KEY
+	
+		SELECT TOP 2
+			  AE.EMPL_SEQ 
+			, AE.AGEN_SEQ 
+			, AAi.BANK_CD 
+			, CONVERT(varchar, DecryptByKey(AAi.STM_ACCT_NO)) as STM_ACCT_NO
+			, AAi.ACCT_DPSR 
+		FROM T_AGEN_ACCT_INFO AAi 
+		LEFT JOIN T_AGEN_EMPL AE
+		ON AE.AGEN_SEQ = AAi.AGEN_SEQ 
+		AND AE.EMPL_SEQ = AAi.EMPL_SEQ 
+		WHERE AE.AGEN_SEQ = #{agenSeq}
+		AND AE.EMPL_SEQ = #{saleEmplSeq}
+		ORDER BY AAi.UPD_DTM, AAi.REG_DTM DESC
+	</select>
+	
+	
+	<!-- 애음자관리 - 지역관리 - 세부 정보 - 판매원명 -->
+	<select id="selectEmplList" parameterType="com.namyang.nyorder.agn.vo.EmplVO" resultType="com.namyang.nyorder.agn.vo.EmplVO">
+	/* AreaMngMapper - selectEmplList */
+	EXEC P_OPEN_KEY
+	
+	SELECT 
+		  AE.EMPL_SEQ 
+		, AE.AGEN_SEQ 
+		, AE.EMPL_CD 
+		, AE.EMPL_SEC_CD 
+		, CASE 
+			WHEN MOB_NO IS NULL THEN NULL 
+			WHEN MOB_NO = '' THEN NULL
+			ELSE dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(AE.MOB_NO))) END MOB_NO
+		, dbo.F_GET_SPLIT(dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(AE.MOB_NO))),'-',1) as MOB_NO1
+		, dbo.F_GET_SPLIT(dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(AE.MOB_NO))),'-',2) as MOB_NO2
+		, dbo.F_GET_SPLIT(dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(AE.MOB_NO))),'-',3) as MOB_NO3
+		, CONVERT(varchar, DecryptByKey(AE.EMPL_NM)) as EMPL_NM
+		, AE.RETE_YN 
+		, IIF(AE.RETE_YN = 'Y', '사용', '중지') AS RETE_YN_NM 
+		, AE.ZIP_CD 
+		, AE.ADDR1 
+		, CONVERT(varchar, DecryptByKey(AE.ADDR2)) as ADDR2
+		FROM T_AGEN_EMPL AE
+		<where>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(agenSeq)">
+				AND	AE.AGEN_SEQ = #{agenSeq}
+			</if>
+		</where>
+	</select>
+	
+		<!-- 애음자관리 - 지역관리 - 순서 변경 -->
+	<select id="selectAreaOrdrList" parameterType="com.namyang.nyorder.agn.vo.AreaMngVO" resultType="com.namyang.nyorder.agn.vo.AreaMngVO">
+	/* AreaMngMapper - selectAgenAreaListByOrdr */
+	EXEC P_OPEN_KEY
+	
+	SELECT 
+		  AA.AREA_SEQ
+		, AA.AGEN_SEQ
+		, AA.EMPL_SEQ
+		, AA.AGEN_AREA_CD 
+		, AA.AREA_NM
+		, AA.DLV_ORDR
+		, CONVERT(varchar, DecryptByKey(AE.EMPL_NM)) as EMPL_NM
+		, AA.AREA_ORDR 
+	FROM 
+	T_AGEN_AREA AA
+	LEFT OUTER JOIN T_AGEN_EMPL AE 
+	ON  AE.EMPL_SEQ = AA.EMPL_SEQ 
+	AND AE.AGEN_SEQ = AA.AGEN_SEQ
+	WHERE 1=1
+    AND AA.DLV_STPG_YN = 'N'
+    AND AA.USE_YN = 'Y'
+	AND AA.AGEN_SEQ = #{agenSeq}
+	<if test="emplNm != null and emplNm != ''">
+    AND CONVERT(varchar, DecryptByKey(AE.EMPL_NM)) like '%'+#{emplNm}+'%'
+    </if>
+	ORDER BY 
+	ISNULL(AA.AREA_ORDR,999),
+	AA.AGEN_AREA_CD ASC;
+	</select>
+	<!-- 애음자관리 - 지역관리 - 순서 변경 - 저장 버튼 -->
+	<update id="updateAreaOrdr" parameterType="com.namyang.nyorder.agn.vo.AreaMngVO">
+	/* AreaMngMapper - updateAreaOrdr */
+	UPDATE T_AGEN_AREA 
+	SET
+	 	  AREA_ORDR = #{areaOrdr}
+		, UPD_DTM = CURRENT_TIMESTAMP
+		, UPD_SEQ = #{emplSeq}
+	WHERE 1=1
+	AND AGEN_SEQ = #{agenSeq}
+	AND AREA_SEQ = #{areaSeq}
+	</update>
+	
+	<!-- 지역 코드 생성 -->
+	<select id="getNextAgenAreaCd" parameterType="com.namyang.nyorder.agn.vo.AreaMngVO" resultType="String">
+		/* AreaMngMapper - getNextAgenAreaCd */
+		SELECT	CONVERT(VARCHAR(4), ISNULL(MAX(CONVERT(int,AGEN_AREA_CD)), 0) + 1) AS NEXT_AGEN_AREA_CD
+		FROM	T_AGEN_AREA
+		WHERE 	AGEN_SEQ = #{agenSeq}
+	</select>
+	
+	<update id="addAreaMngDetail" parameterType="com.namyang.nyorder.agn.vo.AreaMngVO">
+		/* AreaMngMapper - addAreaMngDetail */
+		INSERT INTO T_AGEN_AREA
+			( AREA_SEQ, EMPL_SEQ, AGEN_SEQ, DLV_STPG_YN, AGEN_AREA_CD, AREA_NM, AREA_ORDR, AREA_RM, USE_YN, REG_DTM, REG_SEQ, UPD_DTM, UPD_SEQ)
+		VALUES
+			(
+			  NEXT VALUE FOR SQ_AGEN_AREA
+			, #{saleEmplSeq}
+			, #{agenSeq}
+			, #{dlvStpgYn}
+			, #{agenAreaCd}
+			, #{areaNm}
+			, #{areaOrdr}
+			, #{areaRm}
+			, 'Y'
+			, CURRENT_TIMESTAMP
+			, #{emplSeq}
+			, CURRENT_TIMESTAMP
+			, #{emplSeq}
+			)
+	</update>
+	
+	<!-- 애음자관리 - 지역 관리 - 상세보기 수정  T_AGEN_AREA-->
+	<update id="updateAreaMngDetail" parameterType="com.namyang.nyorder.agn.vo.AreaMngVO">
+		/* AreaMngMapper - updateAreaMngDetail */
+		
+		UPDATE T_AGEN_AREA
+		SET		DLV_STPG_YN =	#{dlvStpgYn},
+				CLS_YN 		=	#{clsYn},
+				EMPL_SEQ	=	#{saleEmplSeq},
+				AREA_NM 	=	#{areaNm},
+				AREA_ORDR 	=	#{areaOrdr},
+				AREA_RM		=	#{areaRm},		
+				UPD_DTM		=	CURRENT_TIMESTAMP,
+				UPD_SEQ		=	#{emplSeq}
+		WHERE	AGEN_SEQ	=	#{agenSeq}
+		AND		AREA_SEQ	=	#{areaSeq} 
+	</update>
+	
+		<!-- 애음자 지역변경 탭 -->
+	<!--  애음자관리 - 지역관리 - 애음자 지역변경 리스트 변경 전 리스트 조회 -->
+	<select id="selectCstAreaChgList" parameterType="com.namyang.nyorder.agn.vo.CstAreaHisVO" resultType="com.namyang.nyorder.agn.vo.CstAreaHisVO">
+		/* AreaMngMapper - selectCstAreaChgList */
+		EXEC P_OPEN_KEY
+	
+		SELECT	CM.CST_SEQ,
+				AA.AGEN_SEQ,
+				AA.AREA_SEQ,
+				CM.CST_AGEN_CD,
+				AA.AGEN_AREA_CD AS BEFORE_AREA_CD,
+				AA.AREA_NM		AS BEFORE_AREA_NM,
+				AA.AREA_SEQ		AS BEFORE_AREA_SEQ,
+				CONVERT(varchar, DecryptByKey(AE.EMPL_NM)) as BEFORE_EMPL_NM,
+				AE.EMPL_SEQ AS BEFORE_EMPL_SEQ,
+				AE.EMPL_CD AS BEFORE_EMPL_CD,
+				CONVERT(varchar, DecryptByKey(CM.CST_NM))  as CST_NM,
+				ISNULL(dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(CM.MOB_NO))), dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(CM.MOB_NO2)))) as MOB_NO,
+				CM.DLV_ADDR1,
+				CONVERT(varchar, DecryptByKey(CM.DLV_ADDR2)) as DLV_ADDR2
+		FROM	T_AGEN_AREA AA
+		JOIN	T_AGEN_EMPL AE
+		ON		AA.AGEN_SEQ	= AE.AGEN_SEQ 
+		AND		AA.EMPL_SEQ = AE.EMPL_SEQ 
+		JOIN	T_CST_MST	CM
+		ON		CM.AGEN_SEQ = AA.AGEN_SEQ 
+		AND		CM.AREA_SEQ = AA.AREA_SEQ 
+		<where>
+			AND	CM.USE_YN = 'Y'
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(agenSeq)">
+				AND AA.AGEN_SEQ = #{agenSeq}
+			</if>
+			<!-- AND A.EMPL_SEQ = #{emplSeq} --> 
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(srcCstNm)">
+				AND CONVERT(varchar, DecryptByKey(CM.CST_NM)) like '%'+#{srcCstNm}+'%'
+			</if>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(srcAddr)">
+				AND (CM.DLV_ADDR1 + CONVERT(varchar, DecryptByKey(CM.DLV_ADDR2))) like '%'+#{srcAddr}+'%'
+			</if>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(beforeAreaSeq)">
+				AND AA.AREA_SEQ = #{beforeAreaSeq}
+			</if>
+			
+		</where>
+	</select>
+	
+	<!-- 지역관리 - 애음자 지역변경 - 변경 이력 -->
+	<select id="selectCstAreaHisList" parameterType="com.namyang.nyorder.agn.vo.CstAreaHisVO" resultType="com.namyang.nyorder.agn.vo.CstAreaHisVO">
+		EXEC P_OPEN_KEY 
+		
+		SELECT
+				CAH.AGEN_SEQ, 
+				CM.CST_SEQ ,
+				CONVERT(varchar, DecryptByKey(CM.CST_NM)) as CST_NM,
+				CM.DLV_ADDR1,
+				CONVERT(varchar, DecryptByKey(CM.DLV_ADDR2)) AS DLV_ADDR2,
+				ISNULL(dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(CM.MOB_NO))), dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(CM.MOB_NO2)))) as MOB_NO,
+				
+				BAA.AGEN_AREA_CD AS BEFORE_AREA_CD,
+				BAA.AREA_NM AS BEFORE_AREA_NM,
+				BAE.EMPL_CD AS BEFORE_EMPL_CD,
+				BAE.EMPL_SEQ AS BEFORE_EMPL_SEQ,
+				CONVERT(varchar, DecryptByKey(BAE.EMPL_NM)) as BEFORE_EMPL_NM,
+				
+				AAA.AGEN_AREA_CD AS AFTER_AREA_CD,
+				AAA.AREA_NM 	AS AFTER_AREA_NM,
+				AAE.EMPL_CD 	AS AFTER_EMPL_CD,
+				AAE.EMPL_SEQ 	AS EMPL_SEQ,
+				CONVERT(varchar, DecryptByKey(BAE.EMPL_NM)) as AFTER_EMPL_NM,
+				
+				CAH.CHG_DT,
+				CAH.CHG_YN,
+				IIF(CAH.CHG_YN = 'Y', '완료', '대기') AS CHG_YN_NM,
+				CAH.REG_DTM,
+				CAH.REG_SEQ,
+				CONVERT(varchar, DecryptByKey((SELECT EMPL_NM FROM T_AGEN_EMPL E WHERE E.EMPL_SEQ = CAH.REG_SEQ))) as REG_NM
+				
+		FROM	T_CST_AREA_HIS	CAH
+		JOIN	T_CST_MST		CM
+		ON		CAH.AGEN_SEQ	= CM.AGEN_SEQ 
+		AND		CAH.AREA_SEQ	= CM.AREA_SEQ
+		AND		CAH.CST_SEQ  	= CM.CST_SEQ 
+	
+		JOIN	T_AGEN_AREA		BAA
+		ON		CAH.AGEN_SEQ 	= BAA.AGEN_SEQ 
+		AND		CAH.AREA_SEQ 	= BAA.AREA_SEQ 
+		JOIN	T_AGEN_EMPL		BAE
+		ON		BAA.AGEN_SEQ 	= BAE.AGEN_SEQ
+		AND		BAA.EMPL_SEQ 	= BAE.EMPL_SEQ 
+	
+		JOIN	T_AGEN_AREA		AAA
+		ON		CAH.AGEN_SEQ 	 = AAA.AGEN_SEQ 
+		AND		CAH.AFT_AREA_SEQ = AAA.AREA_SEQ 
+		JOIN	T_AGEN_EMPL		AAE
+		ON		AAA.AGEN_SEQ 	= AAE.AGEN_SEQ
+		AND		AAA.EMPL_SEQ 	= AAE.EMPL_SEQ 
+		
+		WHERE	CM.AGEN_SEQ  = #{agenSeq}
+		AND		CONVERT(VARCHAR(10), CAH.REG_DTM, 121) BETWEEN #{srcStartDate}	AND #{srcEndDate}
+		ORDER BY CAH.REG_DTM DESC
+	</select>
+	
+	<insert id="addCstAgenAreaChg" parameterType="com.namyang.nyorder.agn.vo.CstAreaHisVO">
+		INSERT INTO T_CST_AREA_HIS
+		(	
+			CST_AREA_SEQ,
+			AGEN_SEQ,
+			AREA_SEQ,
+			AFT_AREA_SEQ,
+			CST_SEQ, 
+			CHG_DT, 
+			LST_YN, 
+			REG_DTM, 
+			REG_SEQ,
+			UPD_DTM,
+			UPD_SEQ
+		)
+		VALUES
+		(
+			NEXT VALUE FOR SQ_CST_AREA, 
+			#{agenSeq},
+			#{beforeAreaSeq},
+			#{afterAreaSeq},
+			#{cstSeq},
+			replace(#{chgDt},'-',''),
+			'Y',
+			CURRENT_TIMESTAMP,
+			#{emplSeq},
+			CURRENT_TIMESTAMP,
+			#{emplSeq}
+		)
+	</insert>
+	
+		<!-- 지역관리 - 애음자 지역변경 - 변경지역 정보 조회 -->
+	<select id="selectAfterAreaInfo"  parameterType="com.namyang.nyorder.agn.vo.CstAreaHisVO" resultType="com.namyang.nyorder.agn.vo.CstAreaHisVO">
+		EXEC P_OPEN_KEY 
+			
+		SELECT	AA.AREA_SEQ AS AFTER_AREA_SEQ,
+				AA.AGEN_SEQ,
+				AA.EMPL_SEQ AS AFTER_EMPL_SEQ,
+				AA.AREA_NM AS AFTER_AREA_NM,
+				AA.AGEN_AREA_CD  AS AFTER_AREA_CD,
+				AE.EMPL_CD 	AS AFTER_EMPL_CD,
+				CONVERT(varchar, DecryptByKey(AE.EMPL_NM )) as AFTER_EMPL_NM
+		FROM	T_AGEN_AREA AA 
+		JOIN 	T_AGEN_EMPL AE 
+		ON  	AA.EMPL_SEQ = AE.EMPL_SEQ
+		AND 	AA.DLV_STPG_YN = 'N'
+		AND 	AA.USE_YN = 'Y'
+		WHERE 	AA.AGEN_SEQ  = #{agenSeq}
+		AND 	AA.AREA_SEQ = #{areaSeq}
+	</select> 
+	
+	
+
+	
+	
+	
+</mapper>

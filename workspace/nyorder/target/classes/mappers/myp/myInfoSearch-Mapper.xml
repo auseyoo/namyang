@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.myp.dao.MyInfoSearchMapper">
+	<sql id="selectMenuWhere">
+		<where>
+			<if test="emplSeq != null and emplSeq != '' ">
+				AND EMPL_SEQ = #{emplSeq}
+			</if>
+			<if test="agenSeq != null and agenSeq != '' ">
+				AND AGEN_SEQ = #{agenSeq}
+			</if>
+		</where>
+	</sql>
+
+	<select id="selectAgenMst" parameterType="com.namyang.nyorder.myp.vo.MyInfoSearchVO" resultType="com.namyang.nyorder.myp.vo.AgenMstVO">
+		EXEC P_OPEN_KEY
+		
+		SELECT 
+				AGEN_SEQ,
+				AGEN_CD,
+				AGEN_NM,
+				BIZ_NO,
+				JUR_NO,
+				SALE_CD,
+				CONVERT(varchar, DecryptByKey(AGEN_PRST)) AGEN_PRST,
+				BIZ_CON,
+				BIZ_INDU,
+				ZIP_CD,
+				ADDR1,
+				ADDR2,
+				dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(TEL_NO))) AS TEL_NO,
+				dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(PRST_TEL_NO))) AS PRST_TEL_NO,
+				dbo.F_GET_TEL_NO(CONVERT(varchar, DecryptByKey(FAX_NO))) AS FAX_NO,
+				AGEN_EML,
+				AGEN_USE_YN,
+				REG_DTM,
+				REG_SEQ,
+				UPD_DTM,
+				UPD_SEQ,
+				CLS_YN_CD
+		FROM 	NY_ORDER.dbo.T_AGEN_MST
+		WHERE 	AGEN_SEQ = #{agenSeq}
+	</select>
+
+	<select id="selectAgenAcctInfo" parameterType="com.namyang.nyorder.myp.vo.MyInfoSearchVO" resultType="com.namyang.nyorder.myp.vo.AgenAcctInfoVO">
+		/*	myInfoSearch-mapper	- selectAgenAcctInfo	*/
+		SELECT
+			ACCT_SEQ,
+			AGEN_SEQ,
+			EMPL_SEQ,
+			ACCT_CD,
+			BANK_CD,
+			STM_ACCT_NO,
+			ACCT_DPSR,
+			ORDR,
+			REG_DTM,
+			REG_SEQ,
+			(SELECT EMPL_NM FROM T_AGEN_EMPL E WHERE E.EMPL_SEQ = REG_SEQ) REG_NM,
+			UPD_DTM,
+			UPD_SEQ,
+			(SELECT EMPL_NM FROM T_AGEN_EMPL E WHERE E.EMPL_SEQ = UPD_SEQ) UPD_NM
+		FROM	T_AGEN_ACCT_INFO
+		<include refid="selectMenuWhere"/>
+		ORDER BY ACCT_SEQ ASC
+	</select>
+	
+	<update id="insertAgenAcctInfo" parameterType="com.namyang.nyorder.myp.vo.AgenAcctInfoVO">
+		/* myInfoSearch-mapper - insertAgenAcctInfo */
+		
+		INSERT INTO T_AGEN_ACCT_INFO 
+		(	ACCT_SEQ,
+			AGEN_SEQ,
+			EMPL_SEQ,
+			ACCT_CD,
+			BANK_CD,
+			STM_ACCT_NO,
+			ACCT_DPSR,
+			ORDR,
+			REG_DTM,
+			REG_SEQ,
+			UPD_DTM,
+			UPD_SEQ
+		)
+		VALUES
+		(
+			NEXT VALUE FOR SQ_ACCT,
+			#{agenSeq},
+			#{emplSeq},
+			#{acctCd},
+			#{bankCd},
+			#{stmAcctNo},
+			#{acctDpsr},
+			#{ordr},
+			CURRENT_TIMESTAMP,
+			0,
+			CURRENT_TIMESTAMP,
+			0
+		)
+	</update>
+	
+	<update id="updateAgenAcctInfo" parameterType="com.namyang.nyorder.myp.vo.AgenAcctInfoVO">
+		/* myInfoSearch-mapper - updateAgenAcctInfo */
+		UPDATE	T_AGEN_ACCT_INFO
+		SET		ACCT_CD		=	#{acctCd},
+				BANK_CD		=	#{bankCd},
+				STM_ACCT_NO	=	#{stmAcctNo},
+				ACCT_DPSR	=	#{acctDpsr},
+				ORDR		=	#{ordr},
+				UPD_DTM		=	CURRENT_TIMESTAMP,
+				UPD_SEQ		=	0
+		WHERE	ACCT_SEQ	=	#{acctSeq}
+	</update>
+</mapper>

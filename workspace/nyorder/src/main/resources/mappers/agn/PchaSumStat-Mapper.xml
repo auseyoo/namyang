@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.agn.dao.PchaSumStatMapper">
+
+	<select id="selectSumStatPchaList" parameterType="com.namyang.nyorder.agn.vo.PchaSumStatVO" resultType="com.namyang.nyorder.agn.vo.PchaSumStatVO">
+		/* PchaSumStat-Mapper - selectSumStatPchaList */
+        SELECT PUCH_SEQ
+             , PUCH_CD
+             , PUCH_NM
+             , 0 AS AGEN_SEQ
+          FROM T_AGEN_MJR_PUCH
+         WHERE 1=1
+           AND USE_CD ='USE'
+           AND PUCH_CD = 1
+           AND PUCH_SEQ = 1
+         UNION ALL
+        SELECT taop.PUCH_SEQ
+             , taop.PUCH_CD 
+             , taop.PUCH_NM
+             , taop.AGEN_SEQ
+          FROM T_AGEN_OTR_PUCH taop
+         WHERE taop.AGEN_SEQ = #{agenSeq}
+           AND taop.USE_CD = 'USE'
+	</select>
+	
+	<select id="selectPchaSumStatDayList" parameterType="com.namyang.nyorder.agn.vo.PchaSumStatVO" resultType="com.namyang.nyorder.agn.vo.PchaSumStatVO">
+		/* PchaSumStat-Mapper - selectPchaSumStatDayList */
+        SELECT tpd.PRD_DTL_SEQ
+             , tpd.AGEN_SEQ
+             , tpd.PUCH_SEQ
+             , tpd.PRD_DTL_CD
+             , tpd.STD_PRD_NM
+             , tpd.FALT_QTY
+             , tpd.TAXT_CD
+             , P.UNTPC
+             , P.ORD_STUS_LIST
+          FROM T_PRD_DTL tpd
+          LEFT JOIN (
+                     SELECT toop.PRD_DTL_SEQ
+                          , toop.UNTPC
+                          , STRING_AGG( CONCAT( ORD_STUS_DT , ':', BOX_QTY , ':' , IDDY_QTY ) , ',' ) WITHIN GROUP(ORDER BY ORD_STUS_DT) AS ORD_STUS_LIST
+                       FROM T_OTH_ORD_PRD toop
+                      WHERE 1=1
+                        AND toop.LAST_YN = 'Y'
+                    <![CDATA[
+                        AND toop.ORD_STUS_DT >= #{startDt} AND toop.ORD_STUS_DT <= #{endDt}
+                    ]]>
+                      GROUP BY PRD_DTL_SEQ , UNTPC
+                     ) P
+              ON tpd.PRD_DTL_SEQ = P.PRD_DTL_SEQ
+           INNER JOIN T_STDR_PRD_SPPRC tsps 
+              ON tpd.AGEN_SEQ = tsps.AGEN_SEQ
+             AND tpd.PUCH_SEQ = tsps.PUCH_SEQ
+             AND tpd.PRD_DTL_SEQ = tsps.PRD_DTL_SEQ
+           WHERE 1=1
+             AND tpd.AGEN_SEQ = #{agenSeq}
+             AND tpd.PUCH_SEQ = #{puchSeq}
+             AND tsps.LAST_YN = 'Y'
+             AND tpd.USE_YN = 'Y'
+             AND tpd.STD_PRD_YN = 'N'
+        <if test="prdDtlCd != null and prdDtlCd != '' ">
+             AND tpd.PRD_DTL_CD LIKE '%'+ #{prdDtlCd} + '%'
+		</if>
+		<if test="stdPrdNm != null and stdPrdNm != '' ">
+             AND tpd.STD_PRD_NM LIKE '%'+ #{stdPrdNm} + '%'
+		</if>
+           ORDER BY tpd.PRD_DTL_SEQ DESC
+	</select>
+	
+	<select id="selectPchaSumStatMonList" parameterType="com.namyang.nyorder.agn.vo.PchaSumStatVO" resultType="com.namyang.nyorder.agn.vo.PchaSumStatVO">
+		/* PchaSumStat-Mapper - selectPchaSumStatMonList */
+        SELECT tpd.PRD_DTL_SEQ
+             , tpd.AGEN_SEQ
+             , tpd.PUCH_SEQ
+             , tpd.PRD_DTL_CD
+             , tpd.STD_PRD_NM
+             , tpd.FALT_QTY
+             , tpd.TAXT_CD
+             , P.UNTPC
+             , P.MON_LIST
+          FROM T_PRD_DTL tpd
+          LEFT JOIN (
+                     SELECT STRING_AGG( A.MON_LIST , ',' )  AS MON_LIST
+                          , A.PRD_DTL_SEQ
+                          , A.UNTPC
+                       FROM (
+          	                 SELECT CONCAT( DATEPART(mm, toop.ORD_STUS_DT) , ':', SUM( BOX_QTY ), ':' ,SUM( IDDY_QTY ) )  AS MON_LIST
+          	                      , toop.PRD_DTL_SEQ
+          	                      , toop.UNTPC
+                               FROM T_OTH_ORD_PRD toop
+                              WHERE 1=1
+                                AND toop.LAST_YN = 'Y'
+                                AND toop.AGEN_SEQ = #{agenSeq}
+                                AND toop.PUCH_SEQ = #{puchSeq}
+                            <![CDATA[
+                                AND DATENAME( MONTH , toop.ORD_STUS_DT ) >= #{startMon} AND DATENAME( MONTH , toop.ORD_STUS_DT ) <= #{endMon}
+                            ]]>
+                              GROUP BY DATEPART(mm, toop.ORD_STUS_DT) , toop.PRD_DTL_SEQ , toop.UNTPC
+                             ) A
+                      GROUP BY A.PRD_DTL_SEQ , A.UNTPC
+                     ) P
+              ON tpd.PRD_DTL_SEQ = P.PRD_DTL_SEQ
+           INNER JOIN T_STDR_PRD_SPPRC tsps 
+              ON tpd.AGEN_SEQ = tsps.AGEN_SEQ
+             AND tpd.PUCH_SEQ = tsps.PUCH_SEQ
+             AND tpd.PRD_DTL_SEQ = tsps.PRD_DTL_SEQ
+           WHERE 1=1
+             AND tpd.AGEN_SEQ = #{agenSeq}
+             AND tpd.PUCH_SEQ = #{puchSeq}
+             AND tsps.LAST_YN = 'Y'
+             AND tpd.USE_YN = 'Y'
+             AND tpd.STD_PRD_YN = 'N'
+         <if test="prdDtlCd != null and prdDtlCd != '' ">
+             AND tpd.PRD_DTL_CD LIKE '%'+ #{prdDtlCd} + '%'
+        </if>
+        <if test="stdPrdNm != null and stdPrdNm != '' ">
+             AND tpd.STD_PRD_NM LIKE '%'+ #{stdPrdNm} + '%'
+        </if>
+           ORDER BY tpd.PRD_DTL_SEQ DESC
+	</select>
+	
+	<select id="selectMjrPchaSumStatDayList" parameterType="com.namyang.nyorder.agn.vo.PchaSumStatVO" resultType="com.namyang.nyorder.agn.vo.PchaSumStatVO">
+		/* PchaSumStat-Mapper - selectMjrPchaSumStatDayList */
+        SELECT tpd.PRD_DTL_SEQ
+             , tpd.AGEN_SEQ
+             , tpd.PUCH_SEQ
+             , tpd.PRD_DTL_CD
+             , tpd.STD_PRD_NM
+             , tpd.FALT_QTY
+             , tpd.TAXT_CD
+             , P.UNTPC
+             , P.ORD_STUS_LIST
+          FROM T_PRD_DTL tpd
+          LEFT JOIN (
+                     SELECT tosp.PRD_DTL_SEQ
+                          , tosp.UNTPC
+                          , STRING_AGG( CONCAT( FORMAT( CAST( tosm.ORD_STUS_DT AS DATE ), 'yyyyMMdd' ) , ':', tosp.BOX_QTY , ':' , tosp.IDDY_QTY ) , ',' ) WITHIN GROUP(ORDER BY tosm.ORD_STUS_DT) AS ORD_STUS_LIST
+                       FROM T_ORD_STUS_MST tosm
+                      INNER JOIN T_ORD_STUS_PRD tosp
+                         ON tosm.AGEN_SEQ = tosp.AGEN_SEQ
+                        AND tosm.ORD_SEQ = tosp.ORD_SEQ
+                        AND tosm.ORD_PRD_SEQ = tosp.ORD_PRD_SEQ
+                        AND tosm.PRD_DTL_SEQ = tosp.PRD_DTL_SEQ
+                      WHERE 1=1
+                        AND tosm.AGEN_SEQ = #{agenSeq}
+                    <![CDATA[
+                        AND FORMAT(CAST(tosm.ORD_STUS_DT AS DATE), 'yyyyMMdd') >= #{startDt}
+                        AND FORMAT(CAST(tosm.ORD_STUS_DT AS DATE), 'yyyyMMdd') <= #{endDt}
+                    ]]>
+                      GROUP BY tosp.PRD_DTL_SEQ , tosp.UNTPC
+                     ) P
+              ON tpd.PRD_DTL_SEQ = P.PRD_DTL_SEQ
+           INNER JOIN T_STDR_PRD_SPPRC tsps 
+              ON tpd.AGEN_SEQ = tsps.AGEN_SEQ
+             AND tpd.PUCH_SEQ = tsps.PUCH_SEQ
+             AND tpd.PRD_DTL_SEQ = tsps.PRD_DTL_SEQ
+           WHERE 1=1
+             AND tpd.AGEN_SEQ = #{agenSeq}
+             AND tpd.PUCH_SEQ = #{puchSeq}
+             AND tsps.LAST_YN = 'Y'
+             AND tpd.USE_YN = 'Y'
+             AND tpd.STD_PRD_YN = 'Y'
+        <if test="prdDtlCd != null and prdDtlCd != '' ">
+             AND tpd.PRD_DTL_CD LIKE '%'+ #{prdDtlCd} + '%'
+		</if>
+		<if test="stdPrdNm != null and stdPrdNm != '' ">
+             AND tpd.STD_PRD_NM LIKE '%'+ #{stdPrdNm} + '%'
+		</if>
+           ORDER BY tpd.PRD_DTL_SEQ DESC
+	</select>
+	
+	<select id="selectMjrPchaSumStatMonList" parameterType="com.namyang.nyorder.agn.vo.PchaSumStatVO" resultType="com.namyang.nyorder.agn.vo.PchaSumStatVO">
+		/* PchaSumStat-Mapper - selectMjrPchaSumStatMonList */
+        SELECT tpd.PRD_DTL_SEQ
+             , tpd.AGEN_SEQ
+             , tpd.PUCH_SEQ
+             , tpd.PRD_DTL_CD
+             , tpd.STD_PRD_NM
+             , tpd.FALT_QTY
+             , tpd.TAXT_CD
+             , P.UNTPC
+             , P.MON_LIST
+          FROM T_PRD_DTL tpd
+          LEFT JOIN (
+                     SELECT STRING_AGG( A.MON_LIST , ',' )  AS MON_LIST
+                          , A.PRD_DTL_SEQ
+                          , A.UNTPC
+                       FROM (
+                             SELECT CONCAT( DATEPART(mm, tosm.ORD_STUS_DT) , ':', SUM( tosp.BOX_QTY ), ':' ,SUM( tosp.IDDY_QTY ) )  AS MON_LIST
+          	                      , tosp.PRD_DTL_SEQ
+          	                      , tosp.UNTPC
+                               FROM T_ORD_STUS_MST tosm
+                              INNER JOIN T_ORD_STUS_PRD tosp
+                                 ON tosm.AGEN_SEQ = tosp.AGEN_SEQ
+                                AND tosm.ORD_SEQ = tosp.ORD_SEQ
+                                AND tosm.ORD_PRD_SEQ = tosp.ORD_PRD_SEQ
+                                AND tosm.PRD_DTL_SEQ = tosp.PRD_DTL_SEQ
+                              WHERE 1=1
+                                AND tosm.AGEN_SEQ = #{agenSeq}
+                            <![CDATA[
+                                AND DATENAME( MONTH , tosm.ORD_STUS_DT ) >= #{startMon} AND DATENAME( MONTH , tosm.ORD_STUS_DT ) <= #{endMon}
+                            ]]>
+                              GROUP BY DATEPART(mm, tosm.ORD_STUS_DT) , tosp.PRD_DTL_SEQ , tosp.UNTPC
+                             ) A
+                      GROUP BY A.PRD_DTL_SEQ , A.UNTPC
+                     ) P
+            ON tpd.PRD_DTL_SEQ = P.PRD_DTL_SEQ
+         INNER JOIN T_STDR_PRD_SPPRC tsps 
+            ON tpd.AGEN_SEQ = tsps.AGEN_SEQ
+           AND tpd.PUCH_SEQ = tsps.PUCH_SEQ
+           AND tpd.PRD_DTL_SEQ = tsps.PRD_DTL_SEQ
+         WHERE 1=1
+           AND tpd.AGEN_SEQ = #{agenSeq}
+           AND tpd.PUCH_SEQ = #{puchSeq}
+           AND tsps.LAST_YN = 'Y'
+           AND tpd.USE_YN = 'Y'
+           AND tpd.STD_PRD_YN = 'Y'
+         <if test="prdDtlCd != null and prdDtlCd != '' ">
+             AND tpd.PRD_DTL_CD LIKE '%'+ #{prdDtlCd} + '%'
+        </if>
+        <if test="stdPrdNm != null and stdPrdNm != '' ">
+             AND tpd.STD_PRD_NM LIKE '%'+ #{stdPrdNm} + '%'
+        </if>
+           ORDER BY tpd.PRD_DTL_SEQ DESC
+	</select>
+</mapper>

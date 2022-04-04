@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.sale.dao.SaleRegMapper">
+	<select id="selectStdPrdPopList" parameterType="com.namyang.nyorder.sale.vo.SaleRegVO" resultType="com.namyang.nyorder.sale.vo.SaleRegVO">
+		SELECT
+			PM.PRD_SEQ,
+			PM.PUCH_SEQ,
+			PD.PRD_DTL_SEQ,
+			PD.AGEN_SEQ,
+			PM.PRD_SAP_CD,
+			PD.PRD_DTL_CD,
+			PM.PRD_NM,
+			PM.FALT_QTY,
+			SPS.UNTPC IDDY_PCHA_CT,
+			PD.STD_PRD_NM,
+			PD.STD_PRD_YN,
+			AVU.SALE_UNTPC
+		FROM NY_ORDER.dbo.T_PRD_MST	PM
+		INNER
+		JOIN NY_ORDER.dbo.T_PRD_DTL PD
+			ON	 PM.PRD_SEQ = PD.PRD_SEQ
+<!-- 			AND  PD.STD_PRD_YN = 'Y' -->
+		LEFT
+		JOIN
+		(
+			SELECT	PUCH_SEQ, PUCH_CD, PUCH_NM, USE_CD
+			FROM	T_AGEN_MJR_PUCH
+			WHERE	USE_CD ='Y'
+			UNION ALL
+			SELECT	PUCH_SEQ, PUCH_CD, PUCH_NM, USE_CD
+			FROM T_AGEN_OTR_PUCH
+			WHERE	USE_CD ='Y'
+			AND 	AGEN_SEQ = #{agenSeq}
+		)  P
+		ON	PM.PUCH_SEQ = P.PUCH_SEQ
+		LEFT
+		JOIN T_COMM_PRD_CLS PC
+			ON	PC.LCLS = PM.LCLS
+			AND PC.MCLS = PM.MCLS
+			AND PC.SCLS = PM.SCLS
+			AND PC.DCLS = PM.DCLS
+		LEFT JOIN  T_STDR_PRD_SPPRC  SPS
+			ON SPS.PRD_DTL_SEQ = PD.PRD_DTL_SEQ
+			AND SPS.LAST_YN ='Y'
+		LEFT JOIN T_AGEN_VEND_UNTPC AVU ON PM.PRD_SEQ  = AVU.PRD_SEQ
+			AND AVU.AGEN_SEQ =#{agenSeq}
+			AND AVU.VEND_SEQ =#{vendSeq}
+			AND AVU.USE_YN = 'Y'
+		WHERE
+			PM.USE_YN = 'Y'
+			AND	 PD.AGEN_SEQ = #{agenSeq}
+<!-- 			AND  PD.STD_PRD_YN = 'Y' -->
+<!-- 			AND  PD.LAST_YN = 'Y' -->
+		<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(schTxt)">
+			<choose>
+				<when test ="schType == 'prdSapCd'">
+					AND PM.PRD_SAP_CD like '%'+#{schTxt}+'%'
+				</when>
+				<when test ="schType == 'prdNm'">
+					AND PM.PRD_NM like '%'+#{schTxt}+'%'
+				</when>
+				<otherwise>
+					AND (PM.PRD_SAP_CD like '%'+#{schTxt}+'%' OR  PM.PRD_NM like '%'+#{schTxt}+'%')
+				</otherwise>
+			</choose>
+		</if>
+		ORDER BY
+			ISNULL(PD.PRD_ORDR,999), PRD_SAP_CD ASC
+	</select>
+	<select id="selectSaleRegList" parameterType="com.namyang.nyorder.sale.vo.SaleRegVO" resultType="com.namyang.nyorder.sale.vo.SaleRegVO">
+	SELECT
+		BSM.VEND_SALE_SEQ,
+		BSM.AGEN_SEQ,
+		BSM.VEND_SEQ,
+		BSD.PUCH_SEQ,
+		BSD.VEND_SALE_DTL_SEQ,
+		BSD.PRD_DTL_SEQ,
+		BSM.SALE_DT,
+		CASE  BSD.PCHA_UNTPC
+<!-- 			WHEN NULL THEN PD.IDDY_PCHA_CT -->
+			WHEN NULL THEN SPS.UNTPC
+			ELSE BSD.PCHA_UNTPC
+		END IDDY_PCHA_CT,
+		BSD.PCHA_UNTPC,
+		BSD.SALE_CT SALE_UNTPC,
+		BSD.RTGD_CT,
+		BSD.SALE_QTY,
+		BSD.PRSNT_QTY,
+		BSD.RTGD_QTY,
+		BSD.EXCHG_QTY,
+		BSD.REG_DTM,
+		BSD.REG_SEQ,
+		BSD.UPD_DTM,
+		BSD.UPD_SEQ,
+<!-- 		TPM.PRD_NM, -->
+<!-- 		TPM.PRD_SAP_CD, -->
+		PD.SHTN_NM PRD_NM,
+		PD.PRD_DTL_CD,
+		BSD.FALT_QTY,
+		BSD.SPECL_UNTPC_YN
+	FROM T_BA_SALE_MST BSM
+	JOIN T_BA_SALE_DTL BSD ON BSM.VEND_SALE_SEQ = BSD.VEND_SALE_SEQ
+	LEFT JOIN T_PRD_DTL PD ON PD.PRD_DTL_SEQ = BSD.PRD_DTL_SEQ AND BSM.AGEN_SEQ = PD.AGEN_SEQ
+	LEFT JOIN T_STDR_PRD_SPPRC  SPS ON SPS.PRD_DTL_SEQ = PD.PRD_DTL_SEQ AND LAST_YN ='Y'
+	WHERE
+		BSM.AGEN_SEQ = #{agenSeq}
+	AND
+		BSM.VEND_SEQ = #{vendSeq}
+	AND
+		BSM.USE_YN ='Y'
+	<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(saleDt)">
+		AND
+			BSM.SALE_DT = REPLACE(#{saleDt},'-','')
+	</if>
+
+	</select>
+
+	<update id="megSaleMstReg" parameterType="com.namyang.nyorder.sale.vo.SaleRegVO" >
+	/* saleReg-Mapper - megSaleRegMst */
+	 	<selectKey resultType="String" keyProperty="vendSaleSeq" order="BEFORE">
+			DECLARE @VEND_SALE_SEQ     numeric(13)
+			DECLARE @T_VEND_SALE_SEQ numeric(13)
+			SET @VEND_SALE_SEQ = NEXT VALUE FOR SQ_VEND_SALE
+			SET @T_VEND_SALE_SEQ =  (SELECT VEND_SALE_SEQ FROM T_BA_SALE_MST WHERE VEND_SALE_SEQ =  #{vendSaleSeq})
+			SELECT
+				CASE @T_VEND_SALE_SEQ
+					WHEN #{vendSaleSeq} THEN @T_VEND_SALE_SEQ
+					ELSE @VEND_SALE_SEQ
+					END VEND_SALE_SEQ
+		</selectKey>
+
+		MERGE INTO T_BA_SALE_MST A
+		USING(
+			SELECT 	#{vendSaleSeq} as VEND_SALE_SEQ
+		) B
+		ON (
+				A.VEND_SALE_SEQ = B.VEND_SALE_SEQ
+		)
+		WHEN	MATCHED THEN
+			UPDATE SET
+				<if test ='removeYn=="Y"'>
+					A.USE_YN ='N',
+				</if>
+				A.UPD_DTM = CURRENT_TIMESTAMP,
+				A.UPD_SEQ = #{emplSeq}
+		WHEN	NOT MATCHED THEN
+			INSERT(VEND_SALE_SEQ, AGEN_SEQ, VEND_SEQ,  CHAG_EMPL_SEQ,   SALE_DT,  REG_DTM, REG_SEQ, USE_YN)
+			VALUES(
+				#{vendSaleSeq},
+				#{agenSeq},
+				#{vendSeq},
+				#{emplSeq},
+				#{saleDt},
+				CURRENT_TIMESTAMP,
+				#{emplSeq},
+				'Y'
+			);
+	</update>
+	<update id="megSaleDtlReg" parameterType="com.namyang.nyorder.sale.vo.SaleRegVO">
+		/* saleReg-Mapper - megSaleRegDtl */
+
+		DECLARE @VEND_SALE_DTL_SEQ     numeric(13)
+		SET @VEND_SALE_DTL_SEQ = NEXT VALUE FOR SQ_VEND_SALE_DTL
+
+		MERGE INTO T_BA_SALE_DTL A
+		USING(
+			SELECT 	#{vendSaleDtlSeq} as VEND_SALE_DTL_SEQ
+		) B
+		ON (
+				A.VEND_SALE_DTL_SEQ = B.VEND_SALE_DTL_SEQ
+		)
+		WHEN	MATCHED THEN
+			UPDATE SET
+				A.PCHA_UNTPC = #{iddyPchaCt},
+				A.SALE_CT = #{saleUntpc},
+				A.SALE_QTY = #{saleQty},
+				A.RTGD_QTY = #{rtgdQty},
+				A.RTGD_CT = #{rtgdCt},
+				A.PRSNT_QTY = #{prsntQty},
+				A.EXCHG_QTY = #{exchgQty},
+				A.UPD_DTM = CURRENT_TIMESTAMP,
+				A.UPD_SEQ = #{emplSeq},
+				A.SPECL_UNTPC_YN = #{speclUntpcYn}
+		WHEN	NOT MATCHED THEN
+			INSERT (VEND_SALE_DTL_SEQ, AGEN_SEQ, VEND_SEQ,   PRD_DTL_SEQ, PUCH_SEQ, VEND_SALE_SEQ,
+			FALT_QTY, PCHA_UNTPC,  SALE_QTY, SALE_CT, RTGD_QTY, RTGD_CT, PRSNT_QTY, EXCHG_QTY, REG_DTM, REG_SEQ, SPECL_UNTPC_YN)
+			VALUES(
+				@VEND_SALE_DTL_SEQ,
+				#{agenSeq},
+				#{vendSeq},
+				#{prdDtlSeq},
+				#{puchSeq},
+				#{vendSaleSeq},
+				#{faltQty},
+				#{iddyPchaCt},
+				#{saleQty},
+				#{saleUntpc},
+				#{rtgdQty},
+				#{rtgdCt},
+				#{prsntQty},
+				#{exchgQty},
+				CURRENT_TIMESTAMP,
+				#{emplSeq},
+				#{speclUntpcYn}
+
+			);
+	</update>
+
+</mapper>

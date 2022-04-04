@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.std.dao.StdPrdCdMngMapper">
+	<select id="selectPrdCdMstList" parameterType="com.namyang.nyorder.std.vo.StdPrdCdMngVO" resultType="com.namyang.nyorder.std.vo.StdPrdCdMngVO">
+        /* stdPrdCdMng-Mapper - selectPrdCdMstList */
+        SELECT tpd.PRD_DTL_SEQ
+             , tpd.PRD_DTL_CD
+             , tpd.STD_PRD_NM
+             , tpd.PUCH_SEQ
+             , tsps.UNTPC
+             , tsps.SPPRC
+             , tsps.VAT
+          FROM T_PRD_DTL tpd
+         INNER JOIN T_STDR_PRD_SPPRC tsps
+            ON tpd.AGEN_SEQ = tsps.AGEN_SEQ
+           AND tpd.PUCH_SEQ = tsps.PUCH_SEQ
+           AND tpd.PRD_DTL_SEQ = tsps.PRD_DTL_SEQ
+         WHERE 1=1
+           AND tpd.PUCH_SEQ = #{puchSeq}
+           AND tpd.AGEN_SEQ = #{agenSeq}
+           AND tsps.LAST_YN = 'Y'
+           AND tpd.USE_YN ='Y'
+        <if test="prdDtlCd != null and prdDtlCd != '' ">
+           AND tpd.PRD_DTL_CD LIKE '%'+ #{prdDtlCd} + '%'
+        </if>
+        <if test="stdPrdNm != null and stdPrdNm != '' ">
+           AND tpd.STD_PRD_NM LIKE '%'+ #{stdPrdNm} + '%'
+        </if>
+         ORDER BY ISNULL(tpd.PRD_ORDR,999), tpd.PRD_DTL_CD ASC
+	</select>
+	
+	<select id="selectPrdCdPchaList" parameterType="com.namyang.nyorder.std.vo.StdPrdCdMngVO" resultType="com.namyang.nyorder.std.vo.StdPrdCdMngVO">
+        /* stdPrdCdMng-Mapper - selectPrdCdPchaList */
+        SELECT taop.PUCH_SEQ
+             , taop.PUCH_CD
+             , taop.PUCH_NM
+          FROM T_AGEN_OTR_PUCH taop
+         WHERE 1=1
+           AND taop.AGEN_SEQ = #{agenSeq}
+           AND taop.USE_CD = 'USE'
+         ORDER BY taop.PUCH_SEQ ASC
+	</select>
+	
+	<insert id="insertStdPrdCdDetail" parameterType="com.namyang.nyorder.std.vo.StdPrdCdMngVO" >
+	/* stdPrdCdMng-Mapper - insertStdPrdCdDetail	*/
+	<selectKey resultType="int" keyProperty="prdDtlSeq" order="BEFORE">
+        SELECT ISNULL ( MAX( PRD_DTL_SEQ ) , 0 ) + 1
+          FROM T_PRD_DTL tpd
+         WHERE 1=1
+      <!-- AND tpd.PUCH_SEQ = #{puchSeq} -->
+           AND tpd.AGEN_SEQ = #{agenSeq}
+	</selectKey>
+	INSERT INTO T_PRD_DTL
+	(	
+		PRD_DTL_SEQ,
+		AGEN_SEQ,
+		PUCH_SEQ,
+		PRD_SEQ,
+		PRD_DTL_CD,
+		STD_PRD_NM,
+		PRD_ORDR,
+		STD_PRD_YN,
+		FALT_QTY,
+		BRCD,
+		IDDY_BRCD,
+		ETC_BRCD,
+		SUITE_NM,
+		PRD_TYPE,
+		TAXT_CD,
+		IDDY_STDR,
+		USE_YN,
+		OTH_COM_PRD_YN,
+		REG_DTM,
+		REG_SEQ,
+		UPD_DTM,
+		UPD_SEQ
+	)
+	VALUES
+	(
+		#{prdDtlSeq},
+		#{agenSeq},
+		#{puchSeq},
+		0,
+		#{prdDtlCd},
+		#{stdPrdNm},
+		#{prdOrdr},
+		'N',
+		#{faltQty},
+		#{brcd},
+		#{iddyBrcd},
+		#{etcBrcd},
+		#{suiteNm},
+		#{prdType},
+		#{taxtCd},
+		#{iddyStdr},
+		'Y',
+		'N',
+		CURRENT_TIMESTAMP,
+		#{agenSeq},
+		CURRENT_TIMESTAMP,
+		0
+	)
+	</insert>
+	
+	<insert id="insertStdrPrdSpprc" parameterType="com.namyang.nyorder.std.vo.StdPrdCdMngVO" >
+	/* stdPrdCdMng-Mapper - insertStdrPrdSpprc	*/
+	<selectKey resultType="int" keyProperty="stdrSpprcSeq" order="BEFORE">
+        SELECT ISNULL ( MAX( STDR_SPPRC_SEQ ) , 0 ) + 1
+          FROM T_STDR_PRD_SPPRC
+         WHERE 1=1
+           AND PUCH_SEQ = #{puchSeq}
+           AND AGEN_SEQ = #{agenSeq}
+	</selectKey>
+	INSERT INTO T_STDR_PRD_SPPRC
+	(
+		STDR_SPPRC_SEQ,
+		AGEN_SEQ,
+		PUCH_SEQ,
+		PRD_DTL_SEQ,
+		UNTPC,
+		SPPRC,
+		VAT,
+		LAST_YN,
+		REG_DTM,
+		REG_SEQ
+	)
+	VALUES
+	(
+		#{stdrSpprcSeq},
+		#{agenSeq},
+		#{puchSeq},
+		#{prdDtlSeq},
+		#{untpc},
+		#{spprc},
+		#{vat},
+		'Y',
+		CURRENT_TIMESTAMP,
+		#{agenSeq}
+	)
+	</insert>
+	
+	<update id="updateStdPrdCdDetail" parameterType="com.namyang.nyorder.std.vo.StdPrdCdMngVO">
+        /* stdPrdCdMng-Mapper - updateStdPrdCdDetail */
+        UPDATE T_PRD_DTL
+           SET STD_PRD_NM = #{stdPrdNm}
+             , PRD_ORDR = #{prdOrdr}
+             , FALT_QTY = #{faltQty}
+             , BRCD = #{brcd}
+             , IDDY_BRCD = #{iddyBrcd}
+             , ETC_BRCD = #{etcBrcd}
+             , SUITE_NM = #{suiteNm}
+             , TAXT_CD = #{taxtCd}
+             , IDDY_STDR = #{iddyStdr}
+             , UPD_DTM = CURRENT_TIMESTAMP
+             , UPD_SEQ = #{agenSeq}
+         WHERE 1=1
+           AND PUCH_SEQ = #{puchSeq}
+           AND AGEN_SEQ = #{agenSeq}
+           AND PRD_DTL_SEQ = #{prdDtlSeq}
+	</update>
+	
+	<update id="removeStdPrdCd" parameterType="com.namyang.nyorder.std.vo.StdPrdCdMngVO">
+        /* stdPrdCdMng-Mapper - removeStdPrdCd */
+        UPDATE T_PRD_DTL
+           SET USE_YN = 'N'
+             , UPD_DTM = CURRENT_TIMESTAMP
+             , UPD_SEQ = #{agenSeq}
+         WHERE 1=1
+           AND PUCH_SEQ = #{puchSeq}
+           AND AGEN_SEQ = #{agenSeq}
+           AND PRD_DTL_SEQ = #{prdDtlSeq}
+	</update>
+	
+	<update id="updateStdrPrdSpprcLastYn" parameterType="com.namyang.nyorder.std.vo.StdPrdCdMngVO">
+        /* stdPrdCdMng-Mapper - updateStdrPrdSpprcLastYn */
+        UPDATE T_STDR_PRD_SPPRC
+           SET LAST_YN = 'N'
+         WHERE 1=1
+           AND AGEN_SEQ = #{agenSeq}
+           AND PUCH_SEQ = #{puchSeq}
+           AND PRD_DTL_SEQ = #{prdDtlSeq}
+	</update>
+	
+	<select id="getNextPrdDtlCd" parameterType="com.namyang.nyorder.std.vo.StdPrdCdMngVO" resultType="String">
+        /* stdPrdCdMng-Mapper - getNextPrdDtlCd */
+        SELECT 'X'+ RIGHT('00000' + CONVERT(VARCHAR(4), ISNULL(MAX( RIGHT(PRD_DTL_CD,5) ), 0) + 1), 5) AS NEXT_PRD_DTL_CD
+          FROM T_PRD_DTL
+         WHERE 1=1
+           AND PUCH_SEQ = #{puchSeq}
+           AND AGEN_SEQ = #{agenSeq}
+	</select>
+	
+	<select id="selectStdrPrdSpprc" parameterType="com.namyang.nyorder.std.vo.StdPrdCdMngVO" resultType="com.namyang.nyorder.std.vo.StdPrdCdMngVO">
+        /* stdPrdCdMng-Mapper - selectStdrPrdSpprc */
+        SELECT UNTPC
+          FROM T_STDR_PRD_SPPRC
+         WHERE 1=1
+           AND AGEN_SEQ = #{agenSeq}
+           AND PUCH_SEQ = #{puchSeq}
+           AND PRD_DTL_SEQ = #{prdDtlSeq}
+           AND LAST_YN = 'Y'
+	</select>
+	
+	<select id="selectStdPrdMngDetail" parameterType="com.namyang.nyorder.std.vo.StdPrdCdMngVO" resultType="com.namyang.nyorder.std.vo.StdPrdCdMngVO">
+        /* stdPrdCdMng-Mapper - selectStdPrdMngDetail */
+        SELECT tpd.PRD_DTL_SEQ
+             , tpd.PRD_DTL_CD
+             , tpd.STD_PRD_NM
+             , tpd.PRD_ORDR
+             , tpd.FALT_QTY
+             , tpd.BRCD
+             , tpd.IDDY_BRCD
+             , tpd.ETC_BRCD
+             , tpd.SUITE_NM
+             , tpd.PRD_TYPE
+             , tpd.TAXT_CD
+             , tpd.IDDY_STDR
+             , tsps.UNTPC
+             , tsps.SPPRC
+             , tsps.VAT
+          FROM T_PRD_DTL tpd
+         INNER JOIN T_STDR_PRD_SPPRC tsps
+            ON tpd.AGEN_SEQ = tsps.AGEN_SEQ
+           AND tpd.PUCH_SEQ = tsps.PUCH_SEQ
+           AND tpd.PRD_DTL_SEQ = tsps.PRD_DTL_SEQ
+         WHERE 1=1
+           AND tpd.PUCH_SEQ = #{puchSeq}
+           AND tpd.AGEN_SEQ = #{agenSeq}
+           AND tsps.LAST_YN = 'Y'
+           AND tpd.USE_YN ='Y'
+           AND tpd.PRD_DTL_SEQ = #{prdDtlSeq}
+	</select>
+</mapper>

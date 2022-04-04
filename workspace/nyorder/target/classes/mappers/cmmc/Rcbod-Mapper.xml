@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.namyang.nyorder.cmmc.dao.RcbodMapper">
+
+<select id="selectRcbodList" parameterType="com.namyang.nyorder.cmmc.vo.RcbodVO" resultType="com.namyang.nyorder.cmmc.vo.RcbodVO">
+	/* rcbod-Mapper - selectRcbodList 자료실 리스트 조회*/
+		SELECT 
+				RM.RCBOD_SEQ, 
+				RM.RCBOD_SUB,
+				RM.REG_DTM,
+				RM.USE_YN
+		FROM 	T_RCBOD_MST 	RM
+		INNER
+		JOIN 	T_RCBOD_DTL		RD
+		ON		RM.RCBOD_SEQ = RD.RCBOD_SEQ
+		<where>
+			AND	RM.USE_YN = 'Y'
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(srcType)">
+				<choose>
+					<when test='srcType == "title" '>
+						AND RM.RCBOD_SUB like '%'+#{srcKeyword}+'%'
+					</when>
+					<when test='srcType == "content" '>
+						AND ( 	AGEN_CD		like '%'+#{srcKeyword}+'%'
+								OR PRD_NM 	like '%'+#{srcKeyword}+'%'
+								OR QTY 		like '%'+#{srcKeyword}+'%'
+								OR CONSGE 	like '%'+#{srcKeyword}+'%'
+								OR ADDR 	like '%'+#{srcKeyword}+'%'
+						)
+					</when>
+					<when test='srcType == "all" '>
+						AND ( 	RM.RCBOD_SUB 	like '%'+#{srcKeyword}+'%'
+								OR RD.AGEN_CD 	like '%'+#{srcKeyword}+'%'
+								OR RD.PRD_NM 	like '%'+#{srcKeyword}+'%'
+								OR RD.QTY 		like '%'+#{srcKeyword}+'%'
+								OR RD.CONSGE 	like '%'+#{srcKeyword}+'%'
+								OR RD.ADDR 		like '%'+#{srcKeyword}+'%'
+						)
+					</when>
+				</choose>
+			</if>
+			<if test="@com.namyang.nyorder.util.MyBatisCmpr@isNotEmpty(agenSeq)">
+				AND	RD.AGEN_SEQ = #{agenSeq}
+			</if>
+		</where>
+		GROUP BY RM.RCBOD_SEQ, RM.RCBOD_SUB, RM.REG_DTM, RM.USE_YN
+		ORDER BY REG_DTM DESC
+	</select>
+
+	<select id="selectRcbodDtlList" parameterType="com.namyang.nyorder.cmmc.vo.RcbodVO" resultType="com.namyang.nyorder.cmmc.vo.RcbodVO">
+		/* rcbod-Mapper - selectRcbodDtlList 자료실 상세보기 리스트 조회*/
+			SELECT 
+				  trd.RCBOD_SEQ
+				, trd.RCBOD_DTL_SEQ
+				, trd.AGEN_CD
+				, trd.AGEN_SEQ
+				, trd.INVC
+				, trd.PRD_NM
+				, trd.QTY
+				, trd.CONSGE
+				, trd.ADDR
+			FROM	T_RCBOD_DTL trd
+			WHERE	trd.USE_YN = 'Y'
+			AND		trd.RCBOD_SEQ = #{rcbodSeq}
+			AND		trd.AGEN_SEQ = #{agenSeq}
+			ORDER BY ORDR ASC
+	</select>	
+</mapper>
